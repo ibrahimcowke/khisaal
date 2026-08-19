@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+@theme {
+  /* ---- Type ---- */
+  --font-ui: "IBM Plex Sans Arabic", "Noto Naskh Arabic", sans-serif;
+  --font-display: "Amiri", "Aref Ruqaa", "Noto Naskh Arabic", serif;
+  --font-reading-amiri: "Amiri", "Noto Naskh Arabic", serif;
+  --font-reading-ruqaa: "Aref Ruqaa", "Amiri", serif;
+  --font-reading-naskh: "Noto Naskh Arabic", "Amiri", serif;
+  --font-reading-scheherazade: "Scheherazade New", "Amiri", serif;
+  --font-reading-cairo: "Cairo", "IBM Plex Sans Arabic", sans-serif;
+  --font-reading-tajawal: "Tajawal", "IBM Plex Sans Arabic", sans-serif;
+  --font-reading-almarai: "Almarai", "IBM Plex Sans Arabic", sans-serif;
+  --font-reading-kufi: "Reem Kufi", "Amiri", sans-serif;
+  --font-reading-plex: "IBM Plex Sans Arabic", sans-serif;
+
+  /* ---- Light / paper theme ---- */
+  --color-paper-bg: #F8F5EE;
+  --color-paper-surface: #FFFDF8;
+  --color-paper-text: #25221E;
+  --color-paper-text-secondary: #777168;
+  --color-paper-muted: #AAA49A;
+  --color-paper-border: #E8E2D8;
+  --color-paper-accent: #836A42;
+  --color-paper-accent-hover: #715936;
+  --color-paper-highlight: #F4E7A3;
+
+  /* ---- Sepia theme ---- */
+  --color-sepia-bg: #EDE1C8;
+  --color-sepia-surface: #F4E8D0;
+  --color-sepia-text: #382E22;
+  --color-sepia-text-secondary: #796B59;
+
+  /* ---- Dark theme ---- */
+  --color-dark-bg: #11110F;
+  --color-dark-surface: #181815;
+  --color-dark-text: #DDD8CE;
+  --color-dark-text-secondary: #969188;
+  --color-dark-border: #2E2D29;
+  --color-dark-accent: #BDA47A;
+
+  /* ---- OLED theme ---- */
+  --color-oled-bg: #000000;
+  --color-oled-surface: #000000;
+  --color-oled-text: #CCCCCC;
+  --color-oled-muted: #777777;
+
+  /* ---- App-wide tokens that follow the active reader theme (set on <html data-reader-theme>) ---- */
+  --color-app-bg: var(--rt-bg, #F8F5EE);
+  --color-app-surface: var(--rt-surface, #FFFDF8);
+  --color-app-text: var(--rt-text, #25221E);
+  --color-app-text-secondary: var(--rt-text-secondary, #777168);
+  --color-app-muted: var(--rt-muted, #AAA49A);
+  --color-app-border: var(--rt-border, #E8E2D8);
+  --color-app-accent: var(--rt-accent, #836A42);
+  --color-app-highlight: var(--rt-highlight, #F4E7A3);
+
+  --animate-fade-in: fade-in 0.35s ease both;
+  --animate-slide-up: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Base styles */
+:root {
+  color-scheme: light;
+  font-family: var(--font-ui);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-app-bg);
+  color: var(--color-app-text);
+  overflow-x: hidden;
+  user-select: text;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar for modern subtle appearance */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-app-border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-app-muted);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-app-highlight);
+  color: var(--color-paper-text);
+}
+
+/* Arabic typography utilities */
+.arabic-kashida {
+  text-align-last: right;
+  text-justify: inter-word;
+}
+
+.soft-tashkeel {
+  --tashkeel-opacity: 0.55;
+}
+
+/* Reader Themes */
+[data-reader-theme="paper"] {
+  --rt-bg: var(--color-paper-bg);
+  --rt-surface: var(--color-paper-surface);
+  --rt-text: var(--color-paper-text);
+  --rt-text-secondary: var(--color-paper-text-secondary);
+  --rt-muted: var(--color-paper-muted);
+  --rt-border: var(--color-paper-border);
+  --rt-accent: var(--color-paper-accent);
+  --rt-highlight: var(--color-paper-highlight);
+}
+[data-reader-theme="warm"] {
+  --rt-bg: #F4EEDE;
+  --rt-surface: #FCF8EE;
+  --rt-text: #2E2A22;
+  --rt-text-secondary: #746C5B;
+  --rt-muted: #A39B8B;
+  --rt-border: #E4DCC8;
+  --rt-accent: #8E6838;
+  --rt-highlight: #F5E298;
+}
+[data-reader-theme="sepia"] {
+  --rt-bg: var(--color-sepia-bg);
+  --rt-surface: var(--color-sepia-surface);
+  --rt-text: var(--color-sepia-text);
+  --rt-text-secondary: var(--color-sepia-text-secondary);
+  --rt-muted: #9E8F7A;
+  --rt-border: #DBCBB0;
+  --rt-accent: #7C5B28;
+  --rt-highlight: #E8CE7E;
+}
+[data-reader-theme="olive"] {
+  --rt-bg: #EAECE4;
+  --rt-surface: #F3F5EE;
+  --rt-text: #212B24;
+  --rt-text-secondary: #5D6B60;
+  --rt-muted: #95A599;
+  --rt-border: #D2DBCF;
+  --rt-accent: #2E6043;
+  --rt-highlight: #CBE4C8;
+}
+[data-reader-theme="gray"] {
+  --rt-bg: #E7E7E4;
+  --rt-surface: #EFEFEC;
+  --rt-text: #2A2A28;
+  --rt-text-secondary: #6E6E68;
+  --rt-muted: #9C9C96;
+  --rt-border: #D3D3CE;
+  --rt-accent: #57544C;
+  --rt-highlight: #D9D0A8;
+}
+[data-reader-theme="night"] {
+  --rt-bg: var(--color-dark-bg);
+  --rt-surface: var(--color-dark-surface);
+  --rt-text: var(--color-dark-text);
+  --rt-text-secondary: var(--color-dark-text-secondary);
+  --rt-muted: #5C594F;
+  --rt-border: var(--color-dark-border);
+  --rt-accent: var(--color-dark-accent);
+  --rt-highlight: #5A4A24;
+}
+[data-reader-theme="oled"] {
+  --rt-bg: var(--color-oled-bg);
+  --rt-surface: var(--color-oled-surface);
+  --rt-text: var(--color-oled-text);
+  --rt-text-secondary: var(--color-oled-muted);
+  --rt-muted: #4A4A4A;
+  --rt-border: #1C1C1C;
+  --rt-accent: #9A8256;
+  --rt-highlight: #453A1E;
+}
+
+/* Custom Accent Overrides */
+[data-accent="gold"] {
+  --rt-accent: #836A42;
+}
+[data-accent="emerald"] {
+  --rt-accent: #1B6B4A;
+}
+[data-accent="indigo"] {
+  --rt-accent: #244B7A;
+}
+[data-accent="crimson"] {
+  --rt-accent: #8C253B;
+}
+[data-accent="amber"] {
+  --rt-accent: #B45309;
+}
+
+/* ---- Dynamic Card & List Shaping Styles ---- */
+[data-shaping="andalusian"] .rounded-2xl,
+[data-shaping="andalusian"] .rounded-3xl {
+  border-radius: 1.75rem 0.6rem 1.75rem 0.6rem !important;
+  transition: all 0.25s ease;
+}
+
+[data-shaping="andalusian"] .rounded-xl {
+  border-radius: 1.25rem 0.4rem 1.25rem 0.4rem !important;
+}
+
+[data-shaping="sharp"] .rounded-2xl,
+[data-shaping="sharp"] .rounded-3xl,
+[data-shaping="sharp"] .rounded-xl {
+  border-radius: 0.35rem !important;
+  border-width: 1.5px !important;
+}
+
+[data-shaping="pill"] .rounded-2xl,
+[data-shaping="pill"] .rounded-3xl {
+  border-radius: 2.25rem !important;
+}
+
+[data-shaping="pill"] .rounded-xl {
+  border-radius: 1.5rem !important;
+}
+
+[data-shaping="bordered"] .rounded-2xl,
+[data-shaping="bordered"] .rounded-3xl {
+  border-radius: 1.25rem !important;
+  border-width: 2px !important;
+  border-color: var(--rt-accent, #836A42) !important;
+}
+
+/* ---- Edge-to-Edge Display Utilities ---- */
+[data-edge-to-edge="true"] .edge-to-edge-container {
+  max-width: 100% !important;
+  padding-left: max(env(safe-area-inset-left, 0px), 0.75rem) !important;
+  padding-right: max(env(safe-area-inset-right, 0px), 0.75rem) !important;
+}
