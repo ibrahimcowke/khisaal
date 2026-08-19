@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LayoutGrid, List as ListIcon, BookOpen, ChevronLeft, Sparkles } from 'lucide-react'
+import { LayoutGrid, List as ListIcon, BookOpen, ChevronLeft, Sparkles, Upload, Download } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { toArabicDigits } from '../lib/format'
 import { Button } from '../components/ui/Button'
 import { PageHeader } from '../components/layout/PageHeader'
+import { CustomBookImporterModal } from '../components/library/CustomBookImporterModal'
+import { NotebookExporterModal } from '../components/library/NotebookExporterModal'
 import type { BookData } from '../lib/types'
 
 export default function LibraryPage() {
   const { allBooks, currentBookId, selectBook, loading } = useBook()
   const navigate = useNavigate()
   const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [importerOpen, setImporterOpen] = useState(false)
+  const [exporterOpen, setExporterOpen] = useState(false)
 
   if (loading && allBooks.length === 0) {
     return <div className="min-h-screen flex items-center justify-center text-app-text-secondary">جارٍ تحميل المكتبة...</div>
@@ -32,27 +36,49 @@ export default function LibraryPage() {
       <PageHeader
         title="المكتبة وموسوعات الأدب"
         subtitle="جامع روائع الحكم والمنظومات الأخلاقية والأدبية"
-        count={`${toArabicDigits(allBooks.length)} كتب`}
+        count={`${toArabicDigits(allBooks.length)} كتب وموسوعات`}
         actions={
-          <div className="flex items-center gap-1 rounded-xl border border-app-border p-1 bg-app-surface">
-            <button
-              onClick={() => setView('grid')}
-              className={`h-8 w-8 rounded-lg flex items-center justify-center transition-colors ${
-                view === 'grid' ? 'bg-app-accent text-white' : 'text-app-text-secondary hover:text-app-text'
-              }`}
-              title="عرض شبكي"
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setImporterOpen(true)}
+              className="gap-1.5 text-xs py-1.5 px-3"
             >
-              <LayoutGrid size={16} />
-            </button>
-            <button
-              onClick={() => setView('list')}
-              className={`h-8 w-8 rounded-lg flex items-center justify-center transition-colors ${
-                view === 'list' ? 'bg-app-accent text-white' : 'text-app-text-secondary hover:text-app-text'
-              }`}
-              title="عرض قائمة"
+              <Upload size={14} />
+              <span className="hidden sm:inline">استيراد كتاب</span>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setExporterOpen(true)}
+              className="gap-1.5 text-xs py-1.5 px-3"
             >
-              <ListIcon size={16} />
-            </button>
+              <Download size={14} />
+              <span className="hidden sm:inline">تصدير الفوائد</span>
+            </Button>
+
+            <div className="flex items-center gap-1 rounded-xl border border-app-border p-1 bg-app-surface">
+              <button
+                onClick={() => setView('grid')}
+                className={`h-8 w-8 rounded-lg flex items-center justify-center transition-colors ${
+                  view === 'grid' ? 'bg-app-accent text-white' : 'text-app-text-secondary hover:text-app-text'
+                }`}
+                title="عرض شبكي"
+              >
+                <LayoutGrid size={16} />
+              </button>
+              <button
+                onClick={() => setView('list')}
+                className={`h-8 w-8 rounded-lg flex items-center justify-center transition-colors ${
+                  view === 'list' ? 'bg-app-accent text-white' : 'text-app-text-secondary hover:text-app-text'
+                }`}
+                title="عرض قائمة"
+              >
+                <ListIcon size={16} />
+              </button>
+            </div>
           </div>
         }
       />
@@ -154,6 +180,20 @@ export default function LibraryPage() {
           ))}
         </div>
       )}
+
+      {/* Modals */}
+      <CustomBookImporterModal
+        open={importerOpen}
+        onOpenChange={setImporterOpen}
+        onBookImported={async (bookId) => {
+          await selectBook(bookId)
+          navigate(`/book/${bookId}`)
+        }}
+      />
+      <NotebookExporterModal
+        open={exporterOpen}
+        onOpenChange={setExporterOpen}
+      />
     </div>
   )
 }

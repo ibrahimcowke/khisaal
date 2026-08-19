@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Volume2, Maximize, Minimize, PlayCircle, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Volume2, Maximize, Minimize, PlayCircle, ChevronRight, ChevronLeft, Mic, GitBranch, Calendar, Sparkles } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { db, uid } from '../lib/db'
 import { chapterProgress as computeChapterProgress, overallProgress as computeOverallProgress, estimateMinutes } from '../lib/bookData'
@@ -26,7 +26,9 @@ import { AutoScrollBar } from '../components/reader/AutoScrollBar'
 import { useWakeLock } from '../components/reader/useWakeLock'
 import { WordLookupSheet } from '../components/reader/WordLookupSheet'
 import { FocusRuler } from '../components/reader/FocusRuler'
-import { QuoteCardModal } from '../components/reader/QuoteCardModal'
+import { QuoteStudioModal } from '../components/quotes/QuoteStudioModal'
+import { AiExplainerSheet } from '../components/reader/AiExplainerSheet'
+import { VoiceNotesSheet } from '../components/reader/VoiceNotesSheet'
 import { ChapterHeaderBanner } from '../components/reader/ChapterHeaderBanner'
 import { NextChapterCard } from '../components/reader/NextChapterCard'
 import { FloatingDesktopNav } from '../components/reader/FloatingDesktopNav'
@@ -65,8 +67,12 @@ export default function ReaderPage() {
   const [page, setPage] = useState(0) // for paginated mode
   const [lookupWord, setLookupWord] = useState<string | null>(null)
   const [pendingSearchQuery, setPendingSearchQuery] = useState<string | undefined>(undefined)
-  const [quoteCardOpen, setQuoteCardOpen] = useState(false)
-  const [quoteCardText, setQuoteCardText] = useState('')
+  const [quoteStudioOpen, setQuoteStudioOpen] = useState(false)
+  const [quoteStudioText, setQuoteStudioText] = useState('')
+  const [aiExplainOpen, setAiExplainOpen] = useState(false)
+  const [aiExplainText, setAiExplainText] = useState('')
+  const [voiceNotesOpen, setVoiceNotesOpen] = useState(false)
+  const navigate = useNavigate()
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -485,12 +491,15 @@ export default function ReaderPage() {
           >
             <MoreMenu
               trigger={
-                <IconButton aria-label="خيارات إضافية">
-                  <Volume2 size={18} />
+                <IconButton aria-label="خيارات إضافية" title="أدوات وميزات إضافية">
+                  <Sparkles size={18} />
                 </IconButton>
               }
               items={[
-                { label: 'الاستماع للفصل', icon: <Volume2 size={15} />, onClick: startTts },
+                { label: 'تسجيل ملاحظة صوتية', icon: <Mic size={15} />, onClick: () => setVoiceNotesOpen(true) },
+                { label: 'شجرة وخريطة الخصال', icon: <GitBranch size={15} />, onClick: () => navigate('/trait-tree') },
+                { label: 'ختمة الـ 30 يوماً', icon: <Calendar size={15} />, onClick: () => navigate('/reading-plan') },
+                { label: 'الاستماع الصوتي للفصل', icon: <Volume2 size={15} />, onClick: startTts },
                 {
                   label: autoScroll.active ? 'إيقاف التمرير التلقائي' : 'بدء التمرير التلقائي',
                   icon: <PlayCircle size={15} />,
@@ -635,8 +644,12 @@ export default function ReaderPage() {
             onSaveQuote={handleSaveQuote}
             onLookup={() => setLookupWord(selection.text.trim().split(/\s+/)[0] ?? selection.text)}
             onCardQuote={() => {
-              setQuoteCardText(selection.text)
-              setQuoteCardOpen(true)
+              setQuoteStudioText(selection.text)
+              setQuoteStudioOpen(true)
+            }}
+            onAiExplain={() => {
+              setAiExplainText(selection.text)
+              setAiExplainOpen(true)
             }}
             onDismiss={clearSelection}
           />
@@ -692,11 +705,28 @@ export default function ReaderPage() {
           onSave={handleSaveNote}
         />
       )}
-      <QuoteCardModal
-        open={quoteCardOpen}
-        onOpenChange={setQuoteCardOpen}
-        quoteText={quoteCardText}
+      <QuoteStudioModal
+        open={quoteStudioOpen}
+        onOpenChange={setQuoteStudioOpen}
+        quoteText={quoteStudioText}
         sourceChapterTitle={chapter?.title}
+        bookTitle={index?.book.title}
+        author={index?.book.author}
+      />
+      <AiExplainerSheet
+        open={aiExplainOpen}
+        onOpenChange={setAiExplainOpen}
+        selectedText={aiExplainText}
+        chapterTitle={chapter?.title}
+        bookId={index?.book.id}
+        chapterId={chapter?.id}
+      />
+      <VoiceNotesSheet
+        open={voiceNotesOpen}
+        onOpenChange={setVoiceNotesOpen}
+        bookId={index?.book.id || ''}
+        chapterId={chapter?.id || ''}
+        chapterTitle={chapter?.title}
       />
     </div>
   )

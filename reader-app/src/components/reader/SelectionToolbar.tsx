@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Highlighter, StickyNote, Copy, Share2, Search, BookText, Quote, Check, Sparkles } from 'lucide-react'
+import { Highlighter, StickyNote, Copy, Search, BookText, Quote, Check, Sparkles, BrainCircuit } from 'lucide-react'
 import type { ActiveSelection } from './useTextSelection'
 import type { HighlightColor } from '../../lib/types'
 
@@ -21,6 +21,7 @@ export function SelectionToolbar({
   onSaveQuote,
   onLookup,
   onCardQuote,
+  onAiExplain,
   onDismiss,
 }: {
   selection: ActiveSelection
@@ -30,6 +31,7 @@ export function SelectionToolbar({
   onSaveQuote: () => void
   onLookup: () => void
   onCardQuote?: () => void
+  onAiExplain?: () => void
   onDismiss: () => void
 }) {
   const [showColors, setShowColors] = useState(false)
@@ -41,7 +43,7 @@ export function SelectionToolbar({
     setCopied(false)
   }, [selection])
 
-  const toolbarWidth = Math.min(310, typeof window !== 'undefined' ? window.innerWidth - 24 : 310)
+  const toolbarWidth = Math.min(320, typeof window !== 'undefined' ? window.innerWidth - 24 : 320)
   const top = Math.max(12, selection.rect.top - 62)
   const left = Math.max(
     12,
@@ -58,18 +60,6 @@ export function SelectionToolbar({
       setTimeout(() => setCopied(false), 1200)
     } catch {
       // clipboard unavailable; ignore silently
-    }
-  }
-
-  async function handleShare() {
-    if (navigator.share) {
-      try {
-        await navigator.share({ text: selection.text })
-      } catch {
-        // user cancelled share
-      }
-    } else {
-      handleCopy()
     }
   }
 
@@ -116,18 +106,20 @@ export function SelectionToolbar({
           >
             <ToolbarAction icon={<Highlighter size={16} />} label="تظليل" onClick={() => setShowColors(true)} />
             <ToolbarAction icon={<StickyNote size={16} />} label="ملاحظة" onClick={() => { onNote(); onDismiss() }} />
+            {onAiExplain && (
+              <ToolbarAction icon={<BrainCircuit size={16} className="text-amber-300" />} label="شرح وبيان" onClick={() => { onAiExplain(); onDismiss() }} />
+            )}
+            {onCardQuote && (
+              <ToolbarAction icon={<Sparkles size={16} className="text-amber-300" />} label="بطاقة 4K" onClick={() => { onCardQuote(); onDismiss() }} />
+            )}
+            <ToolbarAction icon={<Quote size={16} />} label="اقتباس" onClick={() => { onSaveQuote(); onDismiss() }} />
+            <ToolbarAction icon={<BookText size={16} />} label="معنى" onClick={() => { onLookup(); onDismiss() }} />
+            <ToolbarAction icon={<Search size={16} />} label="بحث" onClick={() => { onSearchSelected(); onDismiss() }} />
             <ToolbarAction
               icon={copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
               label={copied ? 'تم' : 'نسخ'}
               onClick={handleCopy}
             />
-            <ToolbarAction icon={<Share2 size={16} />} label="مشاركة" onClick={handleShare} />
-            <ToolbarAction icon={<Search size={16} />} label="بحث" onClick={() => { onSearchSelected(); onDismiss() }} />
-            <ToolbarAction icon={<BookText size={16} />} label="معنى" onClick={() => { onLookup(); onDismiss() }} />
-            <ToolbarAction icon={<Quote size={16} />} label="اقتباس" onClick={() => { onSaveQuote(); onDismiss() }} />
-            {onCardQuote && (
-              <ToolbarAction icon={<Sparkles size={16} className="text-amber-300" />} label="بطاقة" onClick={() => { onCardQuote(); onDismiss() }} />
-            )}
           </motion.div>
         )}
       </AnimatePresence>

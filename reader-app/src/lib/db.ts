@@ -11,6 +11,33 @@ import type {
   RecentSearch,
 } from './types'
 
+export interface VoiceNote {
+  id: string
+  bookId: string
+  chapterId: string
+  blockId?: string
+  title: string
+  audioBlob: Blob
+  durationSeconds: number
+  createdAt: number
+}
+
+export interface ReadingPlanProgress {
+  id: string
+  planId: string
+  day: number
+  completed: boolean
+  completedAt?: number
+}
+
+export interface CustomBookRecord {
+  id: string
+  title: string
+  author: string
+  jsonData: string
+  createdAt: number
+}
+
 export class ReaderDatabase extends Dexie {
   highlights!: Table<Highlight, string>
   notes!: Table<Note, string>
@@ -24,10 +51,13 @@ export class ReaderDatabase extends Dexie {
   history!: Table<{ id: string; bookId: string; chapterId: string; visitedAt: number; durationSeconds: number }, string>
   verifiedBlocks!: Table<{ blockId: string; verifiedAt: number }, string>
   blockOverrides!: Table<{ blockId: string; text: string; updatedAt: number }, string>
+  voiceNotes!: Table<VoiceNote, string>
+  readingPlans!: Table<ReadingPlanProgress, string>
+  customBooks!: Table<CustomBookRecord, string>
 
   constructor() {
     super('imtaa-reader-db')
-    this.version(1).stores({
+    this.version(2).stores({
       highlights: 'id, bookId, chapterId, blockId, color, createdAt',
       notes: 'id, bookId, chapterId, blockId, highlightId, createdAt',
       bookmarks: 'id, bookId, chapterId, blockId, createdAt',
@@ -40,6 +70,9 @@ export class ReaderDatabase extends Dexie {
       history: 'id, bookId, chapterId, visitedAt',
       verifiedBlocks: 'blockId, verifiedAt',
       blockOverrides: 'blockId, updatedAt',
+      voiceNotes: 'id, bookId, chapterId, blockId, createdAt',
+      readingPlans: 'id, planId, day, completed',
+      customBooks: 'id, title, createdAt',
     })
   }
 }

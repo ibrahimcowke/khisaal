@@ -22,6 +22,8 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const EditorPage = lazy(() => import('./pages/EditorPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const MorePage = lazy(() => import('./pages/MorePage'))
+const TraitTreePage = lazy(() => import('./pages/TraitTreePage'))
+const ReadingPlanPage = lazy(() => import('./pages/ReadingPlanPage'))
 
 function PageFallback() {
   return <div className="min-h-screen flex items-center justify-center text-app-text-secondary text-sm">جارٍ التحميل...</div>
@@ -49,6 +51,8 @@ export default function App() {
               <Route path="/book/:bookId" element={<BookDetailPage />} />
               <Route path="/book/:bookId/read" element={<ReaderPage />} />
               <Route path="/book/:bookId/chapter/:chapterId" element={<ChapterToRead />} />
+              <Route path="/trait-tree" element={<TraitTreePage />} />
+              <Route path="/reading-plan" element={<ReadingPlanPage />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/bookmarks" element={<BookmarksPage />} />
               <Route path="/highlights" element={<HighlightsPage />} />
