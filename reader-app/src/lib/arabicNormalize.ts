@@ -14,7 +14,7 @@ export function normalizeArabic(input: string): string {
   s = s.replace(/\u0649/g, '\u064A') // ى -> ي
   s = s.replace(/\u0624/g, '\u0648') // ؤ -> و
   s = s.replace(/\u0626/g, '\u064A') // ئ -> ي
-  s = s.replace(/[\u061B\u061F\u060C،؛؟!.,:;"'`()\[\]{}«»…]/g, ' ')
+  s = s.replace(/[\u061B\u061F\u060C،؛؟!.,:;"'`()[\]{}«»…]/g, ' ')
   s = s.replace(/\s+/g, ' ').trim()
   return s.toLowerCase()
 }

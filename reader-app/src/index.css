@@ -262,3 +262,22 @@ body {
   padding-left: max(env(safe-area-inset-left, 0px), 0.75rem) !important;
   padding-right: max(env(safe-area-inset-right, 0px), 0.75rem) !important;
 }
+
+/* ---- Smooth Reading Surface and Scrolling ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+.reading-surface {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+.topic-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.topic-card:hover {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.07);
+}
+

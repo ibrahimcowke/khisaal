@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { Chapter, ContentBlock } from '../../lib/types'
 
 export interface TopicUnit {
@@ -25,7 +25,7 @@ export function groupChapterIntoTopics(chapter: Chapter | null): TopicUnit[] {
     if (block.text) {
       const t = block.text.trim()
       // Numbered khisal items (e.g., "1. ", "2. ", "١. ", "٢. ")
-      if (/^\s*(\d+|[\u0660-\u0669]+)[\.\-\)]\s+/.test(t)) return true
+      if (/^\s*(\d+|[\u0660-\u0669]+)[.\-)]\s+/.test(t)) return true
       // Specific khisal / section prefixes
       if (/^(الخصلة|خصلة|المفسد|أولاً|ثانياً|ثالثاً|رابعاً|خامساً|سادساً|سابعاً|ثامناً|تاسعاً|عاشراً|فائدة|حكمة|مسألة|تنبيه|وقفة|باب|فصل)/.test(t)) return true
       // Quotes or narrative openings if the previous topic already contains content
@@ -115,7 +115,7 @@ export function usePagination({
   const { w: windowWidth, h: windowHeight } = useDebouncedWindowSize()
 
   const isDesktop = windowWidth >= 768
-  const topics = groupChapterIntoTopics(chapter)
+  const topics = useMemo(() => groupChapterIntoTopics(chapter), [chapter])
 
   useLayoutEffect(() => {
     if (!active || !chapter || topics.length === 0 || !measureRef.current) return
@@ -178,7 +178,7 @@ export function usePagination({
     })
 
     return () => cancelAnimationFrame(raf)
-  }, [active, chapter, fontFamily, fontSize, lineHeight, paragraphSpacing, textWidth, textAlign, windowHeight, windowWidth, isDesktop, topics.length])
+  }, [active, chapter, fontFamily, fontSize, lineHeight, paragraphSpacing, textWidth, textAlign, windowHeight, windowWidth, isDesktop, topics])
 
   return { pages, topics, totalPages: pages.length, ready, isDesktop, measureRef }
 }

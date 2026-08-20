@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, ChevronLeft } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Compass } from 'lucide-react'
 import { toArabicDigits } from '../../lib/format'
 
 export function ReaderBottomBar({
@@ -29,21 +29,27 @@ export function ReaderBottomBar({
     <AnimatePresence>
       {visible && (
         <motion.footer
-          initial={{ y: 80, opacity: 0 }}
+          initial={{ y: 90, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 80, opacity: 0 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-0 inset-x-0 z-30 bg-app-surface/92 backdrop-blur-xl border-t border-app-border pb-[max(env(safe-area-inset-bottom,0px),0.75rem)] shadow-lg"
+          exit={{ y: 90, opacity: 0 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed bottom-0 inset-x-0 z-40 bg-app-surface/90 backdrop-blur-2xl border-t border-app-border/80 pb-[max(env(safe-area-inset-bottom,0px),0.75rem)] shadow-lg transition-all"
         >
-          <div className="max-w-3xl mx-auto px-4 pt-3 pb-2">
-            <div className="flex items-center justify-between text-xs text-app-text-secondary mb-2 font-medium">
-              <span className="font-semibold">{chapterLabel}</span>
-              <span className="text-[11px] text-app-muted">{timeRemainingLabel}</span>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 pb-2">
+            {/* Chapter info & remaining time header */}
+            <div className="flex items-center justify-between text-xs text-app-text-secondary mb-2.5 font-medium">
+              <div className="flex items-center gap-1.5 truncate max-w-[70%]">
+                <Compass size={14} className="text-app-accent shrink-0" />
+                <span className="font-bold text-app-text truncate">{chapterLabel}</span>
+              </div>
+              <span className="text-[11px] font-semibold text-app-muted shrink-0 bg-app-accent/5 px-2 py-0.5 rounded-md border border-app-border/50">
+                {timeRemainingLabel}
+              </span>
             </div>
 
-            {/* Scrubber Progress Bar */}
+            {/* Precision Scrubber Progress Bar */}
             <div
-              className="relative h-2 rounded-full bg-app-border/80 cursor-pointer group py-1 -my-1"
+              className="relative h-2.5 rounded-full bg-app-border/80 cursor-pointer group py-1 -my-1 transition-all"
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect()
                 const ratio = 1 - (e.clientX - rect.left) / rect.width // rtl
@@ -51,7 +57,7 @@ export function ReaderBottomBar({
               }}
             >
               <div
-                className="absolute inset-y-0 right-0 rounded-full bg-app-accent transition-all shadow-xs"
+                className="absolute inset-y-0 right-0 rounded-full bg-linear-to-l from-app-accent to-app-accent/80 transition-all shadow-xs"
                 style={{ width: `${chapterProgress}%` }}
               />
               <div
@@ -60,28 +66,30 @@ export function ReaderBottomBar({
               />
             </div>
 
-            {/* Navigation buttons */}
-            <div className="flex items-center justify-between mt-3">
+            {/* Navigation action buttons */}
+            <div className="flex items-center justify-between mt-3 gap-2">
               <button
                 onClick={onPrev}
                 disabled={!hasPrev}
-                className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-app-text-secondary hover:text-app-accent disabled:opacity-30 px-3 py-1.5 rounded-xl hover:bg-app-bg transition-colors"
+                className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-app-text hover:text-app-accent hover:bg-app-accent/10 border border-app-border disabled:opacity-30 px-3.5 py-1.5 rounded-xl transition-all active:scale-95 shadow-xs"
+                title="الانتقال للباب السابق"
               >
-                <ChevronRight size={17} />
-                <span>الفصل السابق</span>
+                <ChevronRight size={17} className="text-app-accent" />
+                <span>الباب السابق</span>
               </button>
 
-              <span className="text-xs font-semibold text-app-accent bg-app-accent/10 px-2.5 py-0.5 rounded-full">
-                {toArabicDigits(overallProgress)}٪ من الكتاب
+              <span className="text-xs font-bold text-app-accent bg-app-accent/10 border border-app-accent/20 px-3 py-1 rounded-full shadow-xs">
+                {toArabicDigits(overallProgress)}٪ من الموسوعة
               </span>
 
               <button
                 onClick={onNext}
                 disabled={!hasNext}
-                className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-app-text-secondary hover:text-app-accent disabled:opacity-30 px-3 py-1.5 rounded-xl hover:bg-app-bg transition-colors"
+                className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-app-text hover:text-app-accent hover:bg-app-accent/10 border border-app-border disabled:opacity-30 px-3.5 py-1.5 rounded-xl transition-all active:scale-95 shadow-xs"
+                title="الانتقال للباب التالي"
               >
-                <span>الفصل التالي</span>
-                <ChevronLeft size={17} />
+                <span>الباب التالي</span>
+                <ChevronLeft size={17} className="text-app-accent" />
               </button>
             </div>
           </div>

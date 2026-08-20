@@ -303,7 +303,11 @@ export default function ReaderPage() {
         return
       }
     }
-    controlsVisible ? setControlsVisible(false) : showControls()
+    if (controlsVisible) {
+      setControlsVisible(false)
+    } else {
+      showControls()
+    }
   }
 
   // ---------- Highlight / note / bookmark actions ----------
@@ -816,7 +820,7 @@ function PaginatedView({
           {pageTopics.map((topic) => (
             <div
               key={topic.id}
-              className="p-5 sm:p-6 rounded-2xl bg-app-surface/60 border border-app-border/70 shadow-xs hover:border-app-accent/40 transition-all flex flex-col justify-start"
+              className="topic-card p-5 sm:p-6 rounded-2xl bg-app-surface/75 border border-app-border/80 shadow-xs hover:border-app-accent/40 transition-all flex flex-col justify-start"
             >
               {topic.blocks.map((block) => (
                 <BlockRenderer
