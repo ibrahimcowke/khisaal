@@ -35,8 +35,9 @@ import { FloatingDesktopNav } from '../components/reader/FloatingDesktopNav'
 import { TopReadingProgressLine } from '../components/reader/TopReadingProgressLine'
 import { IconButton } from '../components/ui/IconButton'
 import type { HighlightColor } from '../lib/types'
-import { usePagination } from '../components/reader/usePagination'
+import { usePagination, type TopicUnit } from '../components/reader/usePagination'
 import { toArabicDigits } from '../lib/format'
+import { cn } from '../lib/cn'
 
 export default function ReaderPage() {
   const { bookId } = useParams<{ bookId: string }>()
@@ -236,7 +237,7 @@ export default function ReaderPage() {
   const lineHeightValue = LINE_HEIGHT_MAP[s.lineHeight]
   const effectiveTextWidth = s.edgeToEdgeDisplay ? 1080 : s.textWidth
 
-  const { pages, ready: pagesReady, measureRef } = usePagination({
+  const { pages, topics, ready: pagesReady, isDesktop, measureRef } = usePagination({
     chapter,
     active: s.readingMode === 'paginated',
     fontFamily,
@@ -532,9 +533,11 @@ export default function ReaderPage() {
           }}
         >
           <div ref={measureRef}>
-            {chapter.blocks.map((block) => (
-              <div key={block.id} data-measure-block>
-                <BlockRenderer block={block} highlights={[]} activeHighlightId={null} onHighlightClick={() => {}} />
+            {topics.map((topic) => (
+              <div key={topic.id} data-measure-topic={topic.id} className="mb-6 p-5">
+                {topic.blocks.map((block) => (
+                  <BlockRenderer key={block.id} block={block} highlights={[]} activeHighlightId={null} onHighlightClick={() => {}} />
+                ))}
               </div>
             ))}
           </div>
@@ -554,7 +557,7 @@ export default function ReaderPage() {
             <div className="flex items-center justify-center min-h-[70vh] text-app-muted text-sm">جارٍ تجهيز الصفحات...</div>
           ) : (
             <PaginatedView
-              pageBlocks={pages[page] ?? []}
+              pageTopics={pages[page] ?? []}
               fontFamily={fontFamily}
               fontSize={s.fontSize}
               lineHeight={lineHeight}
@@ -574,6 +577,7 @@ export default function ReaderPage() {
                 if (nxt) setSearchParams({ c: nxt.id })
               }}
               onOpenToc={() => setTocOpen(true)}
+              isDesktop={isDesktop}
             />
           )
         ) : (
@@ -594,16 +598,26 @@ export default function ReaderPage() {
               chapterNumber={(index.chapterOrder.get(chapterId) ?? 0) + 1}
             />
 
-            {chapter.blocks.map((block) => (
-              <BlockRenderer
-                key={block.id}
-                block={block}
-                highlights={highlights ?? []}
-                activeHighlightId={activeHighlightId}
-                onHighlightClick={handleHighlightClick}
-                isCurrent={block.id === currentBlockId}
-                dimmed={s.readingMode === 'focus' && currentBlockId !== null && block.id !== currentBlockId}
-              />
+            {topics.map((topic) => (
+              <div
+                key={topic.id}
+                className={cn(
+                  'break-inside-avoid mb-6',
+                  s.readingMode === 'columns' ? 'p-4 rounded-2xl bg-app-surface/40 border border-app-border/60' : ''
+                )}
+              >
+                {topic.blocks.map((block) => (
+                  <BlockRenderer
+                    key={block.id}
+                    block={block}
+                    highlights={highlights ?? []}
+                    activeHighlightId={activeHighlightId}
+                    onHighlightClick={handleHighlightClick}
+                    isCurrent={block.id === currentBlockId}
+                    dimmed={s.readingMode === 'focus' && currentBlockId !== null && block.id !== currentBlockId}
+                  />
+                ))}
+              </div>
             ))}
 
             <NextChapterCard
@@ -733,7 +747,7 @@ export default function ReaderPage() {
 }
 
 function PaginatedView({
-  pageBlocks,
+  pageTopics,
   fontFamily,
   fontSize,
   lineHeight,
@@ -750,8 +764,9 @@ function PaginatedView({
   onPrevPage,
   onNextChapter,
   onOpenToc,
+  isDesktop,
 }: {
-  pageBlocks: any[]
+  pageTopics: TopicUnit[]
   fontFamily: string
   fontSize: number
   lineHeight: number
@@ -768,9 +783,11 @@ function PaginatedView({
   onPrevPage: () => void
   onNextChapter: () => void
   onOpenToc: () => void
+  isDesktop: boolean
 }) {
   const isFirstPage = pageIndex === 0
   const isLastPage = pageIndex === pageCount - 1
+  const isMultiTopicDesktop = isDesktop && pageTopics.length >= 2
 
   return (
     <div className="flex flex-col items-center justify-between min-h-[78vh] py-2">
@@ -781,29 +798,48 @@ function PaginatedView({
         exit={{ opacity: 0, x: -10 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
         className="mx-auto w-full flex-1"
-        style={{ maxWidth: textWidth, fontFamily, fontSize, lineHeight }}
+        style={{ maxWidth: isMultiTopicDesktop ? Math.max(textWidth, 1100) : textWidth, fontFamily, fontSize, lineHeight }}
       >
         {isFirstPage && chapter && (
-          <ChapterHeaderBanner chapter={chapter} chapterNumber={chapterNumber} />
+          <div className="mb-6">
+            <ChapterHeaderBanner chapter={chapter} chapterNumber={chapterNumber} />
+          </div>
         )}
 
-        {pageBlocks.map((block) => (
-          <BlockRenderer
-            key={block.id}
-            block={block}
-            highlights={highlights}
-            activeHighlightId={activeHighlightId}
-            onHighlightClick={onHighlightClick}
-          />
-        ))}
+        <div
+          className={cn(
+            isMultiTopicDesktop
+              ? 'grid grid-cols-1 md:grid-cols-2 gap-6 items-start'
+              : 'flex flex-col gap-6'
+          )}
+        >
+          {pageTopics.map((topic) => (
+            <div
+              key={topic.id}
+              className="p-5 sm:p-6 rounded-2xl bg-app-surface/60 border border-app-border/70 shadow-xs hover:border-app-accent/40 transition-all flex flex-col justify-start"
+            >
+              {topic.blocks.map((block) => (
+                <BlockRenderer
+                  key={block.id}
+                  block={block}
+                  highlights={highlights}
+                  activeHighlightId={activeHighlightId}
+                  onHighlightClick={onHighlightClick}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
 
         {isLastPage && (
-          <NextChapterCard
-            nextChapter={nextChapter}
-            onNext={onNextChapter}
-            onOpenToc={onOpenToc}
-            isLastChapter={!nextChapter}
-          />
+          <div className="mt-8">
+            <NextChapterCard
+              nextChapter={nextChapter}
+              onNext={onNextChapter}
+              onOpenToc={onOpenToc}
+              isLastChapter={!nextChapter}
+            />
+          </div>
         )}
       </motion.div>
 
