@@ -32,9 +32,9 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         runtimeCaching: [
           {
-            urlPattern: /\/data\/book\.json$/,
+            urlPattern: /\/data\/.*\.json$/,
             handler: 'CacheFirst',
-            options: { cacheName: 'book-data', expiration: { maxEntries: 2 } },
+            options: { cacheName: 'book-data', expiration: { maxEntries: 10 } },
           },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
