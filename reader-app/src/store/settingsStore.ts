@@ -56,30 +56,40 @@ export const FONT_SAMPLE_MAP: Record<FontChoice, string> = {
   plex: 'العلم والأدب الرفيع',
 }
 
-export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; desc: string; previewClass: string }> = {
+export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; labelEn: string; desc: string; descEn: string; previewClass: string }> = {
   andalusian: {
     label: 'أندلسي مزخرف 🕌',
+    labelEn: 'Andalusian Curved 🕌',
     desc: 'أركان مقوسة متباينة مع زخارف عريقة',
+    descEn: 'Asymmetrical curvilinear arches inspired by classical heritage',
     previewClass: 'rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md border-app-accent',
   },
   rounded: {
     label: 'انسيابي عصري 💫',
+    labelEn: 'Modern Rounded 💫',
     desc: 'حواف مستديرة ناعمة ومتوازنة',
+    descEn: 'Smooth, balanced modern rounded corners',
     previewClass: 'rounded-2xl border-app-border',
   },
   bordered: {
     label: 'مؤطر مذهب ⚜️',
+    labelEn: 'Gilded Border ⚜️',
     desc: 'إطار مذهب أنيق ومحدد بدقة',
+    descEn: 'Distinct accent gold border with elegant shadows',
     previewClass: 'rounded-2xl border-2 border-app-accent shadow-sm',
   },
   pill: {
     label: 'كبسولي بيضاوي 💊',
+    labelEn: 'Pill / Capsule 💊',
     desc: 'انحناءات كاملة مريحة للعين',
+    descEn: 'Full pill-shaped curvilinear contours',
     previewClass: 'rounded-[2rem] border-app-border',
   },
   sharp: {
     label: 'كلاسيكي هندسي 📐',
+    labelEn: 'Geometric Sharp 📐',
     desc: 'حواف حادة ومستقيمة كالطبعات القديمة',
+    descEn: 'Crisp, rectilinear edges like vintage manuscripts',
     previewClass: 'rounded-xs border-2 border-app-border',
   },
 }
@@ -91,15 +101,17 @@ export const LINE_HEIGHT_MAP: Record<LineHeightPreset, number> = {
   spacious: 2.5,
 }
 
-export const ACCENT_COLOR_MAP: Record<AccentChoice, { name: string; hex: string }> = {
-  gold: { name: 'ذهبي أندلسي', hex: '#836A42' },
-  emerald: { name: 'أخضر زمردي', hex: '#1B6B4A' },
-  indigo: { name: 'أزرق ملكي', hex: '#244B7A' },
-  crimson: { name: 'عنابي فاخر', hex: '#8C253B' },
-  amber: { name: 'كهرماني دافئ', hex: '#B45309' },
+export const ACCENT_COLOR_MAP: Record<AccentChoice, { name: string; nameEn: string; hex: string }> = {
+  gold: { name: 'ذهبي أندلسي', nameEn: 'Andalusian Gold', hex: '#836A42' },
+  emerald: { name: 'أخضر زمردي', nameEn: 'Emerald Green', hex: '#1B6B4A' },
+  indigo: { name: 'أزرق ملكي', nameEn: 'Royal Indigo', hex: '#244B7A' },
+  crimson: { name: 'عنابي فاخر', nameEn: 'Imperial Crimson', hex: '#8C253B' },
+  amber: { name: 'كهرماني دافئ', nameEn: 'Warm Amber', hex: '#B45309' },
 }
 
 interface SettingsState {
+  // Language
+  language: 'ar' | 'en'
   // Appearance
   theme: ReaderTheme
   accentColor: AccentChoice
@@ -132,6 +144,7 @@ interface SettingsState {
   dailyGoalMinutes: number
   pomodoroMinutes: number
 
+  setLanguage: (l: 'ar' | 'en') => void
   setTheme: (t: ReaderTheme) => void
   setAccentColor: (a: AccentChoice) => void
   setCardShaping: (s: CardShaping) => void
@@ -161,6 +174,7 @@ interface SettingsState {
 }
 
 const DEFAULT_SETTINGS = {
+  language: 'ar' as 'ar' | 'en',
   theme: 'paper' as ReaderTheme,
   accentColor: 'gold' as AccentChoice,
   cardShaping: 'andalusian' as CardShaping,
@@ -194,6 +208,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       ...DEFAULT_SETTINGS,
 
+      setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
       setAccentColor: (accentColor) => set({ accentColor }),
       setCardShaping: (cardShaping) => set({ cardShaping }),

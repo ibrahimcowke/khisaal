@@ -18,70 +18,71 @@ import {
   type AccentChoice,
   type CardShaping,
 } from '../../store/settingsStore'
-import { toArabicDigits } from '../../lib/format'
+import { useTranslation } from '../../lib/i18n'
 
-const THEMES: { key: ReaderTheme; label: string; bg: string; text: string }[] = [
-  { key: 'paper', label: 'ورقي كلاسيكي', bg: '#F8F5EE', text: '#25221E' },
-  { key: 'warm', label: 'دافئ مريح', bg: '#F4EEDE', text: '#2E2A22' },
-  { key: 'sepia', label: 'سيبيا عتيق', bg: '#EDE1C8', text: '#382E22' },
-  { key: 'olive', label: 'زيتوني هادئ', bg: '#EAECE4', text: '#212B24' },
-  { key: 'gray', label: 'رمادي حديث', bg: '#E7E7E4', text: '#2A2A28' },
-  { key: 'night', label: 'ليلي مخملي', bg: '#11110F', text: '#DDD8CE' },
-  { key: 'oled', label: 'أسود نقي', bg: '#000000', text: '#CCCCCC' },
-]
-
-const LINE_HEIGHTS: { key: LineHeightPreset; label: string }[] = [
-  { key: 'compact', label: 'مضغوط' },
-  { key: 'normal', label: 'عادي' },
-  { key: 'comfortable', label: 'مريح' },
-  { key: 'spacious', label: 'واسع' },
-]
-
-const READING_MODES: { key: ReadingMode; label: string; desc: string }[] = [
-  { key: 'paginated', label: 'تقليب الصفحات 📖', desc: 'قراءة صفحة بصفحة كالكتاب المطبوع' },
-  { key: 'scroll', label: 'تمرير متصل 📜', desc: 'تمرير انسيابي مستمر' },
-  { key: 'columns', label: 'عمودين (مكتبي) 📰', desc: 'تخطيط صحفي مزدوج' },
-  { key: 'focus', label: 'وضع التركيز 🎯', desc: 'إبراز الفقرة النشطة وتعتيم الباقي' },
-]
-
-const FONT_SIZE_PRESETS = [
-  { size: 18, label: 'صغير' },
-  { size: 22, label: 'متوسط' },
-  { size: 28, label: 'كبير' },
-  { size: 36, label: 'كبير جداً' },
-  { size: 46, label: 'ضخم' },
-  { size: 52, label: 'عملاق' },
-]
-
-const SPACING_PRESETS = [
-  { val: 0.6, label: 'متقارب' },
-  { val: 1.0, label: 'عادي' },
-  { val: 1.5, label: 'مريح' },
-  { val: 2.2, label: 'واسع' },
+const THEMES: { key: ReaderTheme; label: string; labelEn: string; bg: string; text: string }[] = [
+  { key: 'paper', label: 'ورقي كلاسيكي', labelEn: 'Classic Paper', bg: '#F8F5EE', text: '#25221E' },
+  { key: 'warm', label: 'دافئ مريح', labelEn: 'Warm Parchment', bg: '#F4EEDE', text: '#2E2A22' },
+  { key: 'sepia', label: 'سيبيا عتيق', labelEn: 'Vintage Sepia', bg: '#EDE1C8', text: '#382E22' },
+  { key: 'olive', label: 'زيتوني هادئ', labelEn: 'Calm Olive', bg: '#EAECE4', text: '#212B24' },
+  { key: 'gray', label: 'رمادي حديث', labelEn: 'Modern Gray', bg: '#E7E7E4', text: '#2A2A28' },
+  { key: 'night', label: 'ليلي مخملي', labelEn: 'Velvet Night', bg: '#11110F', text: '#DDD8CE' },
+  { key: 'oled', label: 'أسود نقي', labelEn: 'Pure OLED Black', bg: '#000000', text: '#CCCCCC' },
 ]
 
 export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const [tab, setTab] = useState('font')
   const s = useSettingsStore()
+  const { t, lang, setLanguage, isRtl, formatDigits } = useTranslation()
+
+  const LINE_HEIGHTS: { key: LineHeightPreset; label: string }[] = [
+    { key: 'compact', label: isRtl ? 'مضغوط' : 'Compact' },
+    { key: 'normal', label: isRtl ? 'عادي' : 'Normal' },
+    { key: 'comfortable', label: isRtl ? 'مريح' : 'Comfortable' },
+    { key: 'spacious', label: isRtl ? 'واسع' : 'Spacious' },
+  ]
+
+  const READING_MODES: { key: ReadingMode; label: string; desc: string }[] = [
+    { key: 'paginated', label: isRtl ? 'تقليب الصفحات 📖' : 'Book Pages 📖', desc: isRtl ? 'قراءة صفحة بصفحة كالكتاب المطبوع' : 'Page-by-page book flip' },
+    { key: 'scroll', label: isRtl ? 'تمرير متصل 📜' : 'Continuous Scroll 📜', desc: isRtl ? 'تمرير انسيابي مستمر' : 'Smooth infinite scrolling' },
+    { key: 'columns', label: isRtl ? 'عمودين (مكتبي) 📰' : 'Dual Columns 📰', desc: isRtl ? 'تخطيط صحفي مزدوج' : 'Side-by-side newspaper layout' },
+    { key: 'focus', label: isRtl ? 'وضع التركيز 🎯' : 'Focus Mode 🎯', desc: isRtl ? 'إبراز الفقرة النشطة وتعتيم الباقي' : 'Highlight active paragraph' },
+  ]
+
+  const FONT_SIZE_PRESETS = [
+    { size: 18, label: isRtl ? 'صغير' : 'Small' },
+    { size: 22, label: isRtl ? 'متوسط' : 'Medium' },
+    { size: 28, label: isRtl ? 'كبير' : 'Large' },
+    { size: 36, label: isRtl ? 'كبير جداً' : 'X-Large' },
+    { size: 46, label: isRtl ? 'ضخم' : 'Huge' },
+    { size: 52, label: isRtl ? 'عملاق' : 'Giant' },
+  ]
+
+  const SPACING_PRESETS = [
+    { val: 0.6, label: isRtl ? 'متقارب' : 'Tight' },
+    { val: 1.0, label: isRtl ? 'عادي' : 'Normal' },
+    { val: 1.5, label: isRtl ? 'مريح' : 'Relaxed' },
+    { val: 2.2, label: isRtl ? 'واسع' : 'Spacious' },
+  ]
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange} title="تخصيص تجربة القراءة">
+    <Sheet open={open} onOpenChange={onOpenChange} title={t('readerSettings')}>
       <Tabs
         value={tab}
         onValueChange={setTab}
         tabs={[
-          { value: 'font', label: 'الخطوط والحجم' },
-          { value: 'appearance', label: 'المظهر والسمات' },
-          { value: 'shaping', label: 'هيئة الأشكال 🎨' },
-          { value: 'layout', label: 'طريقة العرض' },
-          { value: 'tools', label: 'الأدوات والتركيز' },
+          { value: 'font', label: isRtl ? 'الخطوط والحجم' : 'Typography' },
+          { value: 'appearance', label: isRtl ? 'المظهر والسمات' : 'Appearance' },
+          { value: 'shaping', label: isRtl ? 'هيئة الأشكال 🎨' : 'Shaping 🎨' },
+          { value: 'layout', label: isRtl ? 'طريقة العرض' : 'Layout' },
+          { value: 'tools', label: isRtl ? 'الأدوات واللغة' : 'Tools & Lang' },
         ]}
       >
         {/* Tab: Fonts & Typography */}
         <TabPanel value="font" className="space-y-6">
           {/* Font Type Selection */}
           <div>
-            <p className="text-sm font-semibold mb-2.5">نوع الخط العربي (للقراءة والمواضيع)</p>
+            <p className="text-sm font-semibold mb-2.5">{t('fontFamily')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {(Object.keys(FONT_FAMILY_MAP) as FontChoice[]).map((f) => (
                 <button
@@ -89,7 +90,8 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
                   onClick={() => s.setFontFamily(f)}
                   style={{ fontFamily: FONT_FAMILY_MAP[f] }}
                   className={cn(
-                    'rounded-2xl border p-3 text-right transition-all group hover:border-app-accent',
+                    'rounded-2xl border p-3 transition-all group hover:border-app-accent',
+                    isRtl ? 'text-right' : 'text-left',
                     s.fontFamily === f
                       ? 'border-app-accent bg-app-accent/15 ring-2 ring-app-accent/25 shadow-xs'
                       : 'border-app-border bg-app-surface'
@@ -109,9 +111,9 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
           {/* Big Font Size Slider & Presets */}
           <div className="bg-app-surface/60 p-4 rounded-2xl border border-app-border space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-app-text">حجم الخط (تكبير النصوص)</p>
+              <p className="text-sm font-semibold text-app-text">{t('fontSize')}</p>
               <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-2.5 py-0.5 rounded-full">
-                {toArabicDigits(s.fontSize)} نقطة
+                {formatDigits(s.fontSize)} {isRtl ? 'نقطة' : 'pt'}
               </span>
             </div>
 
@@ -122,10 +124,10 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
                   key={p.size}
                   onClick={() => s.setFontSize(p.size)}
                   className={cn(
-                    'py-1.5 px-2 rounded-xl text-xs font-medium border transition-all',
+                    'py-1.5 px-2 rounded-xl text-xs font-semibold border transition-all',
                     s.fontSize === p.size
-                      ? 'bg-app-accent text-white border-app-accent font-bold shadow-xs'
-                      : 'border-app-border bg-app-surface text-app-text-secondary hover:border-app-accent'
+                      ? 'border-app-accent bg-app-accent text-white shadow-xs font-bold'
+                      : 'border-app-border bg-app-surface hover:bg-app-accent/10 text-app-text'
                   )}
                 >
                   {p.label}
@@ -133,146 +135,137 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
               ))}
             </div>
 
-            <div className="flex items-center gap-3 pt-1">
-              <button
-                onClick={() => s.setFontSize(s.fontSize - 2)}
-                className="h-9 w-9 shrink-0 rounded-xl border border-app-border flex items-center justify-center text-sm font-bold hover:bg-app-bg active:scale-95 transition-all"
-                title="تصغير الخط"
-              >
-                A−
-              </button>
-              <Slider value={s.fontSize} onValueChange={s.setFontSize} min={16} max={54} ariaLabel="حجم الخط" />
-              <button
-                onClick={() => s.setFontSize(s.fontSize + 2)}
-                className="h-9 w-9 shrink-0 rounded-xl border border-app-border flex items-center justify-center text-base font-bold hover:bg-app-bg active:scale-95 transition-all"
-                title="تكبير الخط"
-              >
-                A+
-              </button>
+            <Slider value={s.fontSize} min={16} max={54} step={1} onValueChange={s.setFontSize} ariaLabel={t('fontSize')} />
+          </div>
+
+          {/* Line Height Presets */}
+          <div>
+            <p className="text-sm font-semibold mb-2">{t('lineHeight')}</p>
+            <div className="grid grid-cols-4 gap-2">
+              {LINE_HEIGHTS.map((lh) => (
+                <button
+                  key={lh.key}
+                  onClick={() => s.setLineHeight(lh.key)}
+                  className={cn(
+                    'py-2 rounded-xl border text-xs font-semibold transition-all',
+                    s.lineHeight === lh.key
+                      ? 'border-app-accent bg-app-accent/15 text-app-accent font-bold ring-2 ring-app-accent/20'
+                      : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/40'
+                  )}
+                >
+                  {lh.label}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Paragraph Spacing */}
-          <div className="bg-app-surface/60 p-4 rounded-2xl border border-app-border space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-app-text">تباعد الفقرات (المسافة بين الفقرات)</p>
-              <span className="text-xs text-app-muted">
-                {s.paragraphSpacing.toFixed(1)}em
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {SPACING_PRESETS.map((p) => (
-                <button
-                  key={p.val}
-                  onClick={() => s.setParagraphSpacing(p.val)}
-                  className={cn(
-                    'py-1.5 px-2 rounded-xl text-xs font-medium border transition-all',
-                    Math.abs(s.paragraphSpacing - p.val) < 0.1
-                      ? 'bg-app-accent text-white border-app-accent font-bold shadow-xs'
-                      : 'border-app-border bg-app-surface text-app-text-secondary hover:border-app-accent'
-                  )}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="pt-1">
-              <Slider
-                value={s.paragraphSpacing}
-                onValueChange={s.setParagraphSpacing}
-                min={0.4}
-                max={3.0}
-                step={0.1}
-                ariaLabel="تباعد الفقرات"
-              />
-            </div>
-          </div>
-
-          {/* Line Height */}
           <div>
-            <p className="text-sm font-medium mb-2.5">تباعد الأسطر (ارتفاع السطر)</p>
-            <div className="grid grid-cols-4 gap-2">
-              {LINE_HEIGHTS.map((l) => (
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-semibold">{t('paragraphSpacing')}</p>
+              <span className="text-xs text-app-muted">{formatDigits(s.paragraphSpacing)}</span>
+            </div>
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              {SPACING_PRESETS.map((sp) => (
                 <button
-                  key={l.key}
-                  onClick={() => s.setLineHeight(l.key)}
+                  key={sp.val}
+                  onClick={() => s.setParagraphSpacing(sp.val)}
                   className={cn(
-                    'rounded-xl border py-2 text-xs font-medium transition-colors',
-                    s.lineHeight === l.key
-                      ? 'border-app-accent bg-app-accent/15 text-app-accent font-bold ring-1 ring-app-accent/30'
-                      : 'border-app-border text-app-text-secondary'
+                    'py-1.5 rounded-xl border text-xs font-semibold transition-all',
+                    s.paragraphSpacing === sp.val
+                      ? 'border-app-accent bg-app-accent/15 text-app-accent font-bold ring-2 ring-app-accent/20'
+                      : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/40'
                   )}
                 >
-                  {l.label}
+                  {sp.label}
                 </button>
               ))}
             </div>
+            <Slider value={s.paragraphSpacing} min={0.4} max={3.0} step={0.2} onValueChange={s.setParagraphSpacing} ariaLabel={t('paragraphSpacing')} />
           </div>
 
-          <RowSwitch
-            label="تخفيف تباين التشكيل (لقراءة مريحة)"
-            checked={s.softenTashkeel}
-            onChange={s.setSoftenTashkeel}
-          />
+          {/* Soften Tashkeel */}
+          <div className="p-3 bg-app-surface/60 rounded-2xl border border-app-border flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-app-text">{t('softenTashkeel')}</p>
+              <p className="text-xs text-app-text-secondary mt-0.5">
+                {isRtl ? 'إظهار الحركات بلون خافت لراحة العين أثناء القراءة الطويلة' : 'Display diacritics in a soft contrast'}
+              </p>
+            </div>
+            <Switch checked={s.softenTashkeel} onCheckedChange={s.setSoftenTashkeel} ariaLabel={t('softenTashkeel')} />
+          </div>
         </TabPanel>
 
-        {/* Tab: Appearance */}
+        {/* Tab: Themes & Appearance */}
         <TabPanel value="appearance" className="space-y-6">
           <div>
-            <p className="text-sm font-semibold mb-2.5">سمة القراءة (ألوان الصفحات)</p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-              {THEMES.map((t) => (
+            <p className="text-sm font-semibold mb-2.5">{t('readerTheme')}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {THEMES.map((th) => (
                 <button
-                  key={t.key}
-                  onClick={() => s.setTheme(t.key)}
+                  key={th.key}
+                  onClick={() => s.setTheme(th.key)}
                   className={cn(
-                    'rounded-2xl border overflow-hidden transition-all text-right group shadow-xs',
-                    s.theme === t.key ? 'border-app-accent ring-2 ring-app-accent/30' : 'border-app-border'
+                    'rounded-2xl border p-2.5 transition-all text-center group hover:scale-[1.02]',
+                    s.theme === th.key
+                      ? 'border-app-accent ring-2 ring-app-accent/30 shadow-md scale-[1.02]'
+                      : 'border-app-border bg-app-surface'
                   )}
                 >
-                  <div style={{ backgroundColor: t.bg, color: t.text }} className="h-12 flex items-center justify-center text-xl font-display font-bold">
-                    أ
+                  <div
+                    style={{ backgroundColor: th.bg, color: th.text }}
+                    className="h-14 rounded-xl border border-black/10 flex items-center justify-center font-display text-2xl font-bold shadow-xs mb-2"
+                  >
+                    {isRtl ? 'أ' : 'Aa'}
                   </div>
-                  <p className="text-[10px] py-1 text-center bg-app-surface text-app-text-secondary truncate px-1 font-medium">{t.label}</p>
+                  <p className="text-xs font-bold text-app-text truncate">{isRtl ? th.label : th.labelEn}</p>
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <p className="text-sm font-semibold mb-2.5">لون التمييز (Accent)</p>
-            <div className="flex items-center gap-2.5">
+            <p className="text-sm font-semibold mb-2.5">{t('accentColor')}</p>
+            <div className="grid grid-cols-5 gap-2.5">
               {(Object.keys(ACCENT_COLOR_MAP) as AccentChoice[]).map((acc) => (
                 <button
                   key={acc}
                   onClick={() => s.setAccentColor(acc)}
-                  style={{ backgroundColor: ACCENT_COLOR_MAP[acc].hex }}
                   className={cn(
-                    'h-9 w-9 rounded-full border-2 transition-transform',
-                    s.accentColor === acc ? 'scale-115 border-app-text ring-2 ring-app-accent/40 shadow-sm' : 'border-white/40'
+                    'flex flex-col items-center gap-1.5 p-2 rounded-2xl border transition-all',
+                    s.accentColor === acc
+                      ? 'border-app-accent bg-app-accent/10 ring-2 ring-app-accent/25 shadow-xs'
+                      : 'border-app-border bg-app-surface hover:border-app-accent/40'
                   )}
-                  title={ACCENT_COLOR_MAP[acc].name}
-                />
+                >
+                  <div
+                    style={{ backgroundColor: ACCENT_COLOR_MAP[acc].hex }}
+                    className="w-7 h-7 rounded-full shadow-xs border-2 border-white/50"
+                  />
+                  <span className="text-[11px] font-semibold text-app-text truncate">
+                    {isRtl ? ACCENT_COLOR_MAP[acc].name : ACCENT_COLOR_MAP[acc].nameEn}
+                  </span>
+                </button>
               ))}
             </div>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2.5">
-              <p className="text-sm font-medium">تعتيم الشاشة الليلي</p>
-              <span className="text-xs text-app-muted">{toArabicDigits(Math.round(s.brightnessOverlay * 100))}٪</span>
+              <p className="text-sm font-medium">{t('brightness')}</p>
+              <span className="text-xs text-app-muted">{formatDigits(Math.round(s.brightnessOverlay * 100))}%</span>
             </div>
-            <Slider value={s.brightnessOverlay} onValueChange={s.setBrightnessOverlay} min={0} max={1} step={0.05} ariaLabel="تعتيم القراءة" />
+            <Slider value={s.brightnessOverlay} onValueChange={s.setBrightnessOverlay} min={0} max={1} step={0.05} ariaLabel={t('brightness')} />
           </div>
         </TabPanel>
 
         {/* Tab: Card & List Shaping */}
         <TabPanel value="shaping" className="space-y-6">
           <div>
-            <p className="text-sm font-semibold mb-1">هيئة وتصميم البطاقات والقوائم (Card & List Shaping)</p>
-            <p className="text-xs text-app-text-secondary mb-3">اختر الطابع الهندسي أو التراثي للبطاقات والفهارس والأزرار</p>
+            <p className="text-sm font-semibold mb-1">{t('cardShaping')}</p>
+            <p className="text-xs text-app-text-secondary mb-3">
+              {isRtl ? 'اختر الطابع الهندسي أو التراثي للبطاقات والفهارس والأزرار' : 'Select corner geometry and borders for all cards and lists'}
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {(Object.keys(CARD_SHAPING_MAP) as CardShaping[]).map((sh) => {
@@ -283,7 +276,8 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
                     key={sh}
                     onClick={() => s.setCardShaping(sh)}
                     className={cn(
-                      'p-4 border text-right transition-all group flex items-start justify-between gap-3',
+                      'p-4 border transition-all group flex items-start justify-between gap-3',
+                      isRtl ? 'text-right' : 'text-left',
                       info.previewClass,
                       isSelected
                         ? 'bg-app-accent/15 border-app-accent ring-2 ring-app-accent/30 shadow-md'
@@ -291,8 +285,8 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
                     )}
                   >
                     <div className="min-w-0">
-                      <p className="font-display font-bold text-sm text-app-text">{info.label}</p>
-                      <p className="text-xs text-app-text-secondary mt-1">{info.desc}</p>
+                      <p className="font-display font-bold text-sm text-app-text">{isRtl ? info.label : info.labelEn}</p>
+                      <p className="text-xs text-app-text-secondary mt-1">{isRtl ? info.desc : info.descEn}</p>
                     </div>
 
                     <div className={cn('w-6 h-6 shrink-0 flex items-center justify-center font-display text-sm font-bold', info.previewClass, 'bg-app-accent text-white')}>
@@ -305,15 +299,21 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
           </div>
 
           <div className="p-4 bg-app-surface/60 rounded-2xl border border-app-border space-y-2">
-            <p className="text-xs font-semibold text-app-text">معاينة مباشرة لشكل قائمة الفهرس:</p>
+            <p className="text-xs font-semibold text-app-text">
+              {isRtl ? 'معاينة مباشرة لشكل قائمة الفهرس:' : 'Live Shaping Preview:'}
+            </p>
             <div className="space-y-2">
               <div className="p-3 bg-app-surface border border-app-border rounded-2xl flex items-center justify-between">
-                <span className="font-display text-sm font-bold text-app-accent">الباب الأول: في الحكمة والمروءة</span>
-                <span className="text-xs text-app-muted">ص ١٢</span>
+                <span className="font-display text-sm font-bold text-app-accent">
+                  {isRtl ? 'الباب الأول: في الحكمة والمروءة' : 'Chapter 1: On Wisdom and Honor'}
+                </span>
+                <span className="text-xs text-app-muted">{formatDigits(12)}</span>
               </div>
               <div className="p-3 bg-app-accent/10 border border-app-accent rounded-2xl flex items-center justify-between">
-                <span className="font-display text-sm font-bold text-app-accent">الباب الثاني: في الصبر والشكر</span>
-                <span className="text-xs text-app-accent font-bold">نشط</span>
+                <span className="font-display text-sm font-bold text-app-accent">
+                  {isRtl ? 'الباب الثاني: في الصبر والشكر' : 'Chapter 2: On Patience and Gratitude'}
+                </span>
+                <span className="text-xs text-app-accent font-bold">{isRtl ? 'نشط' : 'Active'}</span>
               </div>
             </div>
           </div>
@@ -322,14 +322,15 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
         {/* Tab: Layout & Reading Mode */}
         <TabPanel value="layout" className="space-y-6">
           <div>
-            <p className="text-sm font-semibold mb-2.5">نمط وطريقة القراءة</p>
+            <p className="text-sm font-semibold mb-2.5">{t('readingMode')}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {READING_MODES.map((m) => (
                 <button
                   key={m.key}
                   onClick={() => s.setReadingMode(m.key)}
                   className={cn(
-                    'p-3.5 rounded-2xl border text-right transition-all',
+                    'p-3.5 rounded-2xl border transition-all',
+                    isRtl ? 'text-right' : 'text-left',
                     s.readingMode === m.key
                       ? 'border-app-accent bg-app-accent/15 ring-2 ring-app-accent/25 shadow-xs'
                       : 'border-app-border bg-app-surface hover:border-app-accent/60'
@@ -346,63 +347,98 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
           <div className="p-4 rounded-2xl border border-app-border bg-app-surface/60 space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-app-text">عرض كامل الحواف (Edge-to-Edge)</p>
-                <p className="text-xs text-app-text-secondary mt-0.5">تمديد مساحة القراءة واستغلال الشاشة بالكامل بدون هوامش ميتة</p>
+                <p className="text-sm font-semibold text-app-text">
+                  {isRtl ? 'عرض كامل الحواف (Edge-to-Edge)' : 'Edge-to-Edge Display'}
+                </p>
+                <p className="text-xs text-app-text-secondary mt-0.5">
+                  {isRtl ? 'تمديد مساحة القراءة واستغلال الشاشة بالكامل بدون هوامش ميتة' : 'Maximize reading area without empty padding'}
+                </p>
               </div>
-              <Switch checked={s.edgeToEdgeDisplay} onCheckedChange={s.setEdgeToEdgeDisplay} ariaLabel="عرض كامل الحواف" />
+              <Switch checked={s.edgeToEdgeDisplay} onCheckedChange={s.setEdgeToEdgeDisplay} ariaLabel="Edge-to-Edge" />
             </div>
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-2.5">عرض عمود النص (في الوضع العادي)</p>
+            <p className="text-sm font-medium mb-2.5">{t('textWidth')}</p>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-app-muted">ضيّق</span>
-              <Slider value={s.textWidth} onValueChange={s.setTextWidth} min={540} max={940} step={10} ariaLabel="عرض النص" />
-              <span className="text-xs text-app-muted">واسع</span>
+              <span className="text-xs text-app-muted">{isRtl ? 'ضيّق' : 'Narrow'}</span>
+              <Slider value={s.textWidth} onValueChange={s.setTextWidth} min={540} max={940} step={10} ariaLabel={t('textWidth')} />
+              <span className="text-xs text-app-muted">{isRtl ? 'واسع' : 'Wide'}</span>
             </div>
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-2.5">محاذاة النص</p>
+            <p className="text-sm font-medium mb-2.5">{t('textAlign')}</p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => s.setTextAlign('right')}
                 className={cn('rounded-xl border py-2.5 text-xs font-semibold', s.textAlign === 'right' ? 'border-app-accent bg-app-accent/15 text-app-accent' : 'border-app-border')}
               >
-                محاذاة لليمين
+                {isRtl ? 'محاذاة لليمين' : 'Right Align'}
               </button>
               <button
                 onClick={() => s.setTextAlign('justify')}
                 className={cn('rounded-xl border py-2.5 text-xs font-semibold', s.textAlign === 'justify' ? 'border-app-accent bg-app-accent/15 text-app-accent' : 'border-app-border')}
               >
-                ضبط الأسطر (Justify)
+                {isRtl ? 'ضبط الأسطر (Justify)' : 'Justified'}
               </button>
             </div>
           </div>
 
           <RowSwitch
-            label="إظهار أرقام صفحات المطبوع المصدرية"
+            label={t('showSourcePages')}
             checked={s.showSourcePages}
             onChange={s.toggleShowSourcePages}
           />
         </TabPanel>
 
-        {/* Tab: Tools */}
+        {/* Tab: Tools & Language */}
         <TabPanel value="tools" className="space-y-6">
+          {/* Quick Language Switcher */}
+          <div className="p-4 bg-app-surface/60 rounded-2xl border border-app-border space-y-2.5">
+            <p className="text-sm font-semibold text-app-text">{t('language')}</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setLanguage('ar')}
+                className={cn(
+                  'py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all',
+                  lang === 'ar'
+                    ? 'border-app-accent bg-app-accent/15 text-app-accent ring-2 ring-app-accent/20'
+                    : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/40'
+                )}
+              >
+                <span>🇸🇦</span>
+                <span>العربية</span>
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={cn(
+                  'py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all',
+                  lang === 'en'
+                    ? 'border-app-accent bg-app-accent/15 text-app-accent ring-2 ring-app-accent/20'
+                    : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/40'
+                )}
+              >
+                <span>🇬🇧</span>
+                <span>English</span>
+              </button>
+            </div>
+          </div>
+
           <RowSwitch
-            label="مسطرة التركيز القرائي (تتبع الأسطر)"
+            label={isRtl ? 'مسطرة التركيز القرائي (تتبع الأسطر)' : 'Focus Ruler Guide'}
             checked={s.showFocusRuler}
             onChange={s.setShowFocusRuler}
           />
 
           <RowSwitch
-            label="إبقاء الشاشة مضاءة أثناء القراءة"
+            label={t('keepScreenOn')}
             checked={s.keepScreenOn}
             onChange={s.setKeepScreenOn}
           />
 
           <RowSwitch
-            label="عكس مناطق النقر لتقليب الصفحات"
+            label={t('tapZonesInverted')}
             checked={s.tapZonesInverted}
             onChange={s.toggleTapZones}
           />

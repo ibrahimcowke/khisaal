@@ -222,38 +222,81 @@ body {
   --rt-accent: #B45309;
 }
 
-/* ---- Dynamic Card & List Shaping Styles ---- */
-[data-shaping="andalusian"] .rounded-2xl,
-[data-shaping="andalusian"] .rounded-3xl {
-  border-radius: 1.75rem 0.6rem 1.75rem 0.6rem !important;
-  transition: all 0.25s ease;
+/* ---- English and Multilingual Typography ---- */
+html[lang="en"] {
+  --font-ui: "Inter", "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-[data-shaping="andalusian"] .rounded-xl {
-  border-radius: 1.25rem 0.4rem 1.25rem 0.4rem !important;
+/* ---- Dynamic Card & List Shaping System ---- */
+/* 1. Andalusian Arched Theme */
+html[data-shaping="andalusian"][dir="rtl"] [class*="rounded-2xl"],
+html[data-shaping="andalusian"][dir="rtl"] [class*="rounded-3xl"],
+html[data-shaping="andalusian"][dir="rtl"] .topic-card {
+  border-radius: 1.75rem 0.5rem 1.75rem 0.5rem !important;
+  transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-[data-shaping="sharp"] .rounded-2xl,
-[data-shaping="sharp"] .rounded-3xl,
-[data-shaping="sharp"] .rounded-xl {
-  border-radius: 0.35rem !important;
-  border-width: 1.5px !important;
+html[data-shaping="andalusian"][dir="ltr"] [class*="rounded-2xl"],
+html[data-shaping="andalusian"][dir="ltr"] [class*="rounded-3xl"],
+html[data-shaping="andalusian"][dir="ltr"] .topic-card {
+  border-radius: 0.5rem 1.75rem 0.5rem 1.75rem !important;
+  transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-[data-shaping="pill"] .rounded-2xl,
-[data-shaping="pill"] .rounded-3xl {
-  border-radius: 2.25rem !important;
+html[data-shaping="andalusian"] [class*="rounded-xl"] {
+  border-radius: 1.15rem 0.35rem 1.15rem 0.35rem !important;
 }
 
-[data-shaping="pill"] .rounded-xl {
-  border-radius: 1.5rem !important;
+/* 2. Modern Rounded Theme */
+html[data-shaping="rounded"] [class*="rounded-2xl"],
+html[data-shaping="rounded"] [class*="rounded-3xl"],
+html[data-shaping="rounded"] .topic-card {
+  border-radius: 1.25rem !important;
+  transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-[data-shaping="bordered"] .rounded-2xl,
-[data-shaping="bordered"] .rounded-3xl {
+html[data-shaping="rounded"] [class*="rounded-xl"] {
+  border-radius: 0.85rem !important;
+}
+
+/* 3. Gilded Border Theme */
+html[data-shaping="bordered"] [class*="rounded-2xl"],
+html[data-shaping="bordered"] [class*="rounded-3xl"],
+html[data-shaping="bordered"] .topic-card {
   border-radius: 1.25rem !important;
   border-width: 2px !important;
   border-color: var(--rt-accent, #836A42) !important;
+  box-shadow: 0 4px 20px -2px rgba(131, 106, 66, 0.12) !important;
+  transition: all 0.25s ease;
+}
+
+html[data-shaping="bordered"] [class*="rounded-xl"] {
+  border-radius: 0.85rem !important;
+  border-width: 1.5px !important;
+  border-color: var(--rt-accent, #836A42) !important;
+}
+
+/* 4. Pill / Capsule Theme */
+html[data-shaping="pill"] [class*="rounded-2xl"],
+html[data-shaping="pill"] [class*="rounded-3xl"],
+html[data-shaping="pill"] .topic-card {
+  border-radius: 2.25rem !important;
+  transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+html[data-shaping="pill"] [class*="rounded-xl"] {
+  border-radius: 1.5rem !important;
+}
+
+/* 5. Geometric Sharp Theme */
+html[data-shaping="sharp"] [class*="rounded-2xl"],
+html[data-shaping="sharp"] [class*="rounded-3xl"],
+html[data-shaping="sharp"] [class*="rounded-xl"],
+html[data-shaping="sharp"] .topic-card {
+  border-radius: 0.25rem !important;
+  border-width: 1.5px !important;
+  transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 /* ---- Edge-to-Edge Display Utilities ---- */

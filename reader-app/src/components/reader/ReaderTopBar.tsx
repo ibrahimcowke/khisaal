@@ -1,8 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Search, Bookmark, SlidersHorizontal, List, Sparkles, BookOpen } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Search, Bookmark, SlidersHorizontal, List, Sparkles, BookOpen } from 'lucide-react'
 import { AmbientSoundPlayer } from './AmbientSoundPlayer'
 import { PomodoroTimer } from './PomodoroTimer'
+import { useTranslation } from '../../lib/i18n'
 
 export function ReaderTopBar({
   visible,
@@ -26,6 +27,7 @@ export function ReaderTopBar({
   onOpenMore: () => void
 }) {
   const navigate = useNavigate()
+  const { t, isRtl } = useTranslation()
 
   return (
     <AnimatePresence>
@@ -35,19 +37,23 @@ export function ReaderTopBar({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -80, opacity: 0 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed top-0 inset-x-0 z-40 bg-app-surface/90 backdrop-blur-2xl border-b border-app-border/80 pt-[max(env(safe-area-inset-top,0px),0.5rem)] pb-2 px-3 sm:px-6 shadow-sm transition-all"
+          className="fixed top-0 inset-x-0 z-40 bg-app-surface/90 backdrop-blur-2xl border-b border-app-border/80 pt-[max(env(safe-area-inset-top,0px),0.5rem)] pb-2 px-3 sm:px-6 shadow-xs transition-all"
         >
           <div className="flex items-center justify-between max-w-6xl mx-auto gap-2 sm:gap-4">
-            {/* Right Side: Back Button & Productivity Tools */}
+            {/* Start Side: Back Button & Productivity Tools */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent/50 hover:bg-app-accent/10 transition-all active:scale-95 text-xs font-bold shadow-xs group"
-                aria-label="رجوع"
-                title="رجوع للصفحة السابقة"
+                aria-label={t('back')}
+                title={t('back')}
               >
-                <ArrowRight size={17} className="group-hover:-translate-x-0.5 transition-transform text-app-accent" />
-                <span className="hidden sm:inline">الرئيسية</span>
+                {isRtl ? (
+                  <ArrowRight size={17} className="group-hover:-translate-x-0.5 transition-transform text-app-accent" />
+                ) : (
+                  <ArrowLeft size={17} className="group-hover:-translate-x-0.5 transition-transform text-app-accent" />
+                )}
+                <span className="hidden sm:inline">{t('home')}</span>
               </button>
 
               <div className="hidden md:flex items-center gap-1.5">
@@ -73,14 +79,14 @@ export function ReaderTopBar({
               </div>
             </div>
 
-            {/* Left Side: Reader Action Hub with High-Visibility Styled Icons */}
+            {/* End Side: Reader Action Hub with High-Visibility Styled Icons */}
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               {/* TOC / Index Button */}
               <button
                 onClick={onOpenToc}
                 className="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent/50 hover:bg-app-accent/10 transition-all active:scale-95 shadow-xs"
-                aria-label="الفهرس"
-                title="فهرس الأبواب والخصال"
+                aria-label={t('toc')}
+                title={t('toc')}
               >
                 <List size={18} />
               </button>
@@ -89,8 +95,8 @@ export function ReaderTopBar({
               <button
                 onClick={onOpenSearch}
                 className="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent/50 hover:bg-app-accent/10 transition-all active:scale-95 shadow-xs"
-                aria-label="بحث في الكتاب"
-                title="بحث دقيق في الكتاب (Ctrl + F)"
+                aria-label={t('searchInBook')}
+                title={t('searchInBook')}
               >
                 <Search size={17} />
               </button>
@@ -103,8 +109,8 @@ export function ReaderTopBar({
                     ? 'bg-amber-500/15 border-amber-500/40 text-amber-500 shadow-amber-500/10'
                     : 'bg-app-surface border-app-border text-app-text hover:text-app-accent hover:border-app-accent/50 hover:bg-app-accent/10'
                 }`}
-                aria-label="علامة مرجعية"
-                title={isBookmarked ? 'إزالة العلامة المرجعية' : 'إضافة علامة مرجعية'}
+                aria-label={t('bookmarks')}
+                title={isBookmarked ? t('bookmarkRemoved') : t('bookmarkAdded')}
               >
                 <Bookmark size={18} fill={isBookmarked ? 'currentColor' : 'none'} />
               </button>
@@ -113,8 +119,8 @@ export function ReaderTopBar({
               <button
                 onClick={onOpenSettings}
                 className="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent/50 hover:bg-app-accent/10 transition-all active:scale-95 shadow-xs"
-                aria-label="تخصيص القراءة"
-                title="تخصيص الخطوط، الأحجام، والسمات"
+                aria-label={t('readerSettings')}
+                title={t('readerSettings')}
               >
                 <SlidersHorizontal size={17} />
               </button>
@@ -123,8 +129,8 @@ export function ReaderTopBar({
               <button
                 onClick={onOpenMore}
                 className="hidden sm:flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent/50 hover:bg-app-accent/10 transition-all active:scale-95 shadow-xs"
-                aria-label="أدوات إضافية"
-                title="ميزات وأدوات الذكاء الصوتي والمفاهيم"
+                aria-label={t('more')}
+                title={t('more')}
               >
                 <Sparkles size={17} className="text-app-accent" />
               </button>

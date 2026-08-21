@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useSettingsStore } from '../store/settingsStore'
 
 export function ThemeEffect() {
+  const language = useSettingsStore((s) => s.language) || 'ar'
   const theme = useSettingsStore((s) => s.theme)
   const accentColor = useSettingsStore((s) => s.accentColor)
   const cardShaping = useSettingsStore((s) => s.cardShaping)
@@ -9,12 +10,15 @@ export function ThemeEffect() {
   const brightnessOverlay = useSettingsStore((s) => s.brightnessOverlay)
 
   useEffect(() => {
+    const isAr = language === 'ar'
+    document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr')
+    document.documentElement.setAttribute('lang', language)
     document.documentElement.setAttribute('data-reader-theme', theme)
     document.documentElement.setAttribute('data-accent', accentColor || 'gold')
     document.documentElement.setAttribute('data-shaping', cardShaping || 'andalusian')
     document.documentElement.setAttribute('data-edge-to-edge', edgeToEdgeDisplay ? 'true' : 'false')
     document.documentElement.style.colorScheme = theme === 'night' || theme === 'oled' ? 'dark' : 'light'
-  }, [theme, accentColor, cardShaping, edgeToEdgeDisplay])
+  }, [language, theme, accentColor, cardShaping, edgeToEdgeDisplay])
 
   useEffect(() => {
     let overlay = document.getElementById('brightness-overlay')

@@ -37,6 +37,7 @@ import { IconButton } from '../components/ui/IconButton'
 import type { HighlightColor } from '../lib/types'
 import { usePagination, type TopicUnit } from '../components/reader/usePagination'
 import { toArabicDigits } from '../lib/format'
+import { useTranslation } from '../lib/i18n'
 import { cn } from '../lib/cn'
 
 export default function ReaderPage() {
@@ -789,6 +790,7 @@ function PaginatedView({
   onOpenToc: () => void
   isDesktop: boolean
 }) {
+  const { t, isRtl, formatDigits } = useTranslation()
   const isFirstPage = pageIndex === 0
   const isLastPage = pageIndex === pageCount - 1
   const isMultiTopicDesktop = isDesktop && pageTopics.length >= 2
@@ -856,14 +858,14 @@ function PaginatedView({
           }}
           disabled={isFirstPage && !chapter}
           className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent disabled:opacity-30 transition-all active:scale-95 shadow-xs"
-          title="الصفحة السابقة"
+          title={t('prevPage')}
         >
-          <ChevronRight size={16} />
-          <span>السابقة</span>
+          {isRtl ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          <span>{t('prevPage')}</span>
         </button>
 
         <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-3.5 py-1 rounded-full border border-app-accent/20">
-          صفحة {toArabicDigits(pageIndex + 1)} من {toArabicDigits(pageCount)}
+          {t('pageOf', { current: formatDigits(pageIndex + 1), total: formatDigits(pageCount) })}
         </span>
 
         <button
@@ -872,10 +874,10 @@ function PaginatedView({
             onNextPage()
           }}
           className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent transition-all active:scale-95 shadow-xs"
-          title="الصفحة التالية"
+          title={t('nextPage')}
         >
-          <span>التالية</span>
-          <ChevronLeft size={16} />
+          <span>{t('nextPage')}</span>
+          {isRtl ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </button>
       </div>
     </div>

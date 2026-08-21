@@ -7,6 +7,7 @@ import {
   Trash2,
   Info,
   ChevronLeft,
+  ChevronRight,
   Edit3,
   FileText,
   RotateCcw,
@@ -16,6 +17,7 @@ import {
   Database,
   CheckCircle2,
   Sparkles,
+  Globe,
 } from 'lucide-react'
 import { db } from '../lib/db'
 import {
@@ -32,29 +34,33 @@ import {
 } from '../store/settingsStore'
 import { Switch } from '../components/ui/Switch'
 import { Slider } from '../components/ui/Slider'
-import { toArabicDigits, formatDuration } from '../lib/format'
+import { formatDuration } from '../lib/format'
 import { cn } from '../lib/cn'
 import { PageHeader } from '../components/layout/PageHeader'
+import { useTranslation } from '../lib/i18n'
 
 const GOALS = [10, 15, 20, 30, 45, 60, 90]
 const POMODORO_OPTIONS = [15, 20, 25, 30, 45, 60]
 
-const THEMES: { key: ReaderTheme; label: string; bg: string; text: string }[] = [
-  { key: 'paper', label: 'ورقي كلاسيكي', bg: '#F8F5EE', text: '#25221E' },
-  { key: 'warm', label: 'دافئ مريح', bg: '#F4EEDE', text: '#2E2A22' },
-  { key: 'sepia', label: 'سيبيا عتيق', bg: '#EDE1C8', text: '#382E22' },
-  { key: 'olive', label: 'زيتوني هادئ', bg: '#EAECE4', text: '#212B24' },
-  { key: 'gray', label: 'رمادي حديث', bg: '#E7E7E4', text: '#2A2A28' },
-  { key: 'night', label: 'ليلي مخملي', bg: '#11110F', text: '#DDD8CE' },
-  { key: 'oled', label: 'أسود نقي', bg: '#000000', text: '#CCCCCC' },
+const THEMES: { key: ReaderTheme; label: string; labelEn: string; bg: string; text: string }[] = [
+  { key: 'paper', label: 'ورقي كلاسيكي', labelEn: 'Classic Paper', bg: '#F8F5EE', text: '#25221E' },
+  { key: 'warm', label: 'دافئ مريح', labelEn: 'Warm Parchment', bg: '#F4EEDE', text: '#2E2A22' },
+  { key: 'sepia', label: 'سيبيا عتيق', labelEn: 'Vintage Sepia', bg: '#EDE1C8', text: '#382E22' },
+  { key: 'olive', label: 'زيتوني هادئ', labelEn: 'Calm Olive', bg: '#EAECE4', text: '#212B24' },
+  { key: 'gray', label: 'رمادي حديث', labelEn: 'Modern Gray', bg: '#E7E7E4', text: '#2A2A28' },
+  { key: 'night', label: 'ليلي مخملي', labelEn: 'Velvet Night', bg: '#11110F', text: '#DDD8CE' },
+  { key: 'oled', label: 'أسود نقي', labelEn: 'Pure OLED Black', bg: '#000000', text: '#CCCCCC' },
 ]
 
 export default function SettingsPage() {
   const navigate = useNavigate()
   const s = useSettingsStore()
+  const { t, lang, setLanguage, isRtl, formatDigits } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [confirmClear, setConfirmClear] = useState(false)
+
+  const ChevronIcon = isRtl ? ChevronLeft : ChevronRight
 
   // Database stats for settings panel
   const counts = useLiveQuery(async () => {
@@ -104,51 +110,31 @@ export default function SettingsPage() {
     a.download = `imtaa-reader-backup-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
-    setStatus('تم تصدير النسخة الاحتياطية بنجاح')
+    setStatus(isRtl ? 'تم تصدير النسخة الاحتياطية بنجاح 💾' : 'Backup exported successfully 💾')
     setTimeout(() => setStatus(null), 3000)
   }
 
   async function handleExportMarkdown() {
-    const [highlights, notes, quotes, bookmarks] = await Promise.all([
-      db.highlights.toArray(),
-      db.notes.toArray(),
-      db.quotes.toArray(),
-      db.bookmarks.toArray(),
-    ])
-
-    let md = `# ملخص قراءاتي وملاحظاتي — إمتاع القارئ\n\n`
-    md += `*تاريخ التصدير: ${new Date().toLocaleDateString('ar-EG')}*\n\n---\n\n`
+    const [highlights, notes] = await Promise.all([db.highlights.toArray(), db.notes.toArray()])
+    let md = `# ${isRtl ? 'تظليلات وملاحظات إمتاع القارئ' : 'Imtaa Reader Notes & Highlights'}\n\n`
+    md += `*${isRtl ? 'تم التصدير بتاريخ' : 'Exported on'}: ${new Date().toLocaleDateString(isRtl ? 'ar-SA' : 'en-US')}*\n\n---\n\n`
 
     if (highlights.length > 0) {
-      md += `## ✍️ التظليلات (${highlights.length})\n\n`
+      md += `## ${isRtl ? 'التظليلات والفوائد' : 'Highlights'}\n\n`
       highlights.forEach((h, i) => {
-        md += `### ${i + 1}. ${h.text}\n`
-        md += `- **التاريخ:** ${new Date(h.createdAt).toLocaleDateString('ar-EG')}\n`
-        if (h.note) md += `- **الملاحظة:** ${h.note}\n`
-        md += `\n`
+        md += `### ${i + 1}. ${h.prefix || ''} **${h.text || ''}** ${h.suffix || ''}\n`
+        md += `- **${isRtl ? 'الباب' : 'Chapter'}**: ${h.chapterId}\n`
+        md += `- **${isRtl ? 'اللون' : 'Color'}**: ${h.color}\n`
+        md += `- **${isRtl ? 'التاريخ' : 'Date'}**: ${new Date(h.createdAt).toLocaleDateString(isRtl ? 'ar-SA' : 'en-US')}\n\n`
       })
     }
 
     if (notes.length > 0) {
-      md += `## 📝 الملاحظات والتدوينات (${notes.length})\n\n`
+      md += `## ${isRtl ? 'الملاحظات والتعليقات' : 'Notes & Annotations'}\n\n`
       notes.forEach((n, i) => {
-        md += `### ${i + 1}. تدوينة حول: "${n.selectedText}"\n`
-        md += `> ${n.body}\n\n`
-      })
-    }
-
-    if (quotes.length > 0) {
-      md += `## 📜 درر واقتباسات مختارة (${quotes.length})\n\n`
-      quotes.forEach((q) => {
-        md += `> «${q.text}»\n`
-        if (q.tags?.length) md += `*الوسوم: ${q.tags.join(', ')}*\n\n`
-      })
-    }
-
-    if (bookmarks.length > 0) {
-      md += `## 🔖 الإشارات المرجعية (${bookmarks.length})\n\n`
-      bookmarks.forEach((b) => {
-        md += `- **${b.title}** (أضيفت: ${new Date(b.createdAt).toLocaleDateString('ar-EG')})\n`
+        md += `### ${i + 1}. ${n.body}\n`
+        md += `- **${isRtl ? 'الباب' : 'Chapter'}**: ${n.chapterId}\n`
+        md += `- **${isRtl ? 'التاريخ' : 'Date'}**: ${new Date(n.createdAt).toLocaleDateString(isRtl ? 'ar-SA' : 'en-US')}\n\n`
       })
     }
 
@@ -159,8 +145,8 @@ export default function SettingsPage() {
     a.download = `imtaa-notes-${new Date().toISOString().slice(0, 10)}.md`
     a.click()
     URL.revokeObjectURL(url)
-    setStatus('تم تصدير ملف Markdown جاهز لـ Obsidian و Notion')
-    setTimeout(() => setStatus(null), 3500)
+    setStatus(isRtl ? 'تم تصدير ملف Markdown بنجاح 📝' : 'Markdown exported successfully 📝')
+    setTimeout(() => setStatus(null), 3000)
   }
 
   async function handleImport(file: File) {
@@ -173,12 +159,13 @@ export default function SettingsPage() {
       if (data.quotes) await db.quotes.bulkPut(data.quotes)
       if (data.collections) await db.collections.bulkPut(data.collections)
       if (data.sessions) await db.sessions.bulkPut(data.sessions)
+      if (data.positions) await db.positions.bulkPut(data.positions)
       if (data.corrections) await db.corrections.bulkPut(data.corrections)
       if (data.blockOverrides) await db.blockOverrides.bulkPut(data.blockOverrides)
       if (data.verifiedBlocks) await db.verifiedBlocks.bulkPut(data.verifiedBlocks)
-      setStatus('تم استيراد النسخة الاحتياطية بنجاح ✅')
+      setStatus(isRtl ? 'تم استيراد كافة البيانات بنجاح ✅' : 'All data imported successfully ✅')
     } catch {
-      setStatus('تعذر استيراد الملف، تأكد من صحة الصيغة ❌')
+      setStatus(isRtl ? 'تعذر استيراد الملف، تأكد من صحة الصيغة ❌' : 'Import failed, invalid file format ❌')
     }
     setTimeout(() => setStatus(null), 3500)
   }
@@ -186,27 +173,27 @@ export default function SettingsPage() {
   async function handleClearHistory() {
     await db.history.clear()
     setConfirmClear(false)
-    setStatus('تم مسح سجل القراءة بنجاح')
+    setStatus(isRtl ? 'تم مسح سجل القراءة بنجاح' : 'Reading history cleared')
     setTimeout(() => setStatus(null), 2500)
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-5 pt-6 sm:pt-8 pb-12 animate-fade-in">
       <PageHeader
-        title="إعدادات التطبيق"
-        subtitle="تخصيص السمات والخطوط والنسخ الاحتياطي"
+        title={t('settings')}
+        subtitle={isRtl ? 'تخصيص اللغة والسمات والخطوط والنسخ الاحتياطي' : 'Customize language, themes, typography & backups'}
         actions={
           <button
             onClick={() => {
               s.resetSettings()
-              setStatus('تمت استعادة الإعدادات الافتراضية')
+              setStatus(isRtl ? 'تمت استعادة الإعدادات الافتراضية' : 'Settings reset to default')
               setTimeout(() => setStatus(null), 2500)
             }}
             className="text-xs text-app-text-secondary hover:text-app-accent flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-app-border bg-app-surface transition-colors"
-            title="استعادة الإعدادات الافتراضية"
+            title={t('resetToDefault')}
           >
             <RotateCcw size={14} />
-            <span>افتراضي</span>
+            <span>{isRtl ? 'افتراضي' : 'Reset'}</span>
           </button>
         }
       />
@@ -218,26 +205,68 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Language Section */}
+      <Section title={t('language')} icon={<Globe size={16} className="text-app-accent" />}>
+        <div className="py-3">
+          <p className="text-xs font-semibold text-app-text-secondary mb-2.5">
+            {isRtl ? 'اختر لغة الواجهة' : 'Select Interface Language'}
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setLanguage('ar')}
+              className={cn(
+                'p-3.5 rounded-2xl border flex items-center justify-between gap-2 transition-all',
+                lang === 'ar'
+                  ? 'bg-app-accent/15 border-app-accent ring-2 ring-app-accent/30 font-bold text-app-accent shadow-xs'
+                  : 'bg-app-surface border-app-border hover:border-app-accent/40 text-app-text'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🇸🇦</span>
+                <span className="text-sm font-display">العربية (Arabic)</span>
+              </div>
+              {lang === 'ar' && <span className="text-xs font-bold text-app-accent">✓</span>}
+            </button>
+
+            <button
+              onClick={() => setLanguage('en')}
+              className={cn(
+                'p-3.5 rounded-2xl border flex items-center justify-between gap-2 transition-all',
+                lang === 'en'
+                  ? 'bg-app-accent/15 border-app-accent ring-2 ring-app-accent/30 font-bold text-app-accent shadow-xs'
+                  : 'bg-app-surface border-app-border hover:border-app-accent/40 text-app-text'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🇬🇧</span>
+                <span className="text-sm font-semibold">English</span>
+              </div>
+              {lang === 'en' && <span className="text-xs font-bold text-app-accent">✓</span>}
+            </button>
+          </div>
+        </div>
+      </Section>
+
       {/* Theme & Accent Palette */}
-      <Section title="المظهر والسمات" icon={<Palette size={16} className="text-app-accent" />}>
+      <Section title={t('appearance')} icon={<Palette size={16} className="text-app-accent" />}>
         <div className="py-2 space-y-4">
           <div>
-            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">سمة القراءة الرئيسية</p>
+            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">{t('readerTheme')}</p>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {THEMES.map((t) => (
+              {THEMES.map((th) => (
                 <button
-                  key={t.key}
-                  onClick={() => s.setTheme(t.key)}
+                  key={th.key}
+                  onClick={() => s.setTheme(th.key)}
                   className={cn(
-                    'rounded-xl border overflow-hidden transition-all text-right',
-                    s.theme === t.key ? 'border-app-accent ring-2 ring-app-accent/30' : 'border-app-border'
+                    'rounded-xl border overflow-hidden transition-all text-center',
+                    s.theme === th.key ? 'border-app-accent ring-2 ring-app-accent/30' : 'border-app-border'
                   )}
                 >
-                  <div style={{ backgroundColor: t.bg, color: t.text }} className="h-10 flex items-center justify-center text-lg font-display">
-                    أ
+                  <div style={{ backgroundColor: th.bg, color: th.text }} className="h-10 flex items-center justify-center text-lg font-display">
+                    {isRtl ? 'أ' : 'Aa'}
                   </div>
-                  <p className="text-[10px] py-1 text-center bg-app-surface text-app-text-secondary truncate px-1">
-                    {t.label}
+                  <p className="text-[10px] py-1 text-center bg-app-surface text-app-text-secondary truncate px-1 font-medium">
+                    {isRtl ? th.label : th.labelEn}
                   </p>
                 </button>
               ))}
@@ -245,7 +274,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="pt-2 border-t border-app-border">
-            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">لون التمييز (Accent Color)</p>
+            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">{t('accentColor')}</p>
             <div className="flex items-center gap-3">
               {(Object.keys(ACCENT_COLOR_MAP) as AccentChoice[]).map((acc) => (
                 <button
@@ -253,10 +282,10 @@ export default function SettingsPage() {
                   onClick={() => s.setAccentColor(acc)}
                   style={{ backgroundColor: ACCENT_COLOR_MAP[acc].hex }}
                   className={cn(
-                    'h-8 w-8 rounded-full border-2 transition-transform shadow-sm',
+                    'h-8 w-8 rounded-full border-2 transition-transform shadow-xs',
                     s.accentColor === acc ? 'scale-115 border-app-text ring-2 ring-app-accent/40' : 'border-white/40'
                   )}
-                  title={ACCENT_COLOR_MAP[acc].name}
+                  title={isRtl ? ACCENT_COLOR_MAP[acc].name : ACCENT_COLOR_MAP[acc].nameEn}
                 />
               ))}
             </div>
@@ -265,8 +294,12 @@ export default function SettingsPage() {
           {/* Card Shaping */}
           <div className="pt-3 border-t border-app-border space-y-2.5">
             <div>
-              <p className="text-xs font-semibold text-app-text-secondary mb-1">هيئة وشكل البطاقات والقوائم (Card & List Shaping)</p>
-              <p className="text-[11px] text-app-muted">تطبيق الطابع الأندلسي أو العصري على كل القوائم والفهارس والبطاقات</p>
+              <p className="text-xs font-semibold text-app-text-secondary mb-1">{t('cardShaping')}</p>
+              <p className="text-[11px] text-app-muted">
+                {isRtl
+                  ? 'تطبيق الطابع الأندلسي أو العصري أو المذهب على كل القوائم والفهارس والبطاقات'
+                  : 'Customize borders and curvilinear corner shaping for all cards and list containers'}
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
@@ -278,7 +311,8 @@ export default function SettingsPage() {
                     key={sh}
                     onClick={() => s.setCardShaping(sh)}
                     className={cn(
-                      'p-3 border text-right transition-all group flex items-center justify-between gap-2',
+                      'p-3 border transition-all group flex items-center justify-between gap-2',
+                      isRtl ? 'text-right' : 'text-left',
                       info.previewClass,
                       isSelected
                         ? 'bg-app-accent/15 border-app-accent ring-2 ring-app-accent/30 shadow-xs'
@@ -286,8 +320,12 @@ export default function SettingsPage() {
                     )}
                   >
                     <div className="min-w-0">
-                      <p className="font-display font-bold text-xs text-app-text">{info.label}</p>
-                      <p className="text-[10px] text-app-text-secondary mt-0.5 truncate">{info.desc}</p>
+                      <p className="font-display font-bold text-xs text-app-text">
+                        {isRtl ? info.label : info.labelEn}
+                      </p>
+                      <p className="text-[10px] text-app-text-secondary mt-0.5 truncate">
+                        {isRtl ? info.desc : info.descEn}
+                      </p>
                     </div>
 
                     <div className={cn('w-5 h-5 shrink-0 flex items-center justify-center font-display text-xs font-bold', info.previewClass, 'bg-app-accent text-white')}>
@@ -301,216 +339,200 @@ export default function SettingsPage() {
 
           {/* Edge to Edge Display */}
           <div className="pt-2 border-t border-app-border">
-            <Row label="عرض كامل الحواف (Edge-to-Edge Display)">
-              <Switch checked={s.edgeToEdgeDisplay} onCheckedChange={s.setEdgeToEdgeDisplay} ariaLabel="عرض كامل الحواف" />
+            <Row label={isRtl ? 'عرض كامل الحواف (Edge-to-Edge Display)' : 'Edge-to-Edge Reading Display'}>
+              <Switch checked={s.edgeToEdgeDisplay} onCheckedChange={s.setEdgeToEdgeDisplay} ariaLabel="Edge-to-Edge" />
             </Row>
           </div>
         </div>
       </Section>
 
       {/* Typography */}
-      <Section title="الخطوط والنصوص (للقراءة والمواضيع)" icon={<Type size={16} className="text-app-accent" />}>
+      <Section title={t('typography')} icon={<Type size={16} className="text-app-accent" />}>
         <div className="py-3 space-y-4">
           <div>
-            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">نوع الخط العربي المفضل</p>
+            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">{t('fontFamily')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {(Object.keys(FONT_FAMILY_MAP) as FontChoice[]).map((f) => (
                 <button
                   key={f}
                   onClick={() => s.setFontFamily(f)}
-                  style={{ fontFamily: FONT_FAMILY_MAP[f] }}
                   className={cn(
-                    'rounded-2xl border p-3 text-right transition-all group hover:border-app-accent',
+                    'p-2.5 rounded-xl border text-center transition-all',
                     s.fontFamily === f
-                      ? 'border-app-accent bg-app-accent/15 ring-2 ring-app-accent/25 shadow-xs'
-                      : 'border-app-border bg-app-surface'
+                      ? 'border-app-accent bg-app-accent/10 ring-2 ring-app-accent/20 text-app-accent font-bold'
+                      : 'border-app-border bg-app-surface hover:border-app-accent/40 text-app-text'
                   )}
                 >
-                  <p className="text-base sm:text-lg leading-tight mb-1.5 truncate text-app-text font-bold">
-                    {FONT_SAMPLE_MAP[f] || 'بِسْمِ اللَّهِ'}
+                  <p style={{ fontFamily: FONT_FAMILY_MAP[f] }} className="text-base truncate">
+                    {FONT_SAMPLE_MAP[f]}
                   </p>
-                  <p className="text-[11px] text-app-accent font-sans font-medium truncate">
-                    {FONT_LABEL_MAP[f]}
-                  </p>
+                  <p className="text-[10px] text-app-text-secondary mt-1 truncate">{FONT_LABEL_MAP[f]}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Big Font Size */}
-          <div className="bg-app-bg/60 p-4 rounded-2xl border border-app-border space-y-2.5">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-app-text-secondary">حجم الخط الافتراضي (تكبير النصوص)</p>
-              <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-2 py-0.5 rounded-full">
-                {toArabicDigits(s.fontSize)} نقطة
-              </span>
+          <div className="space-y-3 pt-2 border-t border-app-border">
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-app-text-secondary font-medium">{t('fontSize')}</span>
+                <span className="font-bold font-mono text-app-accent">{formatDigits(s.fontSize)}px</span>
+              </div>
+              <Slider value={s.fontSize} min={16} max={48} step={1} onValueChange={s.setFontSize} ariaLabel={t('fontSize')} />
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1">
-              {[
-                { size: 18, label: 'صغير' },
-                { size: 22, label: 'متوسط' },
-                { size: 28, label: 'كبير' },
-                { size: 36, label: 'كبير جداً' },
-                { size: 46, label: 'ضخم' },
-                { size: 52, label: 'عملاق' },
-              ].map((p) => (
-                <button
-                  key={p.size}
-                  onClick={() => s.setFontSize(p.size)}
-                  className={cn(
-                    'py-1 rounded-lg text-xs font-medium border transition-all',
-                    s.fontSize === p.size
-                      ? 'bg-app-accent text-white border-app-accent font-bold'
-                      : 'border-app-border bg-app-surface text-app-text-secondary hover:border-app-accent'
-                  )}
-                >
-                  {p.label}
-                </button>
-              ))}
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-app-text-secondary font-medium">{t('paragraphSpacing')}</span>
+                <span className="font-bold font-mono text-app-accent">{formatDigits(s.paragraphSpacing)}</span>
+              </div>
+              <Slider value={s.paragraphSpacing} min={0.6} max={2.6} step={0.2} onValueChange={s.setParagraphSpacing} ariaLabel={t('paragraphSpacing')} />
             </div>
 
-            <Slider value={s.fontSize} onValueChange={s.setFontSize} min={16} max={54} ariaLabel="حجم الخط" />
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-app-text-secondary font-medium">{t('textWidth')}</span>
+                <span className="font-bold font-mono text-app-accent">{formatDigits(s.textWidth)}px</span>
+              </div>
+              <Slider value={s.textWidth} min={540} max={920} step={20} onValueChange={s.setTextWidth} ariaLabel={t('textWidth')} />
+            </div>
           </div>
 
-          {/* Paragraph Spacing */}
-          <div className="bg-app-bg/60 p-4 rounded-2xl border border-app-border space-y-2.5">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-app-text-secondary">تباعد الفقرات (المسافة بين الفقرات)</p>
-              <span className="text-xs text-app-muted font-bold">{s.paragraphSpacing.toFixed(1)}em</span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-              {[
-                { val: 0.6, label: 'متقارب' },
-                { val: 1.0, label: 'عادي' },
-                { val: 1.5, label: 'مريح' },
-                { val: 2.2, label: 'واسع' },
-              ].map((p) => (
-                <button
-                  key={p.val}
-                  onClick={() => s.setParagraphSpacing(p.val)}
-                  className={cn(
-                    'py-1 px-2 rounded-lg text-xs font-medium border transition-all',
-                    Math.abs(s.paragraphSpacing - p.val) < 0.1
-                      ? 'bg-app-accent text-white border-app-accent font-bold'
-                      : 'border-app-border bg-app-surface text-app-text-secondary hover:border-app-accent'
-                  )}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-
-            <Slider value={s.paragraphSpacing} onValueChange={s.setParagraphSpacing} min={0.4} max={3.0} step={0.1} ariaLabel="تباعد الفقرات" />
-          </div>
-
-          <Row label="تخفيف تباين التشكيل والحركات">
-            <Switch checked={s.softenTashkeel} onCheckedChange={s.setSoftenTashkeel} ariaLabel="تخفيف التشكيل" />
+          <Row label={t('softenTashkeel')}>
+            <Switch checked={s.softenTashkeel} onCheckedChange={s.setSoftenTashkeel} ariaLabel={t('softenTashkeel')} />
           </Row>
         </div>
       </Section>
 
-      {/* Reading Aids & Goals */}
-      <Section title="أدوات القراءة والإنتاجية" icon={<BookOpen size={16} className="text-app-accent" />}>
-        <div className="py-2 space-y-4">
+      {/* Reading Behavior */}
+      <Section title={t('readingBehavior')} icon={<BookOpen size={16} className="text-app-accent" />}>
+        <div className="py-2 space-y-3">
           <div>
-            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">هدف القراءة اليومي</p>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-xs font-semibold text-app-text-secondary mb-2">{t('readingMode')}</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => s.setReadingMode('paginated')}
+                className={cn(
+                  'p-2.5 rounded-xl border text-xs font-semibold transition-all',
+                  s.readingMode === 'paginated'
+                    ? 'border-app-accent bg-app-accent/10 text-app-accent ring-2 ring-app-accent/20'
+                    : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/40'
+                )}
+              >
+                {t('paginatedMode')}
+              </button>
+              <button
+                onClick={() => s.setReadingMode('scroll')}
+                className={cn(
+                  'p-2.5 rounded-xl border text-xs font-semibold transition-all',
+                  s.readingMode === 'scroll'
+                    ? 'border-app-accent bg-app-accent/10 text-app-accent ring-2 ring-app-accent/20'
+                    : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/40'
+                )}
+              >
+                {t('scrollMode')}
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-app-border">
+            <p className="text-xs font-semibold text-app-text-secondary mb-2">{t('dailyGoal')}</p>
+            <div className="flex flex-wrap gap-1.5">
               {GOALS.map((g) => (
                 <button
                   key={g}
                   onClick={() => s.setDailyGoalMinutes(g)}
                   className={cn(
-                    'rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all',
+                    'px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all',
                     s.dailyGoalMinutes === g
-                      ? 'border-app-accent bg-app-accent text-white font-bold'
-                      : 'border-app-border text-app-text-secondary hover:border-app-accent'
+                      ? 'border-app-accent bg-app-accent/15 text-app-accent font-bold'
+                      : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/30'
                   )}
                 >
-                  {toArabicDigits(g)} دقيقة
+                  {formatDigits(g)} {isRtl ? 'دقيقة' : 'mins'}
                 </button>
               ))}
             </div>
           </div>
 
-          <div>
-            <p className="text-xs font-semibold text-app-text-secondary mb-2.5">مدة جلسة التركيز (بومودورو)</p>
-            <div className="flex flex-wrap gap-2">
+          <div className="pt-2 border-t border-app-border">
+            <p className="text-xs font-semibold text-app-text-secondary mb-2">
+              {isRtl ? 'مؤقت التركيز (Pomodoro)' : 'Focus Session Timer'}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
               {POMODORO_OPTIONS.map((p) => (
                 <button
                   key={p}
                   onClick={() => s.setPomodoroMinutes(p)}
                   className={cn(
-                    'rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all',
+                    'px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all',
                     s.pomodoroMinutes === p
-                      ? 'border-app-accent bg-app-accent text-white font-bold'
-                      : 'border-app-border text-app-text-secondary hover:border-app-accent'
+                      ? 'border-app-accent bg-app-accent/15 text-app-accent font-bold'
+                      : 'border-app-border bg-app-surface text-app-text hover:border-app-accent/30'
                   )}
                 >
-                  {toArabicDigits(p)} دقيقة
+                  {formatDigits(p)} {isRtl ? 'دقيقة' : 'mins'}
                 </button>
               ))}
             </div>
           </div>
 
-          <Row label="مسطرة تتبع وقراءة السطور (Focus Guide)">
-            <Switch checked={s.showFocusRuler} onCheckedChange={s.setShowFocusRuler} ariaLabel="مسطرة التركيز" />
+          <Row label={isRtl ? 'مسطرة تتبع وقراءة السطور (Focus Guide)' : 'Focus Ruler Guide'}>
+            <Switch checked={s.showFocusRuler} onCheckedChange={s.setShowFocusRuler} ariaLabel="Focus Guide" />
           </Row>
-          <Row label="إبقاء الشاشة مضيئة أثناء القراءة (WakeLock)">
-            <Switch checked={s.keepScreenOn} onCheckedChange={s.setKeepScreenOn} ariaLabel="إبقاء الشاشة مضيئة" />
+          <Row label={t('keepScreenOn')}>
+            <Switch checked={s.keepScreenOn} onCheckedChange={s.setKeepScreenOn} ariaLabel={t('keepScreenOn')} />
           </Row>
-          <Row label="إظهار أرقام صفحات المخطوطة الأصلية">
-            <Switch checked={s.showSourcePages} onCheckedChange={s.toggleShowSourcePages} ariaLabel="إظهار أرقام الصفحات" />
+          <Row label={t('showSourcePages')}>
+            <Switch checked={s.showSourcePages} onCheckedChange={s.toggleShowSourcePages} ariaLabel={t('showSourcePages')} />
           </Row>
         </div>
       </Section>
 
       {/* Data Management Suite */}
-      <Section title="إدارة البيانات والنسخ الاحتياطي" icon={<Database size={16} className="text-app-accent" />}>
-        {/* Quick Database Stats */}
+      <Section title={isRtl ? 'إدارة البيانات والنسخ الاحتياطي' : 'Data Management & Backups'} icon={<Database size={16} className="text-app-accent" />}>
         {counts && (
           <div className="grid grid-cols-3 gap-2 py-3 bg-app-bg/50 rounded-xl p-3 my-2 border border-app-border text-center">
             <div>
-              <p className="text-xs text-app-text-secondary">التظليلات</p>
-              <p className="text-sm font-bold text-app-text font-display">{toArabicDigits(counts.hl)}</p>
+              <p className="text-xs text-app-text-secondary">{t('highlights')}</p>
+              <p className="text-sm font-bold text-app-text font-display">{formatDigits(counts.hl)}</p>
             </div>
             <div>
-              <p className="text-xs text-app-text-secondary">الملاحظات</p>
-              <p className="text-sm font-bold text-app-text font-display">{toArabicDigits(counts.notes)}</p>
+              <p className="text-xs text-app-text-secondary">{t('notes')}</p>
+              <p className="text-sm font-bold text-app-text font-display">{formatDigits(counts.notes)}</p>
             </div>
             <div>
-              <p className="text-xs text-app-text-secondary">وقت القراءة</p>
+              <p className="text-xs text-app-text-secondary">{isRtl ? 'وقت القراءة' : 'Reading Time'}</p>
               <p className="text-sm font-bold text-app-text font-display">{formatDuration(counts.totalSecs)}</p>
             </div>
           </div>
         )}
 
         <button onClick={handleExportMarkdown} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors">
-          <FileText size={17} className="text-app-accent" />
-          <div className="flex-1 text-right">
-            <p className="font-semibold text-xs">تصدير التظليلات والملاحظات كملف Markdown (.md)</p>
-            <p className="text-[11px] text-app-text-secondary">ملف منسق وجاهز للاستيراد في Obsidian و Notion</p>
+          <FileText size={17} className="text-app-accent shrink-0" />
+          <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
+            <p className="font-semibold text-xs">{isRtl ? 'تصدير التظليلات والملاحظات كملف Markdown (.md)' : 'Export Highlights & Notes as Markdown (.md)'}</p>
+            <p className="text-[11px] text-app-text-secondary">{isRtl ? 'ملف منسق وجاهز للاستيراد في Obsidian و Notion' : 'Formatted for Obsidian, Notion & Logseq'}</p>
           </div>
-          <ChevronLeft size={15} className="text-app-muted" />
+          <ChevronIcon size={15} className="text-app-muted shrink-0" />
         </button>
 
         <button onClick={handleExportJSON} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors">
-          <Download size={17} className="text-app-accent" />
-          <div className="flex-1 text-right">
-            <p className="font-semibold text-xs">تصدير نسخة احتياطية كاملة (JSON)</p>
-            <p className="text-[11px] text-app-text-secondary">تشمل كافة العلامات والجلسات والمجموعات والإعدادات</p>
+          <Download size={17} className="text-app-accent shrink-0" />
+          <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
+            <p className="font-semibold text-xs">{isRtl ? 'تصدير نسخة احتياطية كاملة (JSON)' : 'Export Full Backup (JSON)'}</p>
+            <p className="text-[11px] text-app-text-secondary">{isRtl ? 'تشمل كافة العلامات والجلسات والمجموعات والإعدادات' : 'Includes all bookmarks, sessions, highlights & settings'}</p>
           </div>
-          <ChevronLeft size={15} className="text-app-muted" />
+          <ChevronIcon size={15} className="text-app-muted shrink-0" />
         </button>
 
         <button onClick={() => fileInputRef.current?.click()} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors">
-          <Upload size={17} className="text-app-accent" />
-          <div className="flex-1 text-right">
-            <p className="font-semibold text-xs">استيراد نسخة احتياطية (JSON)</p>
-            <p className="text-[11px] text-app-text-secondary">استعادة كافة بياناتك المحفوظة</p>
+          <Upload size={17} className="text-app-accent shrink-0" />
+          <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
+            <p className="font-semibold text-xs">{isRtl ? 'استيراد نسخة احتياطية (JSON)' : 'Import Backup (JSON)'}</p>
+            <p className="text-[11px] text-app-text-secondary">{isRtl ? 'استعادة كافة بياناتك المحفوظة' : 'Restore all saved reading data'}</p>
           </div>
-          <ChevronLeft size={15} className="text-app-muted" />
+          <ChevronIcon size={15} className="text-app-muted shrink-0" />
         </button>
         <input
           ref={fileInputRef}
@@ -522,42 +544,50 @@ export default function SettingsPage() {
 
         {confirmClear ? (
           <div className="p-3 bg-red-500/10 rounded-xl my-2 border border-red-500/20 flex items-center justify-between">
-            <span className="text-xs text-red-600 font-bold">هل أنت متأكد من مسح سجل القراءة؟</span>
+            <span className="text-xs text-red-600 font-bold">
+              {isRtl ? 'هل أنت متأكد من مسح سجل القراءة؟' : 'Clear all reading history?'}
+            </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleClearHistory}
                 className="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-bold"
               >
-                تأكيد
+                {isRtl ? 'تأكيد' : 'Confirm'}
               </button>
               <button
                 onClick={() => setConfirmClear(false)}
                 className="px-3 py-1 bg-app-bg text-app-text rounded-lg text-xs"
               >
-                إلغاء
+                {t('cancel')}
               </button>
             </div>
           </div>
         ) : (
           <button onClick={() => setConfirmClear(true)} className="w-full flex items-center gap-3 py-3 text-sm hover:text-red-600 transition-colors">
-            <Trash2 size={17} className="text-red-500" />
-            <span className="flex-1 text-right text-xs">مسح سجل القراءة وتاريخ التصفح</span>
-            <ChevronLeft size={15} className="text-app-muted" />
+            <Trash2 size={17} className="text-red-500 shrink-0" />
+            <span className={`flex-1 ${isRtl ? 'text-right' : 'text-left'} text-xs`}>
+              {isRtl ? 'مسح سجل القراءة وتاريخ التصفح' : 'Clear Reading History'}
+            </span>
+            <ChevronIcon size={15} className="text-app-muted shrink-0" />
           </button>
         )}
       </Section>
 
-      {/* Other options */}
-      <Section title="المزيد" icon={<Sparkles size={16} className="text-app-accent" />}>
+      {/* More Options */}
+      <Section title={t('more')} icon={<Sparkles size={16} className="text-app-accent" />}>
         <button onClick={() => navigate('/editor')} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors">
-          <Edit3 size={17} className="text-app-accent" />
-          <span className="flex-1 text-right text-xs font-medium">وضع التحرير والتدقيق اللغوي</span>
-          <ChevronLeft size={15} className="text-app-muted" />
+          <Edit3 size={17} className="text-app-accent shrink-0" />
+          <span className={`flex-1 ${isRtl ? 'text-right' : 'text-left'} text-xs font-medium`}>
+            {isRtl ? 'وضع التحرير والتدقيق اللغوي' : 'Book Editor & Proofreading Mode'}
+          </span>
+          <ChevronIcon size={15} className="text-app-muted shrink-0" />
         </button>
         <button onClick={() => navigate('/about')} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors">
-          <Info size={17} className="text-app-accent" />
-          <span className="flex-1 text-right text-xs font-medium">حول تطبيق إمتاع القارئ</span>
-          <ChevronLeft size={15} className="text-app-muted" />
+          <Info size={17} className="text-app-accent shrink-0" />
+          <span className={`flex-1 ${isRtl ? 'text-right' : 'text-left'} text-xs font-medium`}>
+            {t('about')}
+          </span>
+          <ChevronIcon size={15} className="text-app-muted shrink-0" />
         </button>
       </Section>
     </div>
@@ -571,7 +601,7 @@ function Section({ title, icon, children }: { title: string; icon?: React.ReactN
         {icon}
         <span>{title}</span>
       </h2>
-      <div className="rounded-3xl bg-app-surface border border-app-border px-4 divide-y divide-app-border/70 shadow-sm">{children}</div>
+      <div className="rounded-3xl bg-app-surface border border-app-border px-4 divide-y divide-app-border/70 shadow-xs">{children}</div>
     </section>
   )
 }

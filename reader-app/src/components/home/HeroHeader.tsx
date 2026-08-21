@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { Settings, BarChart3, Sun, Moon, Sunrise, Sunset, Sparkles, Search, Library, ArrowRight, Compass } from 'lucide-react'
-import { greetingForHour, formatArabicDate } from '../../lib/format'
+import { Settings, BarChart3, Sun, Moon, Sunrise, Sunset, Sparkles, Search, Library, ArrowRight, ArrowLeft, Compass, Globe } from 'lucide-react'
+import { useTranslation } from '../../lib/i18n'
+import { formatArabicDate } from '../../lib/format'
 
 export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
   const navigate = useNavigate()
+  const { t, lang, setLanguage, isRtl, greetingForHour } = useTranslation()
   const hour = new Date().getHours()
 
   const getTimeIcon = () => {
@@ -13,11 +15,19 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
     return <Moon className="text-indigo-400" size={17} />
   }
 
+  const toggleLang = () => {
+    setLanguage(lang === 'ar' ? 'en' : 'ar')
+  }
+
+  const formattedDate = isRtl
+    ? formatArabicDate()
+    : new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+
   return (
     <header className="relative -mx-4 sm:-mx-6 -mt-6 sm:-mt-8 mb-7 rounded-b-[2.5rem] bg-linear-to-b from-app-surface via-app-surface/95 to-app-accent/10 border-b border-app-border/80 px-5 sm:px-8 pt-8 pb-7 shadow-xs overflow-hidden transition-all">
       {/* Decorative background watermark */}
-      <div className="absolute top-1 left-3 opacity-[0.03] select-none font-display text-9xl text-app-accent pointer-events-none">
-        الخصال
+      <div className={`absolute top-1 ${isRtl ? 'left-3' : 'right-3'} opacity-[0.03] select-none font-display text-9xl text-app-accent pointer-events-none`}>
+        {isRtl ? 'الخصال' : 'Traits'}
       </div>
 
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -27,22 +37,22 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
             {showBack && (
               <button
                 onClick={() => navigate(-1)}
-                aria-label="رجوع"
-                title="رجوع"
+                aria-label={t('back')}
+                title={t('back')}
                 className="h-8 w-8 flex items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent transition-all active:scale-95 shadow-xs"
               >
-                <ArrowRight size={16} />
+                {isRtl ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
               </button>
             )}
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-app-accent/10 border border-app-accent/20 shadow-xs">
               {getTimeIcon()}
               <span className="text-xs font-bold text-app-accent tracking-wide">
-                {formatArabicDate()}
+                {formattedDate}
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-1 text-[11px] font-semibold text-app-muted px-2.5 py-0.5 rounded-full bg-app-surface border border-app-border">
               <Sparkles size={11} className="text-app-accent" />
-              <span>موسوعة الخصال والحكم</span>
+              <span>{t('encyclopediaBadge')}</span>
             </div>
           </div>
 
@@ -53,26 +63,36 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
 
           <p className="text-xs sm:text-sm text-app-text-secondary mt-1.5 flex items-center gap-1.5 font-medium">
             <span className="text-app-accent font-display font-bold">❖</span>
-            <span className="truncate">«خَيْرُ جَلِيسٍ فِي الزَّمَانِ كِتَابُ» — روائع الآداب والأخلاق والمروءة</span>
+            <span className="truncate">{t('proverbQuote')}</span>
           </p>
         </div>
 
-        {/* Dashboard Quick Action Bar with Enhanced Icons */}
-        <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+        {/* Dashboard Quick Action Bar */}
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-center flex-wrap">
+          {/* Language Switch Button */}
+          <button
+            onClick={toggleLang}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs text-xs font-bold"
+            title={lang === 'ar' ? 'Switch to English' : 'التحويل للعربية'}
+          >
+            <Globe size={15} className="text-app-accent" />
+            <span>{lang === 'ar' ? 'EN' : 'عربي'}</span>
+          </button>
+
           <button
             onClick={() => navigate('/search')}
             className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs text-xs font-bold"
-            title="بحث شامل في الموسوعة (Ctrl+K)"
+            title={t('search')}
           >
             <Search size={16} className="text-app-accent" />
-            <span className="hidden md:inline">بحث</span>
+            <span className="hidden md:inline">{t('search')}</span>
           </button>
 
           <button
             onClick={() => navigate('/library')}
             className="h-10 w-10 flex items-center justify-center rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs"
-            aria-label="المكتبة"
-            title="المكتبة والكتب"
+            aria-label={t('library')}
+            title={t('library')}
           >
             <Library size={18} />
           </button>
@@ -80,8 +100,8 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
           <button
             onClick={() => navigate('/trait-tree')}
             className="h-10 w-10 flex items-center justify-center rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs"
-            aria-label="شجرة الخصال"
-            title="شجرة وخريطة المفاهيم"
+            aria-label={t('traitTree')}
+            title={t('traitTree')}
           >
             <Compass size={18} />
           </button>
@@ -89,8 +109,8 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
           <button
             onClick={() => navigate('/reading-stats')}
             className="h-10 w-10 flex items-center justify-center rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs"
-            aria-label="الإحصائيات"
-            title="إحصائيات القراءة والتقدم"
+            aria-label={t('stats')}
+            title={t('stats')}
           >
             <BarChart3 size={18} />
           </button>
@@ -98,8 +118,8 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
           <button
             onClick={() => navigate('/settings')}
             className="h-10 w-10 flex items-center justify-center rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs"
-            aria-label="الإعدادات"
-            title="إعدادات التطبيق والمظهر"
+            aria-label={t('settings')}
+            title={t('settings')}
           >
             <Settings size={18} />
           </button>
