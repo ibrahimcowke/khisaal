@@ -50,7 +50,7 @@ export function Sidebar() {
     <aside
       className={cn(
         'hidden md:flex flex-col shrink-0 border-e border-app-border bg-app-surface h-screen sticky top-0 transition-all duration-200 shadow-xs',
-        collapsed ? 'w-[76px]' : 'w-64'
+        collapsed ? 'w-19' : 'w-64'
       )}
     >
       <div className={cn('flex items-center gap-2.5 px-5 py-5', collapsed && 'justify-center px-0')}>
