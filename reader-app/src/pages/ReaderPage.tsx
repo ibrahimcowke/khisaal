@@ -32,6 +32,7 @@ import { VoiceNotesSheet } from '../components/reader/VoiceNotesSheet'
 import { ChapterHeaderBanner } from '../components/reader/ChapterHeaderBanner'
 import { NextChapterCard } from '../components/reader/NextChapterCard'
 import { FloatingDesktopNav } from '../components/reader/FloatingDesktopNav'
+import { FlipHandNav } from '../components/reader/FlipHandNav'
 import { TopReadingProgressLine } from '../components/reader/TopReadingProgressLine'
 import { IconButton } from '../components/ui/IconButton'
 import type { HighlightColor } from '../lib/types'
@@ -635,6 +636,16 @@ export default function ReaderPage() {
         )}
       </div>
 
+      <FlipHandNav
+        onNextPage={() => goPage(1)}
+        onPrevPage={() => goPage(-1)}
+        canGoNext={!!nextChapterOf() || page < pages.length - 1}
+        canGoPrev={!!prevChapterOf() || page > 0}
+        currentPage={page}
+        totalPages={pages.length}
+        readingMode={s.readingMode}
+      />
+
       <ReaderBottomBar
         visible={controlsVisible}
         chapterLabel={`الفصل ${toArabicDigits(index.chapterOrder.get(chapterId)! + 1)}: ${chapter.title}`}
@@ -799,11 +810,33 @@ function PaginatedView({
     <div className="flex flex-col items-center justify-between min-h-[78vh] py-2">
       <motion.div
         key={pageIndex}
-        initial={{ opacity: 0, x: 10 }}
+        initial={{ opacity: 0, x: isRtl ? -15 : 15 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -10 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="mx-auto w-full flex-1"
+        exit={{ opacity: 0, x: isRtl ? 15 : -15 }}
+        transition={{ duration: 0.22, ease: 'easeOut' }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.12}
+        onDragEnd={(_, info) => {
+          const swipeThreshold = 40
+          const velocityThreshold = 400
+          if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
+            // Dragged to the right
+            if (isRtl) {
+              onPrevPage()
+            } else {
+              onPrevPage()
+            }
+          } else if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
+            // Dragged to the left
+            if (isRtl) {
+              onNextPage()
+            } else {
+              onNextPage()
+            }
+          }
+        }}
+        className="mx-auto w-full flex-1 touch-pan-y"
         style={{ maxWidth: isMultiTopicDesktop ? Math.max(textWidth, 1100) : textWidth, fontFamily, fontSize, lineHeight }}
       >
         {isFirstPage && chapter && (
@@ -849,7 +882,7 @@ function PaginatedView({
         )}
       </motion.div>
 
-      {/* Page Turn Controller Bar at Bottom */}
+      {/* Page Turn Controller Bar with Flip Hand Gestures at Bottom */}
       <div className="mt-8 flex items-center justify-center gap-3 pt-3 border-t border-app-border/40 select-none">
         <button
           onClick={(e) => {
@@ -857,14 +890,17 @@ function PaginatedView({
             onPrevPage()
           }}
           disabled={isFirstPage && !chapter}
-          className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent disabled:opacity-30 transition-all active:scale-95 shadow-xs"
+          className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent disabled:opacity-30 transition-all active:scale-95 shadow-xs group"
           title={t('prevPage')}
         >
-          {isRtl ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          <span className="text-sm select-none group-hover:scale-125 transition-transform">
+            {isRtl ? '👉' : '👈'}
+          </span>
           <span>{t('prevPage')}</span>
+          {isRtl ? <ChevronRight size={14} className="text-app-muted" /> : <ChevronLeft size={14} className="text-app-muted" />}
         </button>
 
-        <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-3.5 py-1 rounded-full border border-app-accent/20">
+        <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-3.5 py-1.5 rounded-full border border-app-accent/20">
           {t('pageOf', { current: formatDigits(pageIndex + 1), total: formatDigits(pageCount) })}
         </span>
 
@@ -873,11 +909,14 @@ function PaginatedView({
             e.stopPropagation()
             onNextPage()
           }}
-          className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent transition-all active:scale-95 shadow-xs"
+          className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent transition-all active:scale-95 shadow-xs group"
           title={t('nextPage')}
         >
+          {isRtl ? <ChevronLeft size={14} className="text-app-muted" /> : <ChevronRight size={14} className="text-app-muted" />}
           <span>{t('nextPage')}</span>
-          {isRtl ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+          <span className="text-sm select-none group-hover:scale-125 transition-transform">
+            {isRtl ? '👈' : '👉'}
+          </span>
         </button>
       </div>
     </div>
