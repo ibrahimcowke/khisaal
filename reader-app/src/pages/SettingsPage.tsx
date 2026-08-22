@@ -15,10 +15,12 @@ import {
   Type,
   BookOpen,
   Database,
-  CheckCircle2,
   Sparkles,
   Globe,
+  Smartphone,
+  CheckCircle2,
 } from 'lucide-react'
+import { usePwaInstall } from '../lib/usePwaInstall'
 import { db } from '../lib/db'
 import {
   useSettingsStore,
@@ -61,8 +63,8 @@ export default function SettingsPage() {
   const [status, setStatus] = useState<string | null>(null)
   const [confirmClear, setConfirmClear] = useState(false)
   const [advancedExporterOpen, setAdvancedExporterOpen] = useState(false)
-
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight
+  const { canInstall, installApp } = usePwaInstall()
 
   // Database stats for settings panel
   const counts = useLiveQuery(async () => {
@@ -586,6 +588,23 @@ export default function SettingsPage() {
 
       {/* More Options */}
       <Section title={t('more')} icon={<Sparkles size={16} className="text-app-accent" />}>
+        {canInstall && (
+          <button
+            onClick={installApp}
+            className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors bg-app-accent/5 -mx-0 px-1 rounded-xl"
+          >
+            <Smartphone size={17} className="text-app-accent shrink-0" />
+            <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
+              <p className="text-xs font-bold text-app-accent">
+                {isRtl ? 'تثبيت التطبيق على جهازك (PWA)' : 'Install App to Device'}
+              </p>
+              <p className="text-[10px] text-app-text-secondary">
+                {isRtl ? 'تطبيق مستقل سريع بدون متصفح ويعمل بلا إنترنت' : 'Standalone app experience with full offline reading'}
+              </p>
+            </div>
+            <ChevronIcon size={15} className="text-app-accent shrink-0" />
+          </button>
+        )}
         <button onClick={() => navigate('/editor')} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors">
           <Edit3 size={17} className="text-app-accent shrink-0" />
           <span className={`flex-1 ${isRtl ? 'text-right' : 'text-left'} text-xs font-medium`}>
