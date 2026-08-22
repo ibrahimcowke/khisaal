@@ -591,7 +591,7 @@ export default function SettingsPage() {
         {canInstall && (
           <button
             onClick={installApp}
-            className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors bg-app-accent/5 -mx-0 px-1 rounded-xl"
+            className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors bg-app-accent/5 px-1 rounded-xl"
           >
             <Smartphone size={17} className="text-app-accent shrink-0" />
             <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
