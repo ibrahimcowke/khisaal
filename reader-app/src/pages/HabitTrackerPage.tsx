@@ -225,11 +225,33 @@ export default function HabitTrackerPage() {
                 {isRtl ? 'تأمل وملاحظة اليوم' : 'Daily Reflection Note'}
               </h3>
             </div>
-            <p className="text-xs text-app-muted mb-3 leading-relaxed">
+            <p className="text-xs text-app-muted mb-2 leading-relaxed">
               {isRtl
                 ? 'كيف طبقت هذه الفضيلة في تعاملك اليوم مع أهلك أو عملك أو مجتمعك؟'
                 : 'How did you embody this trait in your interactions, family, or work today?'}
             </p>
+
+            {/* Guided Prompt Chips */}
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {[
+                isRtl ? '💡 ما الموقف الذي مارست فيه هذا الخلق اليوم؟' : 'What situation tested this virtue?',
+                isRtl ? '🌱 كيف يمكنك ترسيخ هذه الخصلة غداً؟' : 'How can you apply this tomorrow?',
+                isRtl ? '✨ ما الأثر الإيجابي الذي لاحظته؟' : 'What positive impact did you notice?',
+              ].map((prompt, pIdx) => (
+                <button
+                  key={pIdx}
+                  type="button"
+                  onClick={() => {
+                    const current = reflectionInput || todayLog?.reflectionText || ''
+                    setReflectionInput(current ? `${current}\n${prompt} ` : `${prompt} `)
+                  }}
+                  className="px-2.5 py-1 rounded-xl bg-app-accent/10 hover:bg-app-accent/20 border border-app-accent/20 text-[11px] text-app-accent font-medium transition-colors text-right"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+
             <textarea
               rows={4}
               value={reflectionInput || todayLog?.reflectionText || ''}

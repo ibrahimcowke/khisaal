@@ -6,18 +6,22 @@ export function ChapterHeaderBanner({ chapter, chapterNumber }: { chapter: Chapt
     <div className="text-center pt-4 pb-8 mb-8 border-b border-app-border/40 relative">
       {/* Decorative Arabesque Top Ornament */}
       <div className="flex items-center justify-center gap-3 text-app-accent/70 mb-3 select-none">
-        <span className="h-[1px] w-12 sm:w-20 bg-gradient-to-l from-app-accent/50 to-transparent" />
+        <span className="h-px w-12 sm:w-20 bg-linear-to-l from-app-accent/50 to-transparent" />
         <span className="font-display text-sm">❖ ﷽ ❖</span>
-        <span className="h-[1px] w-12 sm:w-20 bg-gradient-to-r from-app-accent/50 to-transparent" />
+        <span className="h-px w-12 sm:w-20 bg-linear-to-r from-app-accent/50 to-transparent" />
       </div>
 
-      {/* Chapter Number Badge */}
-      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-app-accent/10 border border-app-accent/25 text-app-accent text-xs font-bold mb-3 shadow-xs">
+      {/* Chapter Number Badge & Estimated Time */}
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-app-accent/10 border border-app-accent/25 text-app-accent text-xs font-bold mb-3 shadow-xs flex-wrap justify-center">
         <span>الفصل {toArabicDigits(chapterNumber)}</span>
         {chapter.wordCount > 0 && (
           <>
             <span className="opacity-40">·</span>
             <span>{toArabicDigits(chapter.wordCount)} كلمة</span>
+            <span className="opacity-40">·</span>
+            <span className="flex items-center gap-1 text-app-text font-semibold">
+              ⏱️ {toArabicDigits(Math.max(1, Math.ceil(chapter.wordCount / 160)))} دقيقة للقراءة
+            </span>
           </>
         )}
       </div>

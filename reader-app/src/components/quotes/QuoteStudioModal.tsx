@@ -36,6 +36,24 @@ const THEMES: CardTheme[] = [
     canvasBg: '#1C120A',
   },
   {
+    id: 'damascus-emerald',
+    name: 'زمردي دمشقي 🌿',
+    bg: 'linear-gradient(135deg, #0A261D 0%, #04140F 100%)',
+    text: '#EAF7F0',
+    accent: '#D4AF37',
+    border: '#1E5E47',
+    canvasBg: '#081C15',
+  },
+  {
+    id: 'midnight-royal',
+    name: 'كحلي مذهب 🌌',
+    bg: 'linear-gradient(135deg, #0B192C 0%, #030811 100%)',
+    text: '#E3EDF7',
+    accent: '#E5C158',
+    border: '#1E3E62',
+    canvasBg: '#060F1A',
+  },
+  {
     id: 'gold-night',
     name: 'ليلي ذهبي 🌙',
     bg: 'linear-gradient(135deg, #111111 0%, #000000 100%)',
@@ -52,15 +70,6 @@ const THEMES: CardTheme[] = [
     accent: '#7C5B28',
     border: '#D0BC96',
     canvasBg: '#EFE3CA',
-  },
-  {
-    id: 'emerald-luxury',
-    name: 'زمردي فاخر 🌿',
-    bg: 'linear-gradient(135deg, #0F2D20 0%, #061810 100%)',
-    text: '#E2F3EA',
-    accent: '#52C794',
-    border: '#1E4A35',
-    canvasBg: '#091E14',
   },
   {
     id: 'paper-clean',
@@ -216,6 +225,101 @@ export function QuoteStudioModal({
     a.href = dataUrl
     a.download = `iqtibass-${Date.now()}.png`
     a.click()
+  }
+
+  const [copiedImg, setCopiedImg] = useState(false)
+
+  const handleCopyImageToClipboard = () => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let w = 1200
+    let h = 1200
+    if (aspect === '9:16') {
+      w = 1080
+      h = 1920
+    } else if (aspect === '16:9') {
+      w = 1920
+      h = 1080
+    } else if (aspect === '4:5') {
+      w = 1080
+      h = 1350
+    }
+
+    canvas.width = w
+    canvas.height = h
+
+    ctx.fillStyle = activeTheme.canvasBg
+    ctx.fillRect(0, 0, w, h)
+    ctx.strokeStyle = activeTheme.accent
+    ctx.lineWidth = 3
+    ctx.strokeRect(36, 36, w - 72, h - 72)
+
+    if (showBasmalah) {
+      ctx.fillStyle = activeTheme.accent
+      ctx.font = '32px Amiri, serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', w / 2, 110)
+    }
+
+    ctx.fillStyle = activeTheme.text
+    const scaleFactor = w / 450
+    const realFontSize = Math.round(fontSize * scaleFactor * 0.75)
+    ctx.font = `bold ${realFontSize}px ${activeFont.font}`
+    ctx.textAlign = 'center'
+    ctx.direction = 'rtl'
+
+    const words = quoteText.split(' ')
+    const lines: string[] = []
+    let currentLine = ''
+    const maxTextWidth = w - 160
+
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word
+      const testWidth = ctx.measureText(testLine).width
+      if (testWidth > maxTextWidth && currentLine) {
+        lines.push(currentLine)
+        currentLine = word
+      } else {
+        currentLine = testLine
+      }
+    }
+    if (currentLine) lines.push(currentLine)
+
+    const lineHeight = realFontSize * 1.6
+    const totalTextHeight = lines.length * lineHeight
+    let startY = (h - totalTextHeight) / 2 + (showBasmalah ? 20 : 0)
+
+    for (const line of lines) {
+      ctx.fillText(line, w / 2, startY)
+      startY += lineHeight
+    }
+
+    ctx.fillStyle = activeTheme.accent
+    ctx.font = `28px Amiri, serif`
+    ctx.textAlign = 'center'
+    const footerY = h - 90
+    ctx.fillText(`❖ ${sourceChapterTitle || bookTitle} ❖`, w / 2, footerY)
+
+    ctx.fillStyle = activeTheme.text
+    ctx.font = `20px Amiri, sans-serif`
+    ctx.fillText(`جامع الخصال والآداب — ${author}`, w / 2, footerY + 36)
+
+    canvas.toBlob(async (blob) => {
+      if (blob && navigator.clipboard && 'ClipboardItem' in window) {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+          setCopiedImg(true)
+          setTimeout(() => setCopiedImg(false), 2000)
+        } catch {
+          // Fallback to text copy
+          handleCopyText()
+        }
+      } else {
+        handleCopyText()
+      }
+    })
   }
 
   const handleCopyText = () => {
@@ -406,13 +510,23 @@ export function QuoteStudioModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-2 border-t border-app-border">
-          <Button onClick={handleDownload} className="flex-1 gap-2 py-3">
+        <div className="flex items-center gap-2 pt-2 border-t border-app-border flex-wrap sm:flex-nowrap">
+          <Button onClick={handleDownload} className="flex-1 gap-2 py-3 text-xs sm:text-sm">
             <Download size={16} />
-            <span>تحميل بطاقة 4K (PNG)</span>
+            <span>تحميل بطاقة (PNG)</span>
           </Button>
 
-          <Button variant="secondary" onClick={handleNativeShare} className="gap-1.5 py-3">
+          <Button
+            variant="outline"
+            onClick={handleCopyImageToClipboard}
+            className="gap-1.5 py-3 text-xs sm:text-sm"
+            title="نسخ الصورة مباشرة للحافظة للصق في واتساب وتيليجرام"
+          >
+            {copiedImg ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
+            <span>{copiedImg ? 'تم نسخ الصورة ✅' : 'نسخ الصورة'}</span>
+          </Button>
+
+          <Button variant="secondary" onClick={handleNativeShare} className="gap-1.5 py-3 text-xs sm:text-sm">
             <Share2 size={16} />
             <span>مشاركة</span>
           </Button>
@@ -420,7 +534,7 @@ export function QuoteStudioModal({
           <button
             onClick={handleCopyText}
             className="p-3 rounded-2xl border border-app-border bg-app-surface hover:border-app-accent transition-colors"
-            title="نسخ النص"
+            title="نسخ النص فقط"
           >
             {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
           </button>

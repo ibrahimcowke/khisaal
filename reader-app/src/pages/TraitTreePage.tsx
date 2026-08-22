@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GitBranch, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
+import { GitBranch, Search, Filter, ChevronLeft, ChevronRight, CheckCircle2, Sparkles } from 'lucide-react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '../lib/db'
 import { useBook } from '../context/BookContext'
 import { PageHeader } from '../components/layout/PageHeader'
 import { cn } from '../lib/cn'
@@ -30,7 +32,13 @@ export default function TraitTreePage() {
   const navigate = useNavigate()
   const { t, isRtl, formatDigits } = useTranslation()
   const [selectedPillar, setSelectedPillar] = useState('all')
+  const [practiceFilter, setPracticeFilter] = useState<'all' | 'completed' | 'pending'>('all')
   const [searchQuery, setSearchQuery] = useState('')
+
+  const logs = useLiveQuery(() => db.virtueLogs.toArray()) || []
+  const completedTraitIds = useMemo(() => {
+    return new Set(logs.filter((l) => l.completed).map((l) => l.traitId))
+  }, [logs])
 
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight
 
@@ -54,7 +62,7 @@ export default function TraitTreePage() {
     return Array.from(map.entries()).map(([name, chapters]) => ({ name, chapters }))
   }, [index, isRtl])
 
-  // Filter systems by pillar and search query
+  // Filter systems by pillar, practice status, and search query
   const filteredSystems = useMemo(() => {
     const activePillar = MORAL_PILLARS.find((p) => p.id === selectedPillar)
     const normQuery = normalizeArabic(searchQuery.trim())
@@ -62,6 +70,11 @@ export default function TraitTreePage() {
     return systems
       .map((sys) => {
         const matchingChapters = sys.chapters.filter((ch) => {
+          // Practice Status filter
+          const isDone = completedTraitIds.has(ch.id)
+          if (practiceFilter === 'completed' && !isDone) return false
+          if (practiceFilter === 'pending' && isDone) return false
+
           // Search query filter
           if (normQuery) {
             const normTitle = normalizeArabic(ch.title)
@@ -85,7 +98,7 @@ export default function TraitTreePage() {
         return { ...sys, chapters: matchingChapters }
       })
       .filter((sys) => sys.chapters.length > 0)
-  }, [systems, selectedPillar, searchQuery])
+  }, [systems, selectedPillar, searchQuery, practiceFilter, completedTraitIds])
 
   if (loading || !index) {
     return (
@@ -152,6 +165,51 @@ export default function TraitTreePage() {
             ))}
           </div>
         </div>
+        {/* Practice Status Filter Tabs */}
+        <div className="pt-2 border-t border-app-border/40 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-1.5 text-xs text-app-muted font-medium">
+            <Sparkles size={13} className="text-app-accent" />
+            <span>{isRtl ? 'حالة التطبيق والممارسة:' : 'Practice Status:'}</span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setPracticeFilter('all')}
+              className={cn(
+                'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all shadow-xs',
+                practiceFilter === 'all'
+                  ? 'bg-app-accent text-white'
+                  : 'bg-app-surface border border-app-border text-app-muted hover:text-app-text'
+              )}
+            >
+              {isRtl ? 'الكل' : 'All'}
+            </button>
+            <button
+              onClick={() => setPracticeFilter('completed')}
+              className={cn(
+                'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 shadow-xs',
+                practiceFilter === 'completed'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-app-surface border border-app-border text-emerald-600 hover:bg-emerald-500/10'
+              )}
+            >
+              <CheckCircle2 size={12} />
+              <span>{isRtl ? 'المطبقة' : 'Practiced'}</span>
+              <span className="text-[10px] opacity-80">({formatDigits(completedTraitIds.size)})</span>
+            </button>
+            <button
+              onClick={() => setPracticeFilter('pending')}
+              className={cn(
+                'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all shadow-xs',
+                practiceFilter === 'pending'
+                  ? 'bg-amber-600 text-white'
+                  : 'bg-app-surface border border-app-border text-amber-600 hover:bg-amber-500/10'
+              )}
+            >
+              {isRtl ? 'غير المطبقة' : 'Unpracticed'}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Systems & Trait Nodes Tree */}
@@ -186,6 +244,7 @@ export default function TraitTreePage() {
               {/* Trait Branch Nodes Grid */}
               <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 ${isRtl ? 'pr-4 border-r-2 mr-4' : 'pl-4 border-l-2 ml-4'} border-app-accent/30`}>
                 {sys.chapters.map((chapter) => {
+                  const isDone = completedTraitIds.has(chapter.id)
                   const wordCount = chapter.blocks.reduce(
                     (acc, b) => acc + (b.text ?? (b.items ?? []).join(' ')).split(/\s+/).filter(Boolean).length,
                     0
@@ -195,14 +254,24 @@ export default function TraitTreePage() {
                     <div
                       key={chapter.id}
                       onClick={() => navigate(`/book/${index.book.id}/read?c=${chapter.id}`)}
-                      className="topic-card p-4 rounded-2xl bg-app-surface border border-app-border hover:border-app-accent hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                      className={cn(
+                        'topic-card p-4 rounded-2xl bg-app-surface border hover:border-app-accent hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between relative overflow-hidden',
+                        isDone ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-app-border'
+                      )}
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <span className="text-[10px] font-bold text-app-accent bg-app-accent/10 px-2 py-0.5 rounded-md">
                             {isRtl ? 'ص' : 'P.'} {formatDigits(chapter.sourcePageStart)}
                           </span>
-                          <span className="text-xs text-app-muted opacity-60 font-display">❖</span>
+                          {isDone ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                              <CheckCircle2 size={11} />
+                              <span>{isRtl ? 'تم التطبيق' : 'Practiced'}</span>
+                            </span>
+                          ) : (
+                            <span className="text-xs text-app-muted opacity-60 font-display">❖</span>
+                          )}
                         </div>
 
                         <h4 className="font-display text-sm sm:text-base font-bold text-app-text group-hover:text-app-accent transition-colors line-clamp-2 leading-snug">

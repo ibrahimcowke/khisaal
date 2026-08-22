@@ -11,12 +11,16 @@ import {
   Layers,
   ArrowRight,
   ArrowLeft,
+  Volume2,
+  VolumeX,
+  Calendar,
 } from 'lucide-react'
 import { db, uid, type Flashcard } from '../lib/db'
 import { useBook } from '../context/BookContext'
 import { useTranslation } from '../lib/i18n'
 import { Button } from '../components/ui/Button'
 import { Sheet } from '../components/ui/Sheet'
+import { cn } from '../lib/cn'
 
 export default function FlashcardsPage() {
   const { isRtl, formatDigits } = useTranslation()
@@ -31,6 +35,7 @@ export default function FlashcardsPage() {
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
+  const [autoSpeak, setAutoSpeak] = useState(false)
   const [newCardOpen, setNewCardOpen] = useState(false)
   const [frontText, setFrontText] = useState('')
   const [backText, setBackText] = useState('')
@@ -40,6 +45,29 @@ export default function FlashcardsPage() {
   const activeDeck = dueCards
 
   const currentCard: Flashcard | undefined = activeDeck[currentIndex]
+
+  const speakText = (text: string) => {
+    if (!('speechSynthesis' in window)) return
+    window.speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'ar-SA'
+    utterance.rate = 0.95
+    window.speechSynthesis.speak(utterance)
+  }
+
+  // 30-Day Activity Heatmap Data
+  const heatmapDays = useMemo(() => {
+    const days: { dateStr: string; dayNum: number; count: number }[] = []
+    const now = new Date()
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now)
+      d.setDate(d.getDate() - i)
+      const dStr = d.toISOString().split('T')[0]
+      const count = cards.filter((c) => c.lastReviewedAt && new Date(c.lastReviewedAt).toISOString().split('T')[0] === dStr).length
+      days.push({ dateStr: dStr, dayNum: d.getDate(), count })
+    }
+    return days
+  }, [cards])
 
   // SuperMemo SM-2 Interval Calculation
   const handleRate = async (card: Flashcard, rating: 'again' | 'hard' | 'good' | 'easy') => {
@@ -107,7 +135,6 @@ export default function FlashcardsPage() {
       const existingFronts = new Set(cards.map((c) => c.front))
       const newItems: Flashcard[] = []
 
-      // Generate from chapters and blocks
       for (const ch of index.chapters.slice(0, 30)) {
         if (!existingFronts.has(ch.title) && ch.blocks.length > 0) {
           const sampleBlock = ch.blocks.find((b) => (b.text?.length ?? 0) > 20 && (b.text?.length ?? 0) < 250) || ch.blocks[0]
@@ -142,38 +169,50 @@ export default function FlashcardsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 pb-20">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-16 animate-fade-in space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-2 rounded-xl bg-app-accent/15 text-app-accent">
-              <Brain size={22} />
-            </span>
+            <div className="h-8 w-8 rounded-xl bg-app-accent/15 text-app-accent flex items-center justify-center">
+              <Brain size={18} />
+            </div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-app-text">
-              {isRtl ? 'بطاقات الحفظ والمراجعة الذكية' : 'Smart Spaced Repetition Flashcards'}
+              {isRtl ? 'بطاقات الحفظ والمراجعة' : 'Smart Flashcards'}
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-app-text-secondary">
+          <p className="text-xs text-app-text-secondary">
             {isRtl
-              ? 'تكرار متباعد لحفظ واستحضار الحكم، الخصال، وروائع المفردات والأقوال.'
-              : 'Spaced repetition to master virtues, quotes, and classical Arabic wisdom.'}
+              ? 'نظام التكرار المتباعد الذكي (SuperMemo SM-2) لتثبيت الحكم والخصال في الذاكرة'
+              : 'Spaced repetition system for long-term memorization of virtues & wisdom'}
           </p>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant="outline"
+            size="sm"
+            onClick={() => setAutoSpeak(!autoSpeak)}
             className="text-xs gap-1.5"
+            title={autoSpeak ? 'تعطيل النطق التلقائي' : 'تفعيل النطق التلقائي عند القلب'}
+          >
+            {autoSpeak ? <Volume2 size={14} className="text-emerald-500" /> : <VolumeX size={14} />}
+            <span>{autoSpeak ? (isRtl ? 'النطق مفعل' : 'TTS On') : (isRtl ? 'نطق صوتي' : 'TTS')}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleGenerateVirtueDeck}
+            className="text-xs gap-1.5"
             disabled={generatingDecks}
           >
             <Sparkles size={14} className="text-amber-500" />
-            {isRtl ? 'توليد حزمة الخصال تلقائياً' : 'Generate Virtue Deck'}
+            {isRtl ? 'توليد حزمة الخصال' : 'Generate Deck'}
           </Button>
           <Button
             variant="primary"
+            size="sm"
             className="text-xs gap-1.5"
             onClick={() => setNewCardOpen(true)}
           >
@@ -183,33 +222,62 @@ export default function FlashcardsPage() {
         </div>
       </div>
 
-      {/* Stats Ribbon */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
-          <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'المستحقة اليوم' : 'Due Today'}</p>
-          <p className="font-display text-2xl font-bold text-app-accent">
-            {formatDigits(dueCards.length)}
-          </p>
+      {/* Stats Ribbon & 30-Day Activity Heatmap */}
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
+            <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'المستحقة اليوم' : 'Due Today'}</p>
+            <p className="font-display text-2xl font-bold text-app-accent">
+              {formatDigits(dueCards.length)}
+            </p>
+          </div>
+          <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
+            <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'إجمالي البطاقات' : 'Total Cards'}</p>
+            <p className="font-display text-2xl font-bold text-app-text">
+              {formatDigits(cards.length)}
+            </p>
+          </div>
+          <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
+            <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'المتقنة (تكرار > 3)' : 'Mastered'}</p>
+            <p className="font-display text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              {formatDigits(cards.filter((c) => c.repetition >= 3).length)}
+            </p>
+          </div>
+          <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
+            <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'معدل الحفظ' : 'Retention'}</p>
+            <p className="font-display text-2xl font-bold text-indigo-500">
+              {cards.length > 0
+                ? `${Math.round((cards.filter((c) => c.repetition >= 1).length / cards.length) * 100)}%`
+                : '0%'}
+            </p>
+          </div>
         </div>
-        <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
-          <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'إجمالي البطاقات' : 'Total Cards'}</p>
-          <p className="font-display text-2xl font-bold text-app-text">
-            {formatDigits(cards.length)}
-          </p>
-        </div>
-        <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
-          <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'المتقنة (تكرار > 3)' : 'Mastered'}</p>
-          <p className="font-display text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-            {formatDigits(cards.filter((c) => c.repetition >= 3).length)}
-          </p>
-        </div>
-        <div className="p-4 rounded-2xl bg-app-surface border border-app-border text-center">
-          <p className="text-xs text-app-muted font-medium mb-1">{isRtl ? 'معدل الحفظ' : 'Retention'}</p>
-          <p className="font-display text-2xl font-bold text-indigo-500">
-            {cards.length > 0
-              ? `${Math.round((cards.filter((c) => c.repetition >= 1).length / cards.length) * 100)}%`
-              : '0%'}
-          </p>
+
+        {/* Monthly Activity Heatmap Grid */}
+        <div className="p-3.5 rounded-2xl bg-app-surface border border-app-border/80 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-1.5 text-xs text-app-muted font-semibold">
+            <Calendar size={13} className="text-app-accent" />
+            <span>{isRtl ? 'نشاط المراجعة (آخر ٣٠ يوماً):' : '30-Day Activity Heatmap:'}</span>
+          </div>
+
+          <div className="flex items-center gap-1 overflow-x-auto py-1 no-scrollbar">
+            {heatmapDays.map((d) => (
+              <div
+                key={d.dateStr}
+                title={`${d.dateStr}: ${d.count} مراجعات`}
+                className={cn(
+                  'w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-[3px] transition-all',
+                  d.count === 0
+                    ? 'bg-app-border/50'
+                    : d.count < 3
+                    ? 'bg-emerald-400'
+                    : d.count < 8
+                    ? 'bg-emerald-600'
+                    : 'bg-emerald-700 shadow-xs'
+                )}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -273,10 +341,21 @@ export default function FlashcardsPage() {
                     </span>
                   </div>
 
-                  <div className="my-auto py-6 text-center">
-                    <p className="font-display text-2xl sm:text-3xl font-bold text-app-text leading-snug">
+                  <div className="my-auto py-6 text-center relative">
+                    <p className="font-display text-2xl sm:text-3xl font-bold text-app-text leading-snug px-6">
                       {currentCard?.front}
                     </p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (currentCard) speakText(currentCard.front)
+                      }}
+                      className="mt-3 p-1.5 rounded-xl bg-app-accent/10 text-app-accent hover:bg-app-accent hover:text-white transition-all shadow-xs inline-flex items-center gap-1 text-xs"
+                      title={isRtl ? 'استماع للنطق' : 'Listen'}
+                    >
+                      <Volume2 size={13} />
+                      <span>{isRtl ? 'استماع' : 'Listen'}</span>
+                    </button>
                   </div>
 
                   <div className="text-center text-xs text-app-muted">
@@ -297,9 +376,20 @@ export default function FlashcardsPage() {
                   </div>
 
                   <div className="my-auto py-4 text-center">
-                    <p className="text-base sm:text-lg text-app-text leading-relaxed font-serif whitespace-pre-line">
+                    <p className="text-base sm:text-lg text-app-text leading-relaxed font-serif whitespace-pre-line px-4">
                       {currentCard?.back}
                     </p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (currentCard) speakText(currentCard.back)
+                      }}
+                      className="mt-3 p-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all shadow-xs inline-flex items-center gap-1 text-xs"
+                      title={isRtl ? 'استماع للنص' : 'Listen'}
+                    >
+                      <Volume2 size={13} />
+                      <span>{isRtl ? 'استماع' : 'Listen'}</span>
+                    </button>
                   </div>
 
                   <div className="text-center text-xs text-app-muted">

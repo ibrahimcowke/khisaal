@@ -13,11 +13,7 @@ import {
   FolderHeart,
   History,
   Star,
-  GitBranch,
   CalendarCheck,
-  Network,
-  HeartHandshake,
-  Brain,
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { useTranslation } from '../../lib/i18n'
@@ -32,10 +28,6 @@ export function Sidebar() {
   const items = [
     { to: '/', label: t('home'), icon: Home, end: true },
     { to: '/library', label: t('library'), icon: Library },
-    { to: '/trait-tree', label: t('traitTree'), icon: GitBranch },
-    { to: '/mindmap', label: t('mindmap'), icon: Network },
-    { to: '/habit-tracker', label: t('habitTracker'), icon: HeartHandshake },
-    { to: '/flashcards', label: t('flashcards'), icon: Brain },
     { to: '/reading-plan', label: t('readingPlan'), icon: CalendarCheck },
     { to: '/search', label: t('search'), icon: Search },
     { to: '/bookmarks', label: t('bookmarks'), icon: Bookmark },

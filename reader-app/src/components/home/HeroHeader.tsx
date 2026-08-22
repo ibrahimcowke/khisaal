@@ -98,15 +98,6 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
           </button>
 
           <button
-            onClick={() => navigate('/trait-tree')}
-            className="h-10 w-10 flex items-center justify-center rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs"
-            aria-label={t('traitTree')}
-            title={t('traitTree')}
-          >
-            <Compass size={18} />
-          </button>
-
-          <button
             onClick={() => navigate('/reading-stats')}
             className="h-10 w-10 flex items-center justify-center rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/10 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs"
             aria-label={t('stats')}
@@ -122,6 +113,61 @@ export function HeroHeader({ showBack = false }: { showBack?: boolean }) {
             title={t('settings')}
           >
             <Settings size={18} />
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom Icon Header Buttons Strip */}
+      <div className="relative z-10 mt-5 pt-4 border-t border-app-border/60">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <button
+            onClick={() => navigate('/trait-tree')}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-app-surface/90 hover:bg-app-accent/10 border border-app-border/90 hover:border-app-accent/50 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs text-xs font-bold whitespace-nowrap shrink-0 group"
+          >
+            <div className="h-6 w-6 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Compass size={14} />
+            </div>
+            <span>{t('traitTree')}</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/mindmap')}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-app-surface/90 hover:bg-app-accent/10 border border-app-border/90 hover:border-app-accent/50 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs text-xs font-bold whitespace-nowrap shrink-0 group"
+          >
+            <div className="h-6 w-6 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Sparkles size={14} />
+            </div>
+            <span>{t('mindmap')}</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/habit-tracker')}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-app-surface/90 hover:bg-app-accent/10 border border-app-border/90 hover:border-app-accent/50 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs text-xs font-bold whitespace-nowrap shrink-0 group"
+          >
+            <div className="h-6 w-6 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="text-xs">🌿</span>
+            </div>
+            <span>{t('habitTracker')}</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/flashcards')}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-app-surface/90 hover:bg-app-accent/10 border border-app-border/90 hover:border-app-accent/50 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs text-xs font-bold whitespace-nowrap shrink-0 group"
+          >
+            <div className="h-6 w-6 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="text-xs">🧠</span>
+            </div>
+            <span>{t('flashcards')}</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/reading-plan')}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-app-surface/90 hover:bg-app-accent/10 border border-app-border/90 hover:border-app-accent/50 text-app-text hover:text-app-accent transition-all active:scale-95 shadow-xs text-xs font-bold whitespace-nowrap shrink-0 group"
+          >
+            <div className="h-6 w-6 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="text-xs">📅</span>
+            </div>
+            <span>{t('readingPlan')}</span>
           </button>
         </div>
       </div>
