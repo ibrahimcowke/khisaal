@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ArrowLeft } from 'lucide-react'
 import { IconButton } from '../ui/IconButton'
+import { useTranslation } from '../../lib/i18n'
 
 export function PageHeader({
   title,
@@ -18,6 +19,7 @@ export function PageHeader({
   actions?: React.ReactNode
 }) {
   const navigate = useNavigate()
+  const { isRtl, t } = useTranslation()
 
   const handleBack = () => {
     if (onBack) {
@@ -29,20 +31,22 @@ export function PageHeader({
     }
   }
 
+  const BackIcon = isRtl ? ArrowRight : ArrowLeft
+
   return (
-    <header className="flex items-center justify-between gap-3 mb-6 pb-4 border-b border-app-border">
+    <header className="flex items-center justify-between gap-3 mb-6 pb-4 border-b border-app-border/70">
       <div className="flex items-center gap-2.5 min-w-0">
-        <IconButton onClick={handleBack} aria-label="رجوع" title="رجوع للصفحة السابقة">
-          <ArrowRight size={20} />
+        <IconButton onClick={handleBack} aria-label={t('back')} title={t('back')} size="sm">
+          <BackIcon size={18} />
         </IconButton>
 
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-app-text truncate leading-tight">
+            <h1 className="font-display text-xl sm:text-2xl font-bold text-app-text truncate leading-tight">
               {title}
             </h1>
             {count !== undefined && (
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-app-accent/15 text-app-accent font-sans font-bold shrink-0">
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-app-accent/10 text-app-accent font-sans font-bold shrink-0 border border-app-accent/20">
                 {count}
               </span>
             )}

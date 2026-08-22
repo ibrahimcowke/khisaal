@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { Highlighter, Trash2, Star, FolderPlus, Tag } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { db } from '../lib/db'
-import { formatRelativeDay, toArabicDigits } from '../lib/format'
+import { formatRelativeDay } from '../lib/format'
 import type { HighlightColor } from '../lib/types'
 import { cn } from '../lib/cn'
 import { AddToCollectionSheet } from '../components/collections/AddToCollectionSheet'
 import { TagEditorSheet } from '../components/collections/TagEditorSheet'
 import { PageHeader } from '../components/layout/PageHeader'
+import { EmptyState } from '../components/ui/EmptyState'
+import { useTranslation } from '../lib/i18n'
 
 const HL_COLORS: { key: HighlightColor; hex: string }[] = [
   { key: 'yellow', hex: '#F4E7A3' },
@@ -23,6 +25,7 @@ const HL_COLORS: { key: HighlightColor; hex: string }[] = [
 export default function HighlightsPage() {
   const { index, loading } = useBook()
   const navigate = useNavigate()
+  const { t, isRtl, formatDigits } = useTranslation()
   const [activeColor, setActiveColor] = useState<HighlightColor | null>(null)
   const [chapterFilter, setChapterFilter] = useState<string | null>(null)
   const [tagFilter, setTagFilter] = useState<string | null>(null)
@@ -49,28 +52,36 @@ export default function HighlightsPage() {
   }, [highlights, activeColor, chapterFilter, tagFilter])
 
   if (loading || !index) {
-    return <div className="min-h-screen flex items-center justify-center text-app-text-secondary">جارٍ التحميل...</div>
+    return <div className="min-h-screen flex items-center justify-center text-app-text-secondary text-sm">{t('loading')}</div>
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-5 pt-6 sm:pt-8 pb-10 animate-fade-in">
       <PageHeader
-        title="التظليلات والفوائد"
-        count={highlights ? toArabicDigits(highlights.length) : undefined}
+        title={t('highlights')}
+        count={highlights ? formatDigits(highlights.length) : undefined}
       />
 
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-1">
+      <div className="flex items-center gap-2 mb-4 overflow-x-auto no-scrollbar pb-1">
         <button
           onClick={() => setActiveColor(null)}
-          className={cn('shrink-0 text-xs px-3 py-1.5 rounded-full border', !activeColor ? 'border-app-accent text-app-accent bg-app-accent/10' : 'border-app-border text-app-text-secondary')}
+          className={cn(
+            'shrink-0 text-xs px-3 py-1 rounded-full border transition-all cursor-pointer',
+            !activeColor
+              ? 'border-app-accent text-app-accent bg-app-accent/10 font-bold'
+              : 'border-app-border text-app-text-secondary hover:border-app-accent/50'
+          )}
         >
-          الكل
+          {isRtl ? 'الكل' : 'All'}
         </button>
         {HL_COLORS.map((c) => (
           <button
             key={c.key}
             onClick={() => setActiveColor((cur) => (cur === c.key ? null : c.key))}
-            className={cn('shrink-0 h-7 w-7 rounded-full border-2', activeColor === c.key ? 'border-app-accent' : 'border-transparent')}
+            className={cn(
+              'shrink-0 h-6.5 w-6.5 rounded-full border-2 transition-all cursor-pointer',
+              activeColor === c.key ? 'border-app-text ring-2 ring-app-accent/40 scale-110' : 'border-black/10'
+            )}
             style={{ backgroundColor: c.hex }}
             aria-label={c.key}
           />
@@ -78,14 +89,14 @@ export default function HighlightsPage() {
       </div>
 
       {allTags.length > 0 && (
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto no-scrollbar pb-1">
           {allTags.map((t) => (
             <button
               key={t}
               onClick={() => setTagFilter((cur) => (cur === t ? null : t))}
               className={cn(
-                'shrink-0 text-xs px-3 py-1.5 rounded-full border',
-                tagFilter === t ? 'border-app-accent text-app-accent bg-app-accent/10' : 'border-app-border text-app-text-secondary'
+                'shrink-0 text-xs px-3 py-1 rounded-full border transition-all cursor-pointer',
+                tagFilter === t ? 'border-app-accent text-app-accent bg-app-accent/10 font-bold' : 'border-app-border text-app-text-secondary hover:border-app-accent/50'
               )}
             >
               #{t}
@@ -95,39 +106,42 @@ export default function HighlightsPage() {
       )}
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20">
-          <Highlighter size={32} className="mx-auto text-app-muted mb-3" />
-          <p className="text-sm text-app-muted">لا توجد تظليلات مطابقة</p>
-        </div>
+        <EmptyState
+          icon={Highlighter}
+          title={isRtl ? 'لا توجد تظليلات مطابقة' : 'No Highlights Found'}
+          description={isRtl ? 'حدد أي نص أثناء القراءة لتظليله بألوان مختلفة وحفظه.' : 'Highlight memorable quotes and passages while reading.'}
+          actionLabel={t('readBook')}
+          onAction={() => navigate(`/book/${index.book.id}/read`)}
+        />
       ) : (
         <ul className="space-y-2.5">
           {filtered.map((h) => {
             const chapter = index.chapterById.get(h.chapterId)
             return (
-              <li key={h.id} className="rounded-2xl bg-app-surface border border-app-border p-4">
+              <li key={h.id} className="rounded-2xl bg-app-surface border border-app-border p-4 shadow-2xs hover:border-app-accent/50 transition-all">
                 <div className="flex items-start gap-3">
-                  <span className="mt-1.5 h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: HL_COLORS.find((c) => c.key === h.color)?.hex }} />
+                  <span className="mt-1.5 h-2.5 w-2.5 rounded-full shrink-0 shadow-2xs" style={{ backgroundColor: HL_COLORS.find((c) => c.key === h.color)?.hex }} />
                   <button
                     onClick={() => navigate(`/book/${index.book.id}/read?c=${h.chapterId}`)}
-                    className="flex-1 min-w-0 text-right"
+                    className="flex-1 min-w-0 text-right cursor-pointer"
                   >
-                    <p className="text-sm leading-relaxed">{h.text}</p>
+                    <p className="text-xs sm:text-sm leading-relaxed text-app-text font-medium">{h.text}</p>
                     {(h.tags ?? []).length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {h.tags.map((t) => (
-                          <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-app-accent/10 text-app-accent">
+                          <span key={t} className="text-[10px] px-2 py-0.5 rounded-md bg-app-accent/10 text-app-accent font-semibold">
                             #{t}
                           </span>
                         ))}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 mt-2 text-[11px] text-app-muted">
+                    <div className="flex items-center gap-2 mt-2 text-[11px] text-app-muted font-serif">
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
                           setChapterFilter(h.chapterId)
                         }}
-                        className="hover:text-app-accent"
+                        className="hover:text-app-accent cursor-pointer"
                       >
                         {chapter?.title}
                       </button>
@@ -138,27 +152,31 @@ export default function HighlightsPage() {
                   <div className="flex flex-col gap-1 shrink-0">
                     <button
                       onClick={() => db.highlights.update(h.id, { favorite: !h.favorite })}
-                      className={cn('h-8 w-8 rounded-full flex items-center justify-center', h.favorite ? 'text-app-accent' : 'text-app-muted hover:bg-black/5')}
+                      className={cn('h-7 w-7 rounded-xl flex items-center justify-center cursor-pointer', h.favorite ? 'text-app-accent bg-app-accent/10' : 'text-app-muted hover:bg-black/5')}
+                      title={isRtl ? 'المفضلة' : 'Favorite'}
                     >
-                      <Star size={14} fill={h.favorite ? 'currentColor' : 'none'} />
+                      <Star size={13} fill={h.favorite ? 'currentColor' : 'none'} />
                     </button>
                     <button
                       onClick={() => setCollectionTargetId(h.id)}
-                      className="h-8 w-8 rounded-full flex items-center justify-center text-app-muted hover:bg-black/5"
+                      className="h-7 w-7 rounded-xl flex items-center justify-center text-app-muted hover:bg-black/5 cursor-pointer"
+                      title={isRtl ? 'إضافة لمجموعة' : 'Add to Collection'}
                     >
-                      <FolderPlus size={14} />
+                      <FolderPlus size={13} />
                     </button>
                     <button
                       onClick={() => setTagTargetId(h.id)}
-                      className="h-8 w-8 rounded-full flex items-center justify-center text-app-muted hover:bg-black/5"
+                      className="h-7 w-7 rounded-xl flex items-center justify-center text-app-muted hover:bg-black/5 cursor-pointer"
+                      title={isRtl ? 'الوسوم' : 'Tags'}
                     >
-                      <Tag size={14} />
+                      <Tag size={13} />
                     </button>
                     <button
                       onClick={() => db.highlights.delete(h.id)}
-                      className="h-8 w-8 rounded-full flex items-center justify-center text-app-muted hover:text-red-600 hover:bg-red-50"
+                      className="h-7 w-7 rounded-xl flex items-center justify-center text-app-muted hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                      title={isRtl ? 'حذف' : 'Delete'}
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </div>
@@ -176,7 +194,10 @@ export default function HighlightsPage() {
           onOpenChange={(v) => !v && setTagTargetId(null)}
           initialTags={highlights?.find((h) => h.id === tagTargetId)?.tags ?? []}
           suggestions={allTags}
-          onSave={(tags) => db.highlights.update(tagTargetId, { tags })}
+          onSave={(tags) => {
+            db.highlights.update(tagTargetId, { tags })
+            setTagTargetId(null)
+          }}
         />
       )}
     </div>
