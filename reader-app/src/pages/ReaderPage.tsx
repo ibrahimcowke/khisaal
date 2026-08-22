@@ -32,7 +32,6 @@ import { VoiceNotesSheet } from '../components/reader/VoiceNotesSheet'
 import { ChapterHeaderBanner } from '../components/reader/ChapterHeaderBanner'
 import { NextChapterCard } from '../components/reader/NextChapterCard'
 import { FloatingDesktopNav } from '../components/reader/FloatingDesktopNav'
-import { FlipHandNav } from '../components/reader/FlipHandNav'
 import { TopReadingProgressLine } from '../components/reader/TopReadingProgressLine'
 import { IconButton } from '../components/ui/IconButton'
 import type { HighlightColor } from '../lib/types'
@@ -636,15 +635,7 @@ export default function ReaderPage() {
         )}
       </div>
 
-      <FlipHandNav
-        onNextPage={() => goPage(1)}
-        onPrevPage={() => goPage(-1)}
-        canGoNext={!!nextChapterOf() || page < pages.length - 1}
-        canGoPrev={!!prevChapterOf() || page > 0}
-        currentPage={page}
-        totalPages={pages.length}
-        readingMode={s.readingMode}
-      />
+
 
       <ReaderBottomBar
         visible={controlsVisible}
@@ -882,7 +873,7 @@ function PaginatedView({
         )}
       </motion.div>
 
-      {/* Page Turn Controller Bar with Flip Hand Gestures at Bottom */}
+      {/* Page Turn Controller Bar at Bottom */}
       <div className="mt-8 flex items-center justify-center gap-3 pt-3 border-t border-app-border/40 select-none">
         <button
           onClick={(e) => {
@@ -893,11 +884,8 @@ function PaginatedView({
           className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent disabled:opacity-30 transition-all active:scale-95 shadow-xs group"
           title={t('prevPage')}
         >
-          <span className="text-sm select-none group-hover:scale-125 transition-transform">
-            {isRtl ? '👉' : '👈'}
-          </span>
+          {isRtl ? <ChevronRight size={14} className="text-app-muted group-hover:text-app-accent transition-colors" /> : <ChevronLeft size={14} className="text-app-muted group-hover:text-app-accent transition-colors" />}
           <span>{t('prevPage')}</span>
-          {isRtl ? <ChevronRight size={14} className="text-app-muted" /> : <ChevronLeft size={14} className="text-app-muted" />}
         </button>
 
         <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-3.5 py-1.5 rounded-full border border-app-accent/20">
@@ -912,11 +900,8 @@ function PaginatedView({
           className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent transition-all active:scale-95 shadow-xs group"
           title={t('nextPage')}
         >
-          {isRtl ? <ChevronLeft size={14} className="text-app-muted" /> : <ChevronRight size={14} className="text-app-muted" />}
           <span>{t('nextPage')}</span>
-          <span className="text-sm select-none group-hover:scale-125 transition-transform">
-            {isRtl ? '👈' : '👉'}
-          </span>
+          {isRtl ? <ChevronLeft size={14} className="text-app-muted group-hover:text-app-accent transition-colors" /> : <ChevronRight size={14} className="text-app-muted group-hover:text-app-accent transition-colors" />}
         </button>
       </div>
     </div>

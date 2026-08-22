@@ -19,7 +19,7 @@ export function QuickActionsHub() {
       desc: isRtl ? 'خطة القراءة' : '30-Day Plan',
       icon: Calendar,
       path: '/reading-plan',
-      color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+      color: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
     },
     {
       label: t('search'),
