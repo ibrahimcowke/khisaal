@@ -7,6 +7,7 @@ import { QuoteOfDayCard } from '../components/home/QuoteOfDayCard'
 import { ChapterGridExplorer } from '../components/home/ChapterGridExplorer'
 import { WeeklyActivityMiniCard } from '../components/home/WeeklyActivityMiniCard'
 import { RecentlyReadSection, RecentHighlightsSection } from '../components/home/RecentSections'
+import { DailyTraitWidget } from '../components/home/DailyTraitWidget'
 
 export default function HomePage() {
   const { index, loading } = useBook()
@@ -26,6 +27,7 @@ export default function HomePage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-5 pt-6 sm:pt-8 pb-12 space-y-7 animate-fade-in">
       <HeroHeader />
+      <DailyTraitWidget />
       <ContinueReadingCard index={index} />
       <DailyGoalCard bookId={index.book.id} />
       <QuickActionsHub />

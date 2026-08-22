@@ -1,7 +1,25 @@
 import { useNavigate } from 'react-router-dom'
-import { Highlighter, StickyNote, FolderHeart, BarChart3, Settings, Edit3, Info, ChevronLeft, Quote, History, Star } from 'lucide-react'
+import {
+  Highlighter,
+  StickyNote,
+  FolderHeart,
+  BarChart3,
+  Settings,
+  Edit3,
+  Info,
+  ChevronLeft,
+  Quote,
+  History,
+  Star,
+  Network,
+  HeartHandshake,
+  Brain,
+} from 'lucide-react'
 
 const items = [
+  { to: '/habit-tracker', label: 'سجل تطبيق الخصال اليومي', icon: HeartHandshake },
+  { to: '/flashcards', label: 'بطاقات الحفظ والمراجعة (Flashcards)', icon: Brain },
+  { to: '/mindmap', label: 'خريطة وترابط الخصال (Mind Map)', icon: Network },
   { to: '/highlights', label: 'التظليلات', icon: Highlighter },
   { to: '/notes', label: 'الملاحظات', icon: StickyNote },
   { to: '/quotes', label: 'الاقتباسات', icon: Quote },

@@ -38,6 +38,7 @@ import { formatDuration } from '../lib/format'
 import { cn } from '../lib/cn'
 import { PageHeader } from '../components/layout/PageHeader'
 import { useTranslation } from '../lib/i18n'
+import { AdvancedExporterModal } from '../components/library/AdvancedExporterModal'
 
 const GOALS = [10, 15, 20, 30, 45, 60, 90]
 const POMODORO_OPTIONS = [15, 20, 25, 30, 45, 60]
@@ -59,6 +60,7 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [confirmClear, setConfirmClear] = useState(false)
+  const [advancedExporterOpen, setAdvancedExporterOpen] = useState(false)
 
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight
 
@@ -508,6 +510,15 @@ export default function SettingsPage() {
           </div>
         )}
 
+        <button onClick={() => setAdvancedExporterOpen(true)} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors bg-app-accent/5 p-3 rounded-2xl border border-app-accent/20 my-1">
+          <Sparkles size={18} className="text-app-accent shrink-0" />
+          <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
+            <p className="font-bold text-xs text-app-accent">{isRtl ? 'المزامنة السحابية والتصدير المتقدم (Obsidian & AES-256)' : 'Advanced Cloud Sync & Obsidian Vault Export'}</p>
+            <p className="text-[11px] text-app-text-secondary">{isRtl ? 'تصدير Markdown منسق لـ Obsidian، أو نسخ احتياطي مشفر بكلمة مرور' : 'Export Obsidian markdown vault or encrypted AES backup'}</p>
+          </div>
+          <ChevronIcon size={15} className="text-app-accent shrink-0" />
+        </button>
+
         <button onClick={handleExportMarkdown} className="w-full flex items-center gap-3 py-3 text-sm hover:text-app-accent transition-colors">
           <FileText size={17} className="text-app-accent shrink-0" />
           <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
@@ -590,6 +601,12 @@ export default function SettingsPage() {
           <ChevronIcon size={15} className="text-app-muted shrink-0" />
         </button>
       </Section>
+
+      {/* Advanced Exporter Dialog */}
+      <AdvancedExporterModal
+        open={advancedExporterOpen}
+        onOpenChange={setAdvancedExporterOpen}
+      />
     </div>
   )
 }

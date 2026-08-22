@@ -677,7 +677,19 @@ export default function ReaderPage() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>{ttsActive && <TtsBar tts={tts} onClose={() => { tts.stop(); setTtsActive(false) }} />}</AnimatePresence>
+      <AnimatePresence>
+        {ttsActive && (
+          <TtsBar
+            tts={tts}
+            currentBlockIndex={tts.currentIndex}
+            totalBlocks={chapter?.blocks.length || 1}
+            onClose={() => {
+              tts.stop()
+              setTtsActive(false)
+            }}
+          />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {autoScroll.active && (
           <AutoScrollBar
@@ -839,14 +851,14 @@ function PaginatedView({
         <div
           className={cn(
             isMultiTopicDesktop
-              ? 'grid grid-cols-1 md:grid-cols-2 gap-6 items-start'
+              ? 'grid grid-cols-1 md:grid-cols-2 gap-8 items-start'
               : 'flex flex-col gap-6'
           )}
         >
           {pageTopics.map((topic) => (
             <div
               key={topic.id}
-              className="topic-card p-5 sm:p-6 rounded-2xl bg-app-surface/75 border border-app-border/80 shadow-xs hover:border-app-accent/40 transition-all flex flex-col justify-start"
+              className="topic-card p-6 sm:p-8 rounded-3xl bg-app-surface/90 backdrop-blur-xs border border-app-border/90 shadow-xs hover:border-app-accent/30 hover:shadow-md transition-all flex flex-col justify-start"
             >
               {topic.blocks.map((block) => (
                 <BlockRenderer

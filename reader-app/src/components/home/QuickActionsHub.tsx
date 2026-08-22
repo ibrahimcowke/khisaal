@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Highlighter, Quote, FolderHeart, GitBranch, Calendar, Search } from 'lucide-react'
+import { Highlighter, Quote, GitBranch, Calendar, Search, Network, HeartHandshake, Brain } from 'lucide-react'
 import { useTranslation } from '../../lib/i18n'
 
 export function QuickActionsHub() {
@@ -8,8 +8,29 @@ export function QuickActionsHub() {
 
   const actions = [
     {
+      label: t('habitTracker'),
+      desc: isRtl ? 'التطبيق اليومي' : 'Daily Virtue',
+      icon: HeartHandshake,
+      path: '/habit-tracker',
+      color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    },
+    {
+      label: t('flashcards'),
+      desc: isRtl ? 'حفظ ومراجعة' : 'Spaced Reviews',
+      icon: Brain,
+      path: '/flashcards',
+      color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
+    },
+    {
+      label: t('mindmap'),
+      desc: isRtl ? 'خريطة تفاعلية' : 'Virtue Graph',
+      icon: Network,
+      path: '/mindmap',
+      color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+    },
+    {
       label: t('traitTree'),
-      desc: isRtl ? 'خريطة المفاهيم' : 'Concept Map',
+      desc: isRtl ? 'شجرة الخصال' : 'Concept Map',
       icon: GitBranch,
       path: '/trait-tree',
       color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
@@ -33,20 +54,13 @@ export function QuickActionsHub() {
       desc: isRtl ? 'ستوديو 4K' : '4K Studio',
       icon: Quote,
       path: '/quotes',
-      color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+      color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
     },
     {
       label: t('highlights'),
       desc: isRtl ? 'تدويناتك' : 'Annotations',
       icon: Highlighter,
       path: '/highlights',
-      color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-    },
-    {
-      label: t('collections'),
-      desc: isRtl ? 'مجلداتك' : 'Folders',
-      icon: FolderHeart,
-      path: '/collections',
       color: 'bg-app-accent/15 text-app-accent',
     },
   ]
