@@ -15,27 +15,41 @@ export default function HomePage() {
   if (loading || !index) {
     return (
       <div className="min-h-screen flex items-center justify-center text-app-text-secondary">
-        <div className="text-center space-y-2">
-          <div className="w-10 h-10 border-3 border-app-accent border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="font-display text-lg text-app-accent">إمتاع القارئ</p>
-          <p className="text-xs text-app-text-secondary">جارٍ تجهيز الكتاب والمكتبة...</p>
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 border-3 border-app-accent border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="font-display text-xl font-bold text-app-accent">إمتاع القارئ وموسوعة الخصال</p>
+          <p className="text-xs text-app-text-secondary">جارٍ تجهيز الكتاب والمكتبة والبيانات...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-5 pt-6 sm:pt-8 pb-12 space-y-7 animate-fade-in">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-20 animate-fade-in space-y-6 sm:space-y-8">
+      {/* Grand Hero Welcome Header */}
       <HeroHeader />
-      <DailyTraitWidget />
-      <ContinueReadingCard index={index} />
-      <DailyGoalCard bookId={index.book.id} />
-      <QuickActionsHub />
-      <QuoteOfDayCard index={index} />
-      <ChapterGridExplorer index={index} />
-      <WeeklyActivityMiniCard bookId={index.book.id} />
-      <RecentHighlightsSection index={index} />
-      <RecentlyReadSection index={index} />
+
+      {/* Responsive Bento Grid: Main Feed (8 cols on Desktop) + Analytics & Tools Hub (4 cols on Desktop) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* Main Column */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-6 sm:space-y-7">
+          <ContinueReadingCard index={index} />
+          <DailyTraitWidget />
+          <QuoteOfDayCard index={index} />
+          <ChapterGridExplorer index={index} />
+          <div className="space-y-6 pt-2">
+            <RecentlyReadSection index={index} />
+            <RecentHighlightsSection index={index} />
+          </div>
+        </div>
+
+        {/* Sidebar Insights & Tools Column */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-6 sm:space-y-7 sticky top-6">
+          <DailyGoalCard bookId={index.book.id} />
+          <QuickActionsHub />
+          <WeeklyActivityMiniCard bookId={index.book.id} />
+        </div>
+      </div>
     </div>
   )
 }
