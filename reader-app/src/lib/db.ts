@@ -103,6 +103,17 @@ export class ReaderDatabase extends Dexie {
       virtueLogs: 'id, date, traitId, completed, createdAt',
       flashcards: 'id, dueDate, category, createdAt',
     })
+
+    this.version(4).stores({
+      highlights: 'id, bookId, chapterId, [bookId+chapterId], blockId, color, createdAt',
+      notes: 'id, bookId, chapterId, [bookId+chapterId], blockId, highlightId, createdAt',
+      bookmarks: 'id, bookId, chapterId, [bookId+chapterId], blockId, createdAt',
+      quotes: 'id, bookId, chapterId, [bookId+chapterId], favorite, createdAt',
+      sessions: 'id, bookId, chapterId, [bookId+chapterId], startedAt',
+      history: 'id, bookId, chapterId, [bookId+chapterId], visitedAt',
+      voiceNotes: 'id, bookId, chapterId, [bookId+chapterId], blockId, createdAt',
+      readingPlans: 'id, planId, day, [planId+day], completed',
+    })
   }
 }
 
