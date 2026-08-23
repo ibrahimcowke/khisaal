@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "موسوعة الخصال المائتان وإمتاع القارئ في الأدب العربي",
+  "workspaces": [
+    "reader-app"
+  ],
   "scripts": {
     "dev": "npm --prefix reader-app run dev",
     "build": "npm --prefix reader-app run build",
-    "preview": "npm --prefix reader-app run preview"
+    "preview": "npm --prefix reader-app run preview",
+    "postinstall": "npm --prefix reader-app install"
   }
 }
