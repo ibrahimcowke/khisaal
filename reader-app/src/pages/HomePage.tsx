@@ -8,7 +8,6 @@ import { ChapterGridExplorer } from '../components/home/ChapterGridExplorer'
 import { WeeklyActivityMiniCard } from '../components/home/WeeklyActivityMiniCard'
 import { RecentlyReadSection, RecentHighlightsSection } from '../components/home/RecentSections'
 import { DailyTraitWidget } from '../components/home/DailyTraitWidget'
-import { PwaInstallCard } from '../components/ui/PwaInstallCard'
 
 export default function HomePage() {
   const { index, loading } = useBook()
@@ -29,9 +28,6 @@ export default function HomePage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-20 animate-fade-in space-y-6 sm:space-y-8">
       {/* Grand Hero Welcome Header */}
       <HeroHeader />
-
-      {/* PWA Install Promotion Card */}
-      <PwaInstallCard />
 
       {/* Responsive Bento Grid: Main Feed (8 cols on Desktop) + Analytics & Tools Hub (4 cols on Desktop) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
