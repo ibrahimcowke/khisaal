@@ -56,6 +56,9 @@ export default function TraitTreePage() {
       else if (c.title.includes('سداسيات') || c.title.includes('ست') || c.title.includes('ستة')) sysName = isRtl ? 'منظومة السداسيات (Hexads)' : 'Hexads (Systems of 6)'
       else if (c.title.includes('سباعيات') || c.title.includes('سبع') || c.title.includes('سبعة')) sysName = isRtl ? 'منظومة السباعيات (Heptads)' : 'Heptads (Systems of 7)'
       else if (c.title.includes('ثمانيات') || c.title.includes('ثمان') || c.title.includes('ثمانية')) sysName = isRtl ? 'منظومة الثمانيات (Octads)' : 'Octads (Systems of 8)'
+      else if (c.title.includes('تساعيات') || c.title.includes('تسع') || c.title.includes('تسعة')) sysName = isRtl ? 'منظومة التساعيات (Enneads)' : 'Enneads (Systems of 9)'
+      else if (c.title.includes('عشاريات') || c.title.includes('عشر') || c.title.includes('عشرة')) sysName = isRtl ? 'منظومة العشاريات (Decads)' : 'Decads (Systems of 10)'
+      else if (c.title.includes('أربعون') || c.title.includes('أربعين')) sysName = isRtl ? 'الأربعون خصلة النبوية الجامعة' : 'Forty Hadiths of Noble Qualities'
 
       if (!map.has(sysName)) map.set(sysName, [])
       map.get(sysName)!.push(c)
