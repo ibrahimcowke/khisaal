@@ -54,6 +54,8 @@ export default function TraitTreePage() {
       else if (c.title.includes('رباعيات') || c.title.includes('أربع') || c.title.includes('أربعة')) sysName = isRtl ? 'منظومة الرباعيات (Tetrads)' : 'Tetrads (Systems of 4)'
       else if (c.title.includes('خماسيات') || c.title.includes('خمس') || c.title.includes('خمسة')) sysName = isRtl ? 'منظومة الخماسيات (Pentads)' : 'Pentads (Systems of 5)'
       else if (c.title.includes('سداسيات') || c.title.includes('ست') || c.title.includes('ستة')) sysName = isRtl ? 'منظومة السداسيات (Hexads)' : 'Hexads (Systems of 6)'
+      else if (c.title.includes('سباعيات') || c.title.includes('سبع') || c.title.includes('سبعة')) sysName = isRtl ? 'منظومة السباعيات (Heptads)' : 'Heptads (Systems of 7)'
+      else if (c.title.includes('ثمانيات') || c.title.includes('ثمان') || c.title.includes('ثمانية')) sysName = isRtl ? 'منظومة الثمانيات (Octads)' : 'Octads (Systems of 8)'
 
       if (!map.has(sysName)) map.set(sysName, [])
       map.get(sysName)!.push(c)

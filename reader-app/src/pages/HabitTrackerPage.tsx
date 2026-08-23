@@ -20,7 +20,7 @@ import { Button } from '../components/ui/Button'
 
 export default function HabitTrackerPage() {
   const { isRtl, formatDigits } = useTranslation()
-  const { index } = useBook()
+  const { index, currentBookId, selectBook } = useBook()
   const navigate = useNavigate()
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
@@ -134,7 +134,7 @@ export default function HabitTrackerPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 pb-20">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="p-2 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
@@ -161,6 +161,33 @@ export default function HabitTrackerPage() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Book Switcher Tabs */}
+      <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-app-surface border border-app-border mb-6 shadow-xs">
+        <button
+          onClick={() => selectBook('alkhisal-al-miatan')}
+          className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            currentBookId === 'alkhisal-al-miatan'
+              ? 'bg-app-accent text-white shadow-xs'
+              : 'text-app-text-secondary hover:text-app-text hover:bg-black/5'
+          }`}
+        >
+          <BookOpen size={14} />
+          <span>{isRtl ? 'الخصال المائتان (200 خصلة)' : '200 Khisals Book'}</span>
+        </button>
+
+        <button
+          onClick={() => selectBook('imtaa-al-qari-vol-1')}
+          className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            currentBookId === 'imtaa-al-qari-vol-1'
+              ? 'bg-app-accent text-white shadow-xs'
+              : 'text-app-text-secondary hover:text-app-text hover:bg-black/5'
+          }`}
+        >
+          <BookOpen size={14} />
+          <span>{isRtl ? 'إمتاع القارئ (المجلد 1)' : 'Imtaa Al-Qari (Vol 1)'}</span>
+        </button>
       </div>
 
       {/* Main Focus Card: Trait of the Day */}
