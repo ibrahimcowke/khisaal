@@ -858,7 +858,7 @@ function PaginatedView({
           {pageTopics.map((topic) => (
             <div
               key={topic.id}
-              className="topic-card p-6 sm:p-8 rounded-3xl bg-app-surface/90 backdrop-blur-xs border border-app-border/90 shadow-xs hover:border-app-accent/30 hover:shadow-md transition-all flex flex-col justify-start"
+              className="topic-card p-6 sm:p-8 rounded-3xl bg-app-surface/90 backdrop-blur-xs border border-app-border/90 shadow-xs flex flex-col justify-start"
             >
               {topic.blocks.map((block) => (
                 <BlockRenderer
