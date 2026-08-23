@@ -133,7 +133,7 @@ export default function SpeedReaderPage() {
         </div>
 
         {/* Display Stage (RSVP Word Screen) */}
-        <div className="relative min-h-[220px] sm:min-h-[260px] p-8 rounded-3xl bg-app-surface border-2 border-app-accent/30 shadow-lg flex flex-col items-center justify-center text-center overflow-hidden">
+        <div className="relative min-h-55 sm:min-h-65 p-8 rounded-3xl bg-app-surface border-2 border-app-accent/30 shadow-lg flex flex-col items-center justify-center text-center overflow-hidden">
           {/* Subtle Arabesque Watermark */}
           <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none text-9xl font-display select-none">
             ❖

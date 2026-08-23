@@ -128,7 +128,7 @@ export default function ToolsHubPage() {
 
               <div className="pt-2 border-t border-app-border/40 flex items-center justify-between text-xs font-bold text-app-accent">
                 <span>{isRtl ? 'فتح الأداة التفاعلية' : 'Launch Tool'}</span>
-                <span className="group-hover:translate-x-[-4px] transition-transform">❖</span>
+                <span className="group-hover:-translate-x-1 transition-transform">❖</span>
               </div>
             </button>
           )
