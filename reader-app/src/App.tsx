@@ -27,6 +27,9 @@ const ReadingPlanPage = lazy(() => import('./pages/ReadingPlanPage'))
 const HabitTrackerPage = lazy(() => import('./pages/HabitTrackerPage'))
 const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'))
 const MindmapPage = lazy(() => import('./pages/MindmapPage'))
+const ToolsHubPage = lazy(() => import('./pages/ToolsHubPage'))
+const KhisalAssessmentPage = lazy(() => import('./pages/KhisalAssessmentPage'))
+const SpeedReaderPage = lazy(() => import('./pages/SpeedReaderPage'))
 
 function PageFallback() {
   return <div className="min-h-screen flex items-center justify-center text-app-text-secondary text-sm">جارٍ التحميل...</div>
@@ -54,6 +57,9 @@ export default function App() {
               <Route path="/book/:bookId" element={<BookDetailPage />} />
               <Route path="/book/:bookId/read" element={<ReaderPage />} />
               <Route path="/book/:bookId/chapter/:chapterId" element={<ChapterToRead />} />
+              <Route path="/tools" element={<ToolsHubPage />} />
+              <Route path="/khisal-assessment" element={<KhisalAssessmentPage />} />
+              <Route path="/speed-reader" element={<SpeedReaderPage />} />
               <Route path="/trait-tree" element={<TraitTreePage />} />
               <Route path="/mindmap" element={<MindmapPage />} />
               <Route path="/reading-plan" element={<ReadingPlanPage />} />

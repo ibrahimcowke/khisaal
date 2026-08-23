@@ -14,9 +14,15 @@ import {
   Network,
   HeartHandshake,
   Brain,
+  Wrench,
+  Award,
+  Zap,
 } from 'lucide-react'
 
 const items = [
+  { to: '/tools', label: 'مركز الأدوات التفاعلية (Tools Hub)', icon: Wrench },
+  { to: '/khisal-assessment', label: 'مقياس واختبار الخصال السلوكية', icon: Award },
+  { to: '/speed-reader', label: 'مختبر القراءة السريعة (RSVP)', icon: Zap },
   { to: '/habit-tracker', label: 'سجل تطبيق الخصال اليومي', icon: HeartHandshake },
   { to: '/flashcards', label: 'بطاقات الحفظ والمراجعة (Flashcards)', icon: Brain },
   { to: '/mindmap', label: 'خريطة وترابط الخصال (Mind Map)', icon: Network },

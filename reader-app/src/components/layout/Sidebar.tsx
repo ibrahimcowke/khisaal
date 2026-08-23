@@ -13,10 +13,11 @@ import {
   FolderHeart,
   History,
   Star,
-  CalendarCheck,
   HeartHandshake,
   Brain,
   Network,
+  Wrench,
+  Award,
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { useTranslation } from '../../lib/i18n'
@@ -32,10 +33,11 @@ export function Sidebar() {
     { to: '/', label: t('home'), icon: Home, end: true },
     { to: '/library', label: t('library'), icon: Library },
     { to: '/search', label: t('search'), icon: Search },
-    { to: '/reading-plan', label: t('readingPlan'), icon: CalendarCheck },
+    { to: '/tools', label: isRtl ? 'مركز الأدوات' : 'Tools Hub', icon: Wrench },
   ]
 
   const studyNav = [
+    { to: '/khisal-assessment', label: isRtl ? 'مقياس الخصال' : 'Virtue Quiz', icon: Award },
     { to: '/habit-tracker', label: isRtl ? 'سجل الخصال' : 'Habit Tracker', icon: HeartHandshake },
     { to: '/flashcards', label: isRtl ? 'بطاقات الحفظ' : 'Flashcards', icon: Brain },
     { to: '/mindmap', label: isRtl ? 'خريطة الخصال' : 'Mind Map', icon: Network },

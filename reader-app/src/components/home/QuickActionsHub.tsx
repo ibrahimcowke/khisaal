@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Highlighter, Quote, GitBranch, Calendar, Search, Network, HeartHandshake, Brain } from 'lucide-react'
+import { Quote, GitBranch, Network, HeartHandshake, Brain, Wrench, Award, Zap } from 'lucide-react'
 import { useTranslation } from '../../lib/i18n'
 
 export function QuickActionsHub() {
@@ -7,6 +7,24 @@ export function QuickActionsHub() {
   const { t, isRtl } = useTranslation()
 
   const actions = [
+    {
+      label: isRtl ? 'مركز الأدوات' : 'Tools Hub',
+      desc: isRtl ? 'أدوات تفاعلية' : 'Interactive Suite',
+      icon: Wrench,
+      path: '/tools',
+    },
+    {
+      label: isRtl ? 'مقياس الخصال' : 'Virtue Quiz',
+      desc: isRtl ? 'تقييم سلوكي' : 'Self Assessment',
+      icon: Award,
+      path: '/khisal-assessment',
+    },
+    {
+      label: isRtl ? 'القراءة السريعة' : 'Speed Reader',
+      desc: isRtl ? 'تدريب RSVP' : 'Focus Trainer',
+      icon: Zap,
+      path: '/speed-reader',
+    },
     {
       label: t('habitTracker'),
       desc: isRtl ? 'التطبيق اليومي' : 'Daily Practice',
@@ -32,28 +50,10 @@ export function QuickActionsHub() {
       path: '/trait-tree',
     },
     {
-      label: t('readingPlan'),
-      desc: isRtl ? 'خطة 30 يوماً' : '30-Day Plan',
-      icon: Calendar,
-      path: '/reading-plan',
-    },
-    {
-      label: t('search'),
-      desc: isRtl ? 'بحث في المتن' : 'Full Search',
-      icon: Search,
-      path: '/search',
-    },
-    {
       label: t('quotes'),
       desc: isRtl ? 'ستوديو الاقتباس' : 'Quote Studio',
       icon: Quote,
       path: '/quotes',
-    },
-    {
-      label: t('highlights'),
-      desc: isRtl ? 'التظليلات' : 'Highlights',
-      icon: Highlighter,
-      path: '/highlights',
     },
   ]
 
