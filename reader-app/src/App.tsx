@@ -1,35 +1,55 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, type ComponentType } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppShell } from './components/layout/AppShell'
 import { BookProvider } from './context/BookContext'
 import { ThemeEffect } from './context/ThemeEffect'
 
-const HomePage = lazy(() => import('./pages/HomePage'))
-const LibraryPage = lazy(() => import('./pages/LibraryPage'))
-const BookDetailPage = lazy(() => import('./pages/BookDetailPage'))
-const ReaderPage = lazy(() => import('./pages/ReaderPage'))
-const SearchPage = lazy(() => import('./pages/SearchPage'))
-const BookmarksPage = lazy(() => import('./pages/BookmarksPage'))
-const HighlightsPage = lazy(() => import('./pages/HighlightsPage'))
-const NotesPage = lazy(() => import('./pages/NotesPage'))
-const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
-const CollectionDetailPage = lazy(() => import('./pages/CollectionDetailPage'))
-const QuotesPage = lazy(() => import('./pages/QuotesPage'))
-const HistoryPage = lazy(() => import('./pages/HistoryPage'))
-const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
-const StatsPage = lazy(() => import('./pages/StatsPage'))
-const SettingsPage = lazy(() => import('./pages/SettingsPage'))
-const EditorPage = lazy(() => import('./pages/EditorPage'))
-const AboutPage = lazy(() => import('./pages/AboutPage'))
-const MorePage = lazy(() => import('./pages/MorePage'))
-const TraitTreePage = lazy(() => import('./pages/TraitTreePage'))
-const ReadingPlanPage = lazy(() => import('./pages/ReadingPlanPage'))
-const HabitTrackerPage = lazy(() => import('./pages/HabitTrackerPage'))
-const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'))
-const MindmapPage = lazy(() => import('./pages/MindmapPage'))
-const ToolsHubPage = lazy(() => import('./pages/ToolsHubPage'))
-const KhisalAssessmentPage = lazy(() => import('./pages/KhisalAssessmentPage'))
-const SpeedReaderPage = lazy(() => import('./pages/SpeedReaderPage'))
+// Resilient dynamic importer that auto-reloads if a new deployment changes chunk hashes
+function lazyWithRetry<T extends ComponentType<any>>(factory: () => Promise<{ default: T }>) {
+  return lazy(async () => {
+    try {
+      return await factory()
+    } catch (error) {
+      console.warn('Failed to load chunk, auto-reloading to fetch newest version...', error)
+      const key = 'chunk_reload_' + window.location.pathname
+      const hasRetried = sessionStorage.getItem(key)
+      if (!hasRetried) {
+        sessionStorage.setItem(key, 'true')
+        window.location.reload()
+        return new Promise(() => {}) // wait for reload
+      }
+      sessionStorage.removeItem(key)
+      throw error
+    }
+  })
+}
+
+const HomePage = lazyWithRetry(() => import('./pages/HomePage'))
+const LibraryPage = lazyWithRetry(() => import('./pages/LibraryPage'))
+const BookDetailPage = lazyWithRetry(() => import('./pages/BookDetailPage'))
+const ReaderPage = lazyWithRetry(() => import('./pages/ReaderPage'))
+const SearchPage = lazyWithRetry(() => import('./pages/SearchPage'))
+const BookmarksPage = lazyWithRetry(() => import('./pages/BookmarksPage'))
+const HighlightsPage = lazyWithRetry(() => import('./pages/HighlightsPage'))
+const NotesPage = lazyWithRetry(() => import('./pages/NotesPage'))
+const CollectionsPage = lazyWithRetry(() => import('./pages/CollectionsPage'))
+const CollectionDetailPage = lazyWithRetry(() => import('./pages/CollectionDetailPage'))
+const QuotesPage = lazyWithRetry(() => import('./pages/QuotesPage'))
+const HistoryPage = lazyWithRetry(() => import('./pages/HistoryPage'))
+const FavoritesPage = lazyWithRetry(() => import('./pages/FavoritesPage'))
+const StatsPage = lazyWithRetry(() => import('./pages/StatsPage'))
+const SettingsPage = lazyWithRetry(() => import('./pages/SettingsPage'))
+const EditorPage = lazyWithRetry(() => import('./pages/EditorPage'))
+const AboutPage = lazyWithRetry(() => import('./pages/AboutPage'))
+const MorePage = lazyWithRetry(() => import('./pages/MorePage'))
+const TraitTreePage = lazyWithRetry(() => import('./pages/TraitTreePage'))
+const ReadingPlanPage = lazyWithRetry(() => import('./pages/ReadingPlanPage'))
+const HabitTrackerPage = lazyWithRetry(() => import('./pages/HabitTrackerPage'))
+const FlashcardsPage = lazyWithRetry(() => import('./pages/FlashcardsPage'))
+const MindmapPage = lazyWithRetry(() => import('./pages/MindmapPage'))
+const ToolsHubPage = lazyWithRetry(() => import('./pages/ToolsHubPage'))
+const KhisalAssessmentPage = lazyWithRetry(() => import('./pages/KhisalAssessmentPage'))
+const SpeedReaderPage = lazyWithRetry(() => import('./pages/SpeedReaderPage'))
 
 function PageFallback() {
   return <div className="min-h-screen flex items-center justify-center text-app-text-secondary text-sm">جارٍ التحميل...</div>
