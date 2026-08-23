@@ -16,16 +16,15 @@ export function TopReadingProgressLine() {
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  if (progress <= 0) return null
-
   return (
-    <div className="fixed top-0 inset-x-0 z-40 h-[2.5px] bg-transparent pointer-events-none">
+    <div className="fixed top-0 inset-x-0 z-50 h-[3px] bg-app-border/20 pointer-events-none">
       <div
-        className="h-full bg-app-accent shadow-sm transition-all duration-100 ease-out"
-        style={{ width: `${progress}%`, opacity: 0.85 }}
+        className="h-full bg-linear-to-r from-app-accent/70 via-app-accent to-app-accent/90 shadow-xs transition-all duration-100 ease-out"
+        style={{ width: `${progress}%` }}
       />
     </div>
   )
