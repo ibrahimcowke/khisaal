@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft, Search, Bookmark, SlidersHorizontal, List, Sparkles } from 'lucide-react'
+import { LayoutDashboard, Search, Bookmark, SlidersHorizontal, List, Sparkles } from 'lucide-react'
 import { AmbientSoundPlayer } from './AmbientSoundPlayer'
 import { PomodoroTimer } from './PomodoroTimer'
 import { useTranslation } from '../../lib/i18n'
@@ -27,9 +27,7 @@ export function ReaderTopBar({
   onOpenMore: () => void
 }) {
   const navigate = useNavigate()
-  const { t, isRtl } = useTranslation()
-
-  const BackIcon = isRtl ? ArrowRight : ArrowLeft
+  const { t } = useTranslation()
 
   return (
     <AnimatePresence>
@@ -42,16 +40,15 @@ export function ReaderTopBar({
           className="fixed top-0 inset-x-0 z-40 bg-app-surface/95 backdrop-blur-xl border-b border-app-border/80 pt-[max(env(safe-area-inset-top,0px),0.5rem)] pb-2 px-3 sm:px-6 shadow-sm"
         >
           <div className="flex items-center justify-between max-w-5xl mx-auto gap-2 sm:gap-4">
-            {/* Start Side: Back & Ambient Tools */}
+            {/* Start Side: Dashboard Icon & Ambient Tools */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent/60 transition-all active:scale-95 text-xs font-semibold shadow-2xs cursor-pointer"
-                aria-label={t('back')}
-                title={t('back')}
+                onClick={() => navigate('/')}
+                className="h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text hover:text-app-accent hover:border-app-accent/60 transition-all active:scale-95 shadow-2xs cursor-pointer group"
+                aria-label={t('home')}
+                title={t('home')}
               >
-                <BackIcon size={16} className="text-app-accent" />
-                <span className="hidden sm:inline font-display">{t('home')}</span>
+                <LayoutDashboard size={18} className="text-app-accent group-hover:scale-110 transition-transform" />
               </button>
 
               <div className="hidden md:flex items-center gap-1.5">
