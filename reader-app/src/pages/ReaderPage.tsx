@@ -256,22 +256,8 @@ export default function ReaderPage() {
   function goPage(dir: 1 | -1) {
     setPage((p) => {
       const next = p + dir
-      if (next < 0) {
-        const prev = index && chapter ? prevChapterOf() : null
-        if (prev) {
-          setSearchParams({ c: prev.id })
-          return 0
-        }
-        return p
-      }
-      if (next >= pages.length) {
-        const nxt = index && chapter ? nextChapterOf() : null
-        if (nxt) {
-          setSearchParams({ c: nxt.id })
-          return 0
-        }
-        return p
-      }
+      if (next < 0) return 0
+      if (next >= pages.length) return Math.max(0, pages.length - 1)
       return next
     })
   }
@@ -848,32 +834,10 @@ function PaginatedView({
     <div className="flex flex-col items-center justify-between min-h-[78vh] py-2">
       <motion.div
         key={pageIndex}
-        initial={{ opacity: 0, x: isRtl ? -15 : 15 }}
+        initial={{ opacity: 0, x: isRtl ? -12 : 12 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: isRtl ? 15 : -15 }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.12}
-        onDragEnd={(_, info) => {
-          const swipeThreshold = 40
-          const velocityThreshold = 400
-          if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
-            // Dragged to the right
-            if (isRtl) {
-              onPrevPage()
-            } else {
-              onPrevPage()
-            }
-          } else if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
-            // Dragged to the left
-            if (isRtl) {
-              onNextPage()
-            } else {
-              onNextPage()
-            }
-          }
-        }}
+        exit={{ opacity: 0, x: isRtl ? 12 : -12 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
         className="mx-auto w-full flex-1 touch-pan-y"
         style={{ maxWidth: isMultiTopicDesktop ? Math.max(textWidth, 1100) : textWidth, fontFamily, fontSize, lineHeight }}
       >
