@@ -151,44 +151,44 @@ export default function ReadingPlanPage() {
       </div>
 
       {/* Mode Switcher Tabs */}
-      <div className="grid grid-cols-3 gap-2 mb-6">
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-6">
         <button
           onClick={() => setActiveTab('plan')}
           className={cn(
-            'py-2.5 px-2 rounded-2xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5',
+            'py-2.5 px-1 sm:px-2 rounded-2xl text-[11px] sm:text-xs font-bold border transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 touch-manipulation',
             activeTab === 'plan'
               ? 'bg-app-accent text-white border-app-accent shadow-xs'
               : 'bg-app-surface border-app-border text-app-text hover:border-app-accent/60'
           )}
         >
-          <Calendar size={14} />
-          <span>{isRtl ? 'جدول الـ 30 يوماً' : '30-Day Schedule'}</span>
+          <Calendar size={13} className="shrink-0" />
+          <span className="truncate">{isRtl ? 'جدول الـ 30 يوماً' : '30-Day Schedule'}</span>
         </button>
 
         <button
           onClick={() => setActiveTab('daily')}
           className={cn(
-            'py-2.5 px-2 rounded-2xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5',
+            'py-2.5 px-1 sm:px-2 rounded-2xl text-[11px] sm:text-xs font-bold border transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 touch-manipulation',
             activeTab === 'daily'
               ? 'bg-app-accent text-white border-app-accent shadow-xs'
               : 'bg-app-surface border-app-border text-app-text hover:border-app-accent/60'
           )}
         >
-          <Sparkles size={14} />
-          <span>{isRtl ? 'خصلة اليوم والتطبيق' : "Today's Trait"}</span>
+          <Sparkles size={13} className="shrink-0" />
+          <span className="truncate">{isRtl ? 'خصلة اليوم' : "Today's Trait"}</span>
         </button>
 
         <button
           onClick={() => setActiveTab('quiz')}
           className={cn(
-            'py-2.5 px-2 rounded-2xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5',
+            'py-2.5 px-1 sm:px-2 rounded-2xl text-[11px] sm:text-xs font-bold border transition-all flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 touch-manipulation',
             activeTab === 'quiz'
               ? 'bg-app-accent text-white border-app-accent shadow-xs'
               : 'bg-app-surface border-app-border text-app-text hover:border-app-accent/60'
           )}
         >
-          <HelpCircle size={14} />
-          <span>{isRtl ? 'بطاقات الاختبار 🧠' : 'Flashcards 🧠'}</span>
+          <HelpCircle size={13} className="shrink-0" />
+          <span className="truncate">{isRtl ? 'بطاقات الاختبار' : 'Flashcards'}</span>
         </button>
       </div>
 

@@ -287,7 +287,40 @@ export default function ReaderPage() {
     return index.chapters[order - 1] ?? null
   }
 
-  // ---------- Tap zones ----------
+  // ---------- Mobile Touch Swipe Gestures & Tap zones ----------
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
+
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    if (e.touches.length === 1) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now(),
+      }
+    }
+  }
+
+  function handleTouchEnd(e: React.TouchEvent<HTMLDivElement>) {
+    if (!touchStartRef.current || e.changedTouches.length === 0) return
+    const touch = e.changedTouches[0]
+    const deltaX = touch.clientX - touchStartRef.current.x
+    const deltaY = touch.clientY - touchStartRef.current.y
+    const elapsed = Date.now() - touchStartRef.current.time
+    touchStartRef.current = null
+
+    // Ensure it's a decisive horizontal swipe (> 45px, mostly horizontal, duration < 600ms)
+    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4 && elapsed < 600) {
+      if (s.readingMode === 'paginated') {
+        // Swiping left advances to next page, swiping right goes to previous page
+        if (deltaX < 0) {
+          goPage(1)
+        } else {
+          goPage(-1)
+        }
+      }
+    }
+  }
+
   function handleReaderTap(e: React.MouseEvent<HTMLDivElement>) {
     if (window.getSelection()?.toString()) return
     const rect = e.currentTarget.getBoundingClientRect()
@@ -552,7 +585,9 @@ export default function ReaderPage() {
       <div
         ref={containerRef}
         onClick={handleReaderTap}
-        className="pt-14 sm:pt-16 pb-28 px-4 sm:px-6 md:px-8 min-h-screen transition-all duration-150"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="pt-[calc(4.25rem+env(safe-area-inset-top,0px))] pb-[calc(7rem+env(safe-area-inset-bottom,0px))] pl-[max(env(safe-area-inset-left,0px),1rem)] pr-[max(env(safe-area-inset-right,0px),1rem)] min-h-dvh transition-all duration-150 select-text"
         style={{
           filter: s.brightnessOverlay > 0 ? undefined : undefined,
         }}

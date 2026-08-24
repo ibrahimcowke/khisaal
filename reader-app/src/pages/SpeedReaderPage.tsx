@@ -162,11 +162,11 @@ export default function SpeedReaderPage() {
         </div>
 
         {/* Playback Controls */}
-        <div className="p-5 rounded-2xl bg-app-surface border border-app-border shadow-xs space-y-4">
-          <div className="flex items-center justify-center gap-3">
+        <div className="p-4 sm:p-5 rounded-2xl bg-app-surface border border-app-border shadow-xs space-y-4">
+          <div className="flex items-center justify-center gap-2 sm:gap-3">
             <button
               onClick={() => handleSkip(-10)}
-              className="p-2.5 rounded-xl border border-app-border bg-app-bg text-app-text hover:text-app-accent hover:border-app-accent active:scale-95 transition-all shadow-2xs cursor-pointer"
+              className="p-2.5 rounded-xl border border-app-border bg-app-bg text-app-text hover:text-app-accent hover:border-app-accent active:scale-95 transition-all shadow-2xs cursor-pointer touch-manipulation"
               title={isRtl ? 'تراجع 10 كلمات' : 'Rewind 10 words'}
             >
               <Rewind size={18} />
@@ -175,7 +175,7 @@ export default function SpeedReaderPage() {
             <Button
               size="lg"
               onClick={handleTogglePlay}
-              className="px-8 gap-2 font-bold shadow-md active:scale-95"
+              className="px-4 sm:px-8 gap-2 font-bold shadow-md active:scale-95 text-xs sm:text-sm"
             >
               {isPlaying ? <Pause size={18} /> : <Play size={18} />}
               <span>{isPlaying ? (isRtl ? 'إيقاف مؤقت' : 'Pause') : (isRtl ? 'بدء القراءة' : 'Start Reading')}</span>
@@ -183,7 +183,7 @@ export default function SpeedReaderPage() {
 
             <button
               onClick={() => handleSkip(10)}
-              className="p-2.5 rounded-xl border border-app-border bg-app-bg text-app-text hover:text-app-accent hover:border-app-accent active:scale-95 transition-all shadow-2xs cursor-pointer"
+              className="p-2.5 rounded-xl border border-app-border bg-app-bg text-app-text hover:text-app-accent hover:border-app-accent active:scale-95 transition-all shadow-2xs cursor-pointer touch-manipulation"
               title={isRtl ? 'تقديم 10 كلمات' : 'Forward 10 words'}
             >
               <FastForward size={18} />
@@ -191,7 +191,7 @@ export default function SpeedReaderPage() {
 
             <button
               onClick={handleReset}
-              className="p-2.5 rounded-xl border border-app-border bg-app-bg text-app-text hover:text-app-accent hover:border-app-accent active:scale-95 transition-all shadow-2xs cursor-pointer"
+              className="p-2.5 rounded-xl border border-app-border bg-app-bg text-app-text hover:text-app-accent hover:border-app-accent active:scale-95 transition-all shadow-2xs cursor-pointer touch-manipulation"
               title={isRtl ? 'إعادة من البداية' : 'Reset'}
             >
               <RotateCcw size={18} />

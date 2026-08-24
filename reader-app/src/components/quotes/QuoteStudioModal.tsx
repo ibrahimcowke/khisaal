@@ -510,8 +510,8 @@ export function QuoteStudioModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-2 border-t border-app-border flex-wrap sm:flex-nowrap">
-          <Button onClick={handleDownload} className="flex-1 gap-2 py-3 text-xs sm:text-sm">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 pt-3 border-t border-app-border">
+          <Button onClick={handleDownload} className="col-span-2 sm:flex-1 gap-2 py-3 text-xs sm:text-sm font-bold active:scale-95 touch-manipulation">
             <Download size={16} />
             <span>تحميل بطاقة (PNG)</span>
           </Button>
@@ -519,24 +519,25 @@ export function QuoteStudioModal({
           <Button
             variant="outline"
             onClick={handleCopyImageToClipboard}
-            className="gap-1.5 py-3 text-xs sm:text-sm"
+            className="gap-1.5 py-3 text-xs sm:text-sm active:scale-95 touch-manipulation"
             title="نسخ الصورة مباشرة للحافظة للصق في واتساب وتيليجرام"
           >
             {copiedImg ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
-            <span>{copiedImg ? 'تم نسخ الصورة ✅' : 'نسخ الصورة'}</span>
+            <span className="truncate">{copiedImg ? 'تم النسخ ✅' : 'نسخ الصورة'}</span>
           </Button>
 
-          <Button variant="secondary" onClick={handleNativeShare} className="gap-1.5 py-3 text-xs sm:text-sm">
+          <Button variant="secondary" onClick={handleNativeShare} className="gap-1.5 py-3 text-xs sm:text-sm active:scale-95 touch-manipulation">
             <Share2 size={16} />
             <span>مشاركة</span>
           </Button>
 
           <button
             onClick={handleCopyText}
-            className="p-3 rounded-2xl border border-app-border bg-app-surface hover:border-app-accent transition-colors"
+            className="col-span-2 sm:col-span-1 p-2.5 sm:p-3 rounded-2xl border border-app-border bg-app-surface hover:border-app-accent flex items-center justify-center gap-1.5 text-xs text-app-text-secondary transition-colors touch-manipulation"
             title="نسخ النص فقط"
           >
-            {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
+            {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+            <span className="sm:hidden font-medium">نسخ النص</span>
           </button>
         </div>
       </div>

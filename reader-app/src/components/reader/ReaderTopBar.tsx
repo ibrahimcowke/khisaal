@@ -38,10 +38,9 @@ export function ReaderTopBar({
           initial={{ y: -70, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -70, opacity: 0 }}
-          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed top-0 inset-x-0 z-40 bg-app-surface/95 backdrop-blur-xl border-b border-app-border/80 pt-[max(env(safe-area-inset-top,0px),0.5rem)] pb-2 px-3 sm:px-6 shadow-sm"
+          className="fixed top-0 inset-x-0 z-40 bg-app-surface/95 backdrop-blur-xl border-b border-app-border/80 pt-[max(env(safe-area-inset-top,0px),0.65rem)] pb-2.5 pl-[max(env(safe-area-inset-left,0px),0.75rem)] pr-[max(env(safe-area-inset-right,0px),0.75rem)] shadow-sm select-none"
         >
-          <div className="flex items-center justify-between max-w-5xl mx-auto gap-2 sm:gap-4">
+          <div className="flex items-center justify-between max-w-5xl mx-auto gap-1.5 sm:gap-4">
             {/* Start Side: Back & Dashboard Icons + Ambient Tools */}
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               <button

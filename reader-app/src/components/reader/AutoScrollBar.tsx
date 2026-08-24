@@ -32,7 +32,7 @@ export function AutoScrollBar({
       animate={{ y: 0, opacity: 1, scale: 1 }}
       exit={{ y: 50, opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 rounded-2xl bg-zinc-950/90 dark:bg-zinc-900/95 text-white px-3.5 py-2.5 shadow-2xl backdrop-blur-2xl border border-white/15"
+      className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 rounded-2xl bg-zinc-950/90 dark:bg-zinc-900/95 text-white px-3.5 py-2.5 shadow-2xl backdrop-blur-2xl border border-white/15 select-none"
       dir="rtl"
     >
       {/* Play/Pause Button */}

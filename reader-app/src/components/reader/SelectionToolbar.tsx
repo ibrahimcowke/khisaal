@@ -44,7 +44,11 @@ export function SelectionToolbar({
   }, [selection])
 
   const toolbarWidth = Math.min(320, typeof window !== 'undefined' ? window.innerWidth - 24 : 320)
-  const top = Math.max(12, selection.rect.top - 62)
+  const minTop = typeof window !== 'undefined' ? 60 : 16
+  let top = selection.rect.top - 64
+  if (top < minTop) {
+    top = Math.min((typeof window !== 'undefined' ? window.innerHeight : 600) - 80, selection.rect.bottom + 12)
+  }
   const left = Math.max(
     12,
     Math.min(
@@ -71,8 +75,9 @@ export function SelectionToolbar({
       exit={{ opacity: 0, y: 6, scale: 0.95 }}
       transition={{ duration: 0.15 }}
       style={{ position: 'fixed', top, left, width: toolbarWidth }}
-      className="z-50 rounded-2xl bg-[#25221E]/95 backdrop-blur-md text-white shadow-2xl px-2 py-2 border border-white/10"
+      className="z-50 rounded-2xl bg-paper-text/95 backdrop-blur-md text-white shadow-2xl px-2 py-2 border border-white/10 select-none touch-manipulation"
       onMouseDown={(e) => e.preventDefault()}
+      onTouchStart={(e) => e.stopPropagation()}
     >
       <AnimatePresence mode="wait">
         {showColors ? (

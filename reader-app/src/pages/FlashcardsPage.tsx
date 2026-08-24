@@ -331,7 +331,7 @@ export default function FlashcardsPage() {
             >
               {/* Card Face */}
               {!isFlipped ? (
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="flex-1 flex flex-col justify-between backface-hidden">
                   <div className="flex items-center justify-between text-xs text-app-muted">
                     <span className="px-2.5 py-1 rounded-full bg-app-accent/10 text-app-accent font-bold">
                       {currentCard?.category || 'عام'}
@@ -342,7 +342,7 @@ export default function FlashcardsPage() {
                   </div>
 
                   <div className="my-auto py-6 text-center relative">
-                    <p className="font-display text-2xl sm:text-3xl font-bold text-app-text leading-snug px-6">
+                    <p className="font-display text-2xl sm:text-3xl font-bold text-app-text leading-snug px-4 sm:px-6">
                       {currentCard?.front}
                     </p>
                     <button
@@ -365,7 +365,7 @@ export default function FlashcardsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 flex flex-col justify-between rotate-y-180">
+                <div className="flex-1 flex flex-col justify-between rotate-y-180 backface-hidden">
                   <div className="flex items-center justify-between text-xs text-app-muted">
                     <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
                       {isRtl ? 'البيان والإجابة' : 'Answer / Meaning'}
@@ -376,7 +376,7 @@ export default function FlashcardsPage() {
                   </div>
 
                   <div className="my-auto py-4 text-center">
-                    <p className="text-base sm:text-lg text-app-text leading-relaxed font-serif whitespace-pre-line px-4">
+                    <p className="text-base sm:text-lg text-app-text leading-relaxed font-serif whitespace-pre-line px-3 sm:px-4">
                       {currentCard?.back}
                     </p>
                     <button

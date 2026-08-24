@@ -230,9 +230,9 @@ export default function KhisalAssessmentPage() {
                     <button
                       key={idx}
                       onClick={() => handleSelectOption(ASSESSMENT_QUESTIONS[currentStep].id, opt.score)}
-                      className="w-full p-4 rounded-2xl border border-app-border bg-app-bg hover:border-app-accent/80 hover:bg-app-accent/5 transition-all text-right group flex items-center justify-between gap-3 active:scale-[0.99] cursor-pointer"
+                      className="w-full p-3.5 sm:p-4 rounded-2xl border border-app-border bg-app-bg hover:border-app-accent/80 hover:bg-app-accent/5 transition-all text-start group flex items-center justify-between gap-3 active:scale-[0.99] cursor-pointer touch-manipulation"
                     >
-                      <span className="text-sm font-medium text-app-text group-hover:text-app-accent leading-relaxed">
+                      <span className="text-xs sm:text-sm font-medium text-app-text group-hover:text-app-accent leading-relaxed">
                         {isRtl ? opt.text : opt.textEn}
                       </span>
                       <div className="w-6 h-6 rounded-full border border-app-border group-hover:border-app-accent flex items-center justify-center shrink-0 text-transparent group-hover:text-app-accent group-hover:bg-app-accent/10 transition-colors">

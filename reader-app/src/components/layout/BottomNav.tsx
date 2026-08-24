@@ -18,8 +18,8 @@ export function BottomNav() {
   ]
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-app-surface/95 backdrop-blur-lg border-t border-app-border/80 pb-[max(env(safe-area-inset-bottom,0px),0.25rem)] shadow-lg">
-      <ul className="flex items-center justify-around px-2 pt-1">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-app-surface/95 backdrop-blur-xl border-t border-app-border/80 pb-[max(env(safe-area-inset-bottom,0px),0.5rem)] pl-[max(env(safe-area-inset-left,0px),0.25rem)] pr-[max(env(safe-area-inset-right,0px),0.25rem)] shadow-lg select-none">
+      <ul className="flex items-center justify-around px-1 pt-1.5">
         {items.map((item) => (
           <li key={item.to} className="flex-1">
             <NavLink
@@ -27,7 +27,7 @@ export function BottomNav() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-col items-center justify-center gap-1 py-1.5 px-1 min-h-11 text-[10.5px] font-medium transition-all rounded-xl active:scale-95 select-none',
+                  'flex flex-col items-center justify-center gap-1 py-1 px-1 min-h-12 text-[11px] font-medium transition-all rounded-xl active:scale-95 select-none touch-manipulation',
                   isActive
                     ? 'text-app-accent font-bold'
                     : 'text-app-text-secondary hover:text-app-text'

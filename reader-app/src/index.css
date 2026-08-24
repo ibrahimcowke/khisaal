@@ -79,23 +79,80 @@
   }
 }
 
-/* Base styles */
+/* Base styles & Mobile Safe Areas */
 :root {
   color-scheme: light;
   font-family: var(--font-ui);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+html {
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--color-app-bg);
   color: var(--color-app-text);
   overflow-x: hidden;
   user-select: text;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent iOS Safari auto-zooming on input focus on small screens */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* iOS WebKit 3D Card and Smooth Scroll Utilities */
+.preserve-3d {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.rotate-y-180 {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.perspective-1000 {
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+.safe-top-inset {
+  padding-top: max(env(safe-area-inset-top, 0px), 0.5rem);
+}
+
+.safe-bottom-inset {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem);
+}
+
+.safe-left-inset {
+  padding-left: max(env(safe-area-inset-left, 0px), 0.5rem);
+}
+
+.safe-right-inset {
+  padding-right: max(env(safe-area-inset-right, 0px), 0.5rem);
 }
 
 /* Custom scrollbar for modern subtle appearance */

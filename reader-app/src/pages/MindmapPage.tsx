@@ -190,12 +190,12 @@ export default function MindmapPage() {
       </div>
 
       {/* Interactive SVG Canvas */}
-      <div className="relative w-full h-150 rounded-3xl bg-app-surface/90 border border-app-border/80 shadow-md overflow-hidden flex items-center justify-center">
+      <div className="relative w-full h-[58vh] sm:h-[65vh] min-h-90 max-h-155 rounded-3xl bg-app-surface/90 border border-app-border/80 shadow-md overflow-hidden flex items-center justify-center touch-manipulation">
         {/* Center Root Core Indicator */}
         <div className="absolute z-10 pointer-events-none text-center">
-          <div className="w-24 h-24 rounded-full bg-linear-to-tr from-app-accent to-amber-500/80 text-white flex flex-col items-center justify-center p-2 shadow-2xl border-4 border-app-surface">
-            <Sparkles size={20} className="mb-0.5" />
-            <span className="font-display font-bold text-xs text-center leading-tight">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-linear-to-tr from-app-accent to-amber-500/80 text-white flex flex-col items-center justify-center p-2 shadow-2xl border-4 border-app-surface">
+            <Sparkles size={18} className="mb-0.5" />
+            <span className="font-display font-bold text-[11px] sm:text-xs text-center leading-tight">
               {index?.book.shortTitle || 'جامع الخصال'}
             </span>
           </div>
@@ -204,7 +204,7 @@ export default function MindmapPage() {
         <motion.svg
           animate={{ scale: zoom }}
           transition={{ type: 'spring', stiffness: 200, damping: 30 }}
-          className="w-full h-full cursor-grab active:cursor-grabbing"
+          className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
           viewBox="0 0 1000 900"
         >
           {/* Connection Lines from Center to Nodes */}

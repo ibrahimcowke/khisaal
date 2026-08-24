@@ -21,7 +21,7 @@ export function TtsBar({
       initial={{ y: 40, opacity: 0, scale: 0.95 }}
       animate={{ y: 0, opacity: 1, scale: 1 }}
       exit={{ y: 40, opacity: 0, scale: 0.95 }}
-      className="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 rounded-2xl bg-app-surface/95 backdrop-blur-xl border border-app-accent/40 text-app-text px-4 py-2.5 shadow-2xl"
+      className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 rounded-2xl bg-app-surface/95 backdrop-blur-xl border border-app-accent/40 text-app-text px-4 py-2.5 shadow-2xl select-none"
     >
       {/* Sound Waves & Block indicator */}
       <div className="flex items-center gap-2 pr-1 border-r border-app-border/80">
