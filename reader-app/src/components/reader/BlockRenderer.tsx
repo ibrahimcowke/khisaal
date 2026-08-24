@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import type { ContentBlock, Highlight } from '../../lib/types'
 import { splitTextWithRanges } from '../../lib/textAnchor'
 import { locateAnchor } from '../../lib/textAnchor'
-import { useSettingsStore } from '../../store/settingsStore'
+import { useSettingsStore, CARD_SHAPING_MAP } from '../../store/settingsStore'
 import { toArabicDigits } from '../../lib/format'
 import { cn } from '../../lib/cn'
 
@@ -83,6 +83,8 @@ export function BlockRenderer({
   const textAlign = useSettingsStore((s) => s.textAlign)
   const paragraphSpacing = useSettingsStore((s) => s.paragraphSpacing)
   const softenTashkeel = useSettingsStore((s) => s.softenTashkeel)
+  const cardShaping = useSettingsStore((s) => s.cardShaping) || 'andalusian'
+  const listIcon = CARD_SHAPING_MAP[cardShaping]?.icon || '❖'
 
   const wrapperStyle = {
     marginBottom: `${paragraphSpacing}em`,
@@ -127,15 +129,11 @@ export function BlockRenderer({
         <blockquote
           data-block-id={block.id}
           style={wrapperStyle}
-          className="border-r-4 border-app-accent bg-linear-to-l from-app-accent/10 to-transparent rounded-l-2xl py-4 pr-6 pl-5 my-5 italic text-app-text font-serif shadow-xs"
+          className="border-r-4 border-app-accent bg-app-accent/5 my-5 px-6 py-4 rounded-2xl leading-relaxed text-app-text font-serif italic shadow-2xs"
         >
-          <div className="flex items-start gap-1">
-            <span className="font-display text-app-accent text-2xl opacity-70 leading-none select-none">«</span>
-            <div className="flex-1 leading-loose">{body}</div>
-            <span className="font-display text-app-accent text-2xl opacity-70 leading-none select-none">»</span>
-          </div>
+          {body}
           {block.attribution && (
-            <footer className="mt-2.5 text-xs not-italic text-app-accent font-bold tracking-wide flex items-center gap-1">
+            <footer className="mt-2 text-xs text-app-accent font-sans not-italic font-semibold flex items-center gap-1.5 opacity-85">
               <span>—</span>
               <span>{block.attribution}</span>
             </footer>
@@ -157,12 +155,19 @@ export function BlockRenderer({
               <li
                 key={i}
                 className={cn(
-                  'leading-loose',
-                  block.type === 'list'
-                    ? 'reader-list-item relative pr-6 before:absolute before:right-0 before:text-app-accent before:text-xs before:top-1'
-                    : ''
+                  'leading-loose relative',
+                  block.type === 'list' ? 'pr-6 sm:pr-7' : ''
                 )}
               >
+                {block.type === 'list' && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-0 top-1 text-app-accent font-bold text-xs select-none pointer-events-none"
+                    style={{ fontFamily: '"Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", "Amiri", serif' }}
+                  >
+                    {listIcon}
+                  </span>
+                )}
                 {cleanItem}
               </li>
             )

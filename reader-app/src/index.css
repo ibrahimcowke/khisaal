@@ -330,7 +330,7 @@ html[lang="en"] {
 /* List item bullets based on active shaping theme */
 .reader-list-item::before {
   content: "❖";
-  font-family: var(--font-display), "Noto Naskh Arabic", serif;
+  font-family: "Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", "Amiri", var(--font-display), "Noto Naskh Arabic", serif;
   display: inline-block;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }

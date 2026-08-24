@@ -4,6 +4,7 @@ import { Download, Copy, Check, BookOpen } from 'lucide-react'
 import { Sheet } from '../ui/Sheet'
 import { Button } from '../ui/Button'
 import { useBook } from '../../context/BookContext'
+import { useSettingsStore, CARD_SHAPING_MAP } from '../../store/settingsStore'
 
 interface QuoteCardModalProps {
   open: boolean
@@ -30,6 +31,9 @@ const CARD_FONTS = [
 
 export function QuoteCardModal({ open, onOpenChange, quoteText, sourceChapterTitle }: QuoteCardModalProps) {
   const { index } = useBook()
+  const cardShaping = useSettingsStore((s) => s.cardShaping) || 'andalusian'
+  const shapingIcon = CARD_SHAPING_MAP[cardShaping]?.icon || '❖'
+
   const cardRef = useRef<HTMLDivElement>(null)
   const [selectedStyle, setSelectedStyle] = useState(CARD_STYLES[0])
   const [selectedFont, setSelectedFont] = useState(CARD_FONTS[0])
@@ -70,10 +74,30 @@ export function QuoteCardModal({ open, onOpenChange, quoteText, sourceChapterTit
             className={`w-full max-w-sm rounded-2xl p-7 border-2 shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 ${selectedStyle.bg}`}
           >
             {/* Islamic decorative corner motif */}
-            <div className="absolute top-2 right-2 text-xs opacity-40 select-none">❖</div>
-            <div className="absolute top-2 left-2 text-xs opacity-40 select-none">❖</div>
-            <div className="absolute bottom-2 right-2 text-xs opacity-40 select-none">❖</div>
-            <div className="absolute bottom-2 left-2 text-xs opacity-40 select-none">❖</div>
+            <div
+              className="absolute top-2 right-2 text-xs opacity-40 select-none"
+              style={{ fontFamily: '"Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", "Amiri", serif' }}
+            >
+              {shapingIcon}
+            </div>
+            <div
+              className="absolute top-2 left-2 text-xs opacity-40 select-none"
+              style={{ fontFamily: '"Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", "Amiri", serif' }}
+            >
+              {shapingIcon}
+            </div>
+            <div
+              className="absolute bottom-2 right-2 text-xs opacity-40 select-none"
+              style={{ fontFamily: '"Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", "Amiri", serif' }}
+            >
+              {shapingIcon}
+            </div>
+            <div
+              className="absolute bottom-2 left-2 text-xs opacity-40 select-none"
+              style={{ fontFamily: '"Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", "Amiri", serif' }}
+            >
+              {shapingIcon}
+            </div>
 
             <div className="text-center mb-4">
               <span className="text-xl opacity-50 block leading-none mb-2">«</span>
