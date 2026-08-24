@@ -29,8 +29,8 @@ import {
   FONT_SAMPLE_MAP,
   ACCENT_COLOR_MAP,
   CARD_SHAPING_MAP,
+  THEMES,
   type FontChoice,
-  type ReaderTheme,
   type AccentChoice,
   type CardShaping,
 } from '../store/settingsStore'
@@ -44,16 +44,6 @@ import { AdvancedExporterModal } from '../components/library/AdvancedExporterMod
 
 const GOALS = [10, 15, 20, 30, 45, 60, 90]
 const POMODORO_OPTIONS = [15, 20, 25, 30, 45, 60]
-
-const THEMES: { key: ReaderTheme; label: string; labelEn: string; bg: string; text: string }[] = [
-  { key: 'paper', label: 'ورقي كلاسيكي', labelEn: 'Classic Paper', bg: '#F8F5EE', text: '#25221E' },
-  { key: 'warm', label: 'دافئ مريح', labelEn: 'Warm Parchment', bg: '#F4EEDE', text: '#2E2A22' },
-  { key: 'sepia', label: 'سيبيا عتيق', labelEn: 'Vintage Sepia', bg: '#EDE1C8', text: '#382E22' },
-  { key: 'olive', label: 'زيتوني هادئ', labelEn: 'Calm Olive', bg: '#EAECE4', text: '#212B24' },
-  { key: 'gray', label: 'رمادي حديث', labelEn: 'Modern Gray', bg: '#E7E7E4', text: '#2A2A28' },
-  { key: 'night', label: 'ليلي مخملي', labelEn: 'Velvet Night', bg: '#11110F', text: '#DDD8CE' },
-  { key: 'oled', label: 'أسود نقي', labelEn: 'Pure OLED Black', bg: '#000000', text: '#CCCCCC' },
-]
 
 export default function SettingsPage() {
   const navigate = useNavigate()

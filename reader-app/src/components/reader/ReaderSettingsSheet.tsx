@@ -11,24 +11,14 @@ import {
   FONT_SAMPLE_MAP,
   ACCENT_COLOR_MAP,
   CARD_SHAPING_MAP,
+  THEMES,
   type FontChoice,
   type LineHeightPreset,
-  type ReaderTheme,
   type ReadingMode,
   type AccentChoice,
   type CardShaping,
 } from '../../store/settingsStore'
 import { useTranslation } from '../../lib/i18n'
-
-const THEMES: { key: ReaderTheme; label: string; labelEn: string; bg: string; text: string }[] = [
-  { key: 'paper', label: 'ورقي كلاسيكي', labelEn: 'Classic Paper', bg: '#F8F5EE', text: '#25221E' },
-  { key: 'warm', label: 'دافئ مريح', labelEn: 'Warm Parchment', bg: '#F4EEDE', text: '#2E2A22' },
-  { key: 'sepia', label: 'سيبيا عتيق', labelEn: 'Vintage Sepia', bg: '#EDE1C8', text: '#382E22' },
-  { key: 'olive', label: 'زيتوني هادئ', labelEn: 'Calm Olive', bg: '#EAECE4', text: '#212B24' },
-  { key: 'gray', label: 'رمادي حديث', labelEn: 'Modern Gray', bg: '#E7E7E4', text: '#2A2A28' },
-  { key: 'night', label: 'ليلي مخملي', labelEn: 'Velvet Night', bg: '#11110F', text: '#DDD8CE' },
-  { key: 'oled', label: 'أسود نقي', labelEn: 'Pure OLED Black', bg: '#000000', text: '#CCCCCC' },
-]
 
 export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const [tab, setTab] = useState('font')
@@ -214,11 +204,12 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
                 >
                   <div
                     style={{ backgroundColor: th.bg, color: th.text }}
-                    className="h-14 rounded-xl border border-black/10 flex items-center justify-center font-display text-2xl font-bold shadow-xs mb-2"
+                    className="h-13 rounded-xl border border-black/10 flex items-center justify-center font-display text-2xl font-bold shadow-xs mb-1.5"
                   >
                     {isRtl ? 'أ' : 'Aa'}
                   </div>
                   <p className="text-xs font-bold text-app-text truncate">{isRtl ? th.label : th.labelEn}</p>
+                  <p className="text-[10px] text-app-muted truncate mt-0.5">{isRtl ? th.desc : th.descEn}</p>
                 </button>
               ))}
             </div>

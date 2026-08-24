@@ -14,6 +14,8 @@ interface QuoteCardModalProps {
 
 const CARD_STYLES = [
   { id: 'gold', name: 'أندلسي ذهبي', bg: 'bg-[#FAF6EE] text-[#2C241B] border-[#D4C3A3]' },
+  { id: 'coffee', name: 'قهوة دافئة ☕', bg: 'bg-[#EFE7DC] text-[#2C1E14] border-[#DCCFBF]' },
+  { id: 'sage', name: 'أخضر عشبي 🌿', bg: 'bg-[#E3ECE3] text-[#1A2B20] border-[#C7D9C9]' },
   { id: 'emerald', name: 'زمردي فاخر', bg: 'bg-[#0E2E20] text-[#E0EFE6] border-[#2E6043]' },
   { id: 'night', name: 'ليلي مذهب', bg: 'bg-[#141412] text-[#E8E2D5] border-[#4A4232]' },
   { id: 'sepia', name: 'مخطوطة عتيقة', bg: 'bg-[#F2E5CE] text-[#3D2E1B] border-[#C8B084]' },

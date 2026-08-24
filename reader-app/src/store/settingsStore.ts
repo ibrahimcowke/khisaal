@@ -1,9 +1,35 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type ReaderTheme = 'paper' | 'warm' | 'sepia' | 'olive' | 'gray' | 'night' | 'oled'
+export type ReaderTheme = 'paper' | 'warm' | 'coffee' | 'green' | 'mint' | 'sepia' | 'olive' | 'gray' | 'twilight' | 'night' | 'oled'
 export type AccentChoice = 'gold' | 'emerald' | 'indigo' | 'crimson' | 'amber'
 export type CardShaping = 'rounded' | 'andalusian' | 'sharp' | 'pill' | 'bordered'
+
+export interface ThemeConfig {
+  key: ReaderTheme
+  label: string
+  labelEn: string
+  desc: string
+  descEn: string
+  bg: string
+  surface: string
+  text: string
+  accent: string
+}
+
+export const THEMES: ThemeConfig[] = [
+  { key: 'paper', label: 'ورقي كلاسيكي 📜', labelEn: 'Classic Paper', desc: 'بياض ورقي طبيعي ونقي', descEn: 'Natural clean paper reading', bg: '#F8F5EE', surface: '#FFFFFF', text: '#25221E', accent: '#8E6838' },
+  { key: 'warm', label: 'دافئ مريح 🕯️', labelEn: 'Warm Parchment', desc: 'درجة دافئة مريحة للإضاءة المتوسطة', descEn: 'Warm parchment for cozy reading', bg: '#F4EEDE', surface: '#FCF8EE', text: '#2E2A22', accent: '#8E6838' },
+  { key: 'coffee', label: 'قهوة دافئة ☕', labelEn: 'Warm Coffee', desc: 'بني موكا دافئ يحجب الضوء الأزرق المجهد', descEn: 'Rich mocha tones reducing blue-light strain', bg: '#EFE7DC', surface: '#F7F2EA', text: '#2C1E14', accent: '#8C582B' },
+  { key: 'green', label: 'أخضر عشبي 🌿', labelEn: 'Sage Green', desc: 'الدرجة المثالية طبيّاً لراحة العين وتقليل الإجهاد', descEn: 'Scientifically proven optimal hue for eye relief', bg: '#E3ECE3', surface: '#EEF5EE', text: '#1A2B20', accent: '#2D6A4F' },
+  { key: 'mint', label: 'نعناعي منعش 🍃', labelEn: 'Calm Mint', desc: 'انتعاش بصري متوازن للقراءة النهارية الممتدة', descEn: 'Balanced fresh mint for daytime focus', bg: '#E4EFEA', surface: '#F0F8F4', text: '#182F27', accent: '#267A66' },
+  { key: 'sepia', label: 'سيبيا عتيق 🏺', labelEn: 'Vintage Sepia', desc: 'ألوان المخطوطات والكتب الأثرية القديمة', descEn: 'Traditional antique manuscript sepia', bg: '#EDE1C8', surface: '#F5EBD6', text: '#382E22', accent: '#7C5B28' },
+  { key: 'olive', label: 'زيتوني هادئ 🫒', labelEn: 'Calm Olive', desc: 'صبغة زيتونية مخملية هادئة', descEn: 'Subtle olive-tinted peaceful tone', bg: '#EAECE4', surface: '#F3F5EE', text: '#212B24', accent: '#2E6043' },
+  { key: 'gray', label: 'رمادي حديث 🔘', labelEn: 'Modern Gray', desc: 'توازن لوني معتدل بدون لمعان', descEn: 'Neutral soft low-contrast gray', bg: '#E7E7E4', surface: '#EFEFEC', text: '#2A2A28', accent: '#57544C' },
+  { key: 'twilight', label: 'غسق كحلي 🌌', labelEn: 'Twilight Indigo', desc: 'داكن ناعم مريح للعين قبل النوم بديل للأسود', descEn: 'Soft night twilight easing eye strain before sleep', bg: '#1A1922', surface: '#24222E', text: '#DFDCED', accent: '#9E8DDF' },
+  { key: 'night', label: 'ليلي مخملي 🌙', labelEn: 'Velvet Night', desc: 'قراءة ليلية متوازنة في الظلام', descEn: 'Deep velvet night mode for low light', bg: '#11110F', surface: '#1C1B18', text: '#DDD8CE', accent: '#D4A853' },
+  { key: 'oled', label: 'أسود نقي 🖤', labelEn: 'Pure OLED Black', desc: 'أسود خالص لشاشات OLED وتوفير البطارية', descEn: 'True black for OLED panels & battery saving', bg: '#000000', surface: '#0C0C0C', text: '#CCCCCC', accent: '#9A8256' },
+]
 export type FontChoice =
   | 'amiri'
   | 'ruqaa'
