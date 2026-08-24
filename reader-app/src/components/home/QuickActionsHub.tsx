@@ -8,52 +8,52 @@ export function QuickActionsHub() {
 
   const actions = [
     {
-      label: isRtl ? 'مركز الأدوات' : 'Tools Hub',
-      desc: isRtl ? 'أدوات تفاعلية' : 'Interactive Suite',
-      icon: Wrench,
-      path: '/tools',
-    },
-    {
-      label: isRtl ? 'مقياس الخصال' : 'Virtue Quiz',
-      desc: isRtl ? 'تقييم سلوكي' : 'Self Assessment',
-      icon: Award,
-      path: '/khisal-assessment',
-    },
-    {
-      label: isRtl ? 'القراءة السريعة' : 'Speed Reader',
-      desc: isRtl ? 'تدريب RSVP' : 'Focus Trainer',
-      icon: Zap,
-      path: '/speed-reader',
-    },
-    {
-      label: t('habitTracker'),
-      desc: isRtl ? 'التطبيق اليومي' : 'Daily Practice',
+      label: isRtl ? 'تتبع الفضائل' : 'Habit Tracker',
+      desc: isRtl ? 'التطبيق والورد اليومي' : 'Daily Practice',
       icon: HeartHandshake,
       path: '/habit-tracker',
     },
     {
-      label: t('flashcards'),
-      desc: isRtl ? 'حفظ ومراجعة' : 'Spaced Flashcards',
-      icon: Brain,
-      path: '/flashcards',
+      label: isRtl ? 'القراءة السريعة' : 'Speed Reader',
+      desc: isRtl ? 'تدريب التركيز RSVP' : 'Focus Trainer',
+      icon: Zap,
+      path: '/speed-reader',
     },
     {
-      label: t('mindmap'),
-      desc: isRtl ? 'خريطة المفاهيم' : 'Concept Graph',
-      icon: Network,
-      path: '/mindmap',
+      label: isRtl ? 'مقياس الخصال' : 'Virtue Quiz',
+      desc: isRtl ? 'تقييم سلوكي شامل' : 'Self Assessment',
+      icon: Award,
+      path: '/khisal-assessment',
     },
     {
-      label: t('traitTree'),
-      desc: isRtl ? 'شجرة الخصال' : 'Virtue Tree',
+      label: isRtl ? 'مركز الأدوات' : 'Tools Hub',
+      desc: isRtl ? 'أدوات تفاعلية متقدمة' : 'Interactive Suite',
+      icon: Wrench,
+      path: '/tools',
+    },
+    {
+      label: isRtl ? 'ستوديو البطاقات' : 'Quote Studio',
+      desc: isRtl ? 'تصميم ومشاركة الحِكم' : 'Card Designer',
+      icon: Quote,
+      path: '/quotes',
+    },
+    {
+      label: isRtl ? 'شجرة الخصال' : 'Trait Tree',
+      desc: isRtl ? 'تصنيف أبواب الأخلاق' : 'Virtue Taxonomy',
       icon: GitBranch,
       path: '/trait-tree',
     },
     {
-      label: t('quotes'),
-      desc: isRtl ? 'ستوديو الاقتباس' : 'Quote Studio',
-      icon: Quote,
-      path: '/quotes',
+      label: isRtl ? 'خريطة المفاهيم' : 'Mind Map',
+      desc: isRtl ? 'شجرة بصرية مترابطة' : 'Concept Graph',
+      icon: Network,
+      path: '/mindmap',
+    },
+    {
+      label: isRtl ? 'بطاقات المراجعة' : 'Flashcards',
+      desc: isRtl ? 'حفظ واستذكار ذكي' : 'Spaced Repetition',
+      icon: Brain,
+      path: '/flashcards',
     },
   ]
 
@@ -65,24 +65,26 @@ export function QuickActionsHub() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2.5">
         {actions.map((action) => {
           const Icon = action.icon
           return (
             <button
               key={action.path}
               onClick={() => navigate(action.path)}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-app-surface border border-app-border hover:border-app-accent/60 hover:bg-app-accent/5 hover:shadow-xs transition-all duration-150 group text-center active:scale-[0.98] shadow-2xs cursor-pointer"
+              className="flex items-center gap-2.5 sm:gap-3 p-3 rounded-2xl bg-app-surface border border-app-border hover:border-app-accent hover:bg-app-accent/5 transition-all text-start group active:scale-[0.98] shadow-2xs cursor-pointer min-w-0"
             >
-              <div className="w-8 h-8 rounded-xl bg-app-accent/10 text-app-accent flex items-center justify-center mb-1.5 transition-transform duration-150 group-hover:scale-105">
-                <Icon size={16} strokeWidth={1.8} />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-app-accent/10 text-app-accent flex items-center justify-center shrink-0 transition-all duration-150 group-hover:scale-105 group-hover:bg-app-accent group-hover:text-white shadow-xs">
+                <Icon size={18} strokeWidth={2} />
               </div>
-              <span className="text-xs font-semibold text-app-text truncate w-full group-hover:text-app-accent transition-colors">
-                {action.label}
-              </span>
-              <span className="text-[10px] text-app-muted truncate w-full">
-                {action.desc}
-              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-bold text-app-text group-hover:text-app-accent transition-colors truncate leading-tight">
+                  {action.label}
+                </p>
+                <p className="text-[10px] sm:text-[11px] text-app-muted truncate mt-0.5 leading-tight">
+                  {action.desc}
+                </p>
+              </div>
             </button>
           )
         })}
