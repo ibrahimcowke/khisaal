@@ -34,6 +34,10 @@ export function groupChapterIntoTopics(chapter: Chapter | null): TopicUnit[] {
           return true
         }
       }
+      // Break very long contiguous prose blocks so they fit comfortably on mobile screens
+      if (current.length >= 3 && (block.type === 'paragraph' || block.type === 'list' || block.type === 'quote')) {
+        return true
+      }
     }
     return false
   }
@@ -127,8 +131,10 @@ export function usePagination({
       const nodes = Array.from(container.querySelectorAll<HTMLElement>('[data-measure-topic]'))
       const heights = nodes.map((n) => n.offsetHeight)
 
-      // Available vertical height: screen height minus topbar & bottombar margins
-      const available = Math.max(300, windowHeight - 160)
+      // Available vertical height: screen height minus topbar & bottombar margins & safe areas
+      const available = isDesktop
+        ? Math.max(350, windowHeight - 160)
+        : Math.max(260, windowHeight - 210)
       const minTopicsPerPage = isDesktop ? 2 : 1
 
       const packed: TopicUnit[][] = []

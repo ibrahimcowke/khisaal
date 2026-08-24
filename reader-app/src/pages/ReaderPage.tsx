@@ -893,7 +893,7 @@ function PaginatedView({
           {pageTopics.map((topic) => (
             <div
               key={topic.id}
-              className="topic-card p-6 sm:p-8 rounded-3xl bg-app-surface/90 backdrop-blur-xs border border-app-border/90 shadow-xs flex flex-col justify-start"
+              className="topic-card p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-app-surface/90 backdrop-blur-xs border border-app-border/90 shadow-xs flex flex-col justify-start"
             >
               {topic.blocks.map((block) => (
                 <BlockRenderer

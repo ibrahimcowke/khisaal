@@ -39,23 +39,33 @@ export function ContinueReadingCard({ index }: { index: BookIndex }) {
 
   return (
     <section className="space-y-3">
-      {/* Optional Book Switcher */}
+      {/* Book Switcher Tabs */}
       {allBooks.length > 1 && (
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+        <div className="flex items-center justify-between gap-2 px-1">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-app-surface border border-app-border/80 shadow-2xs overflow-x-auto no-scrollbar">
             {allBooks.map((b) => {
               const active = b.book.id === index.book.id
               return (
                 <button
                   key={b.book.id}
                   onClick={() => selectBook(b.book.id)}
-                  className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border shadow-2xs cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     active
-                      ? 'bg-app-accent text-white border-app-accent font-bold'
-                      : 'bg-app-surface text-app-text-secondary border-app-border hover:border-app-accent/60 hover:text-app-text'
+                      ? 'bg-app-accent text-white font-bold shadow-xs'
+                      : 'text-app-text-secondary hover:text-app-text hover:bg-app-accent/10'
                   }`}
                 >
-                  {b.book.shortTitle}
+                  <span className="flex items-center gap-1.5">
+                    <BookOpen size={13} className={active ? 'text-white' : 'text-app-accent'} />
+                    <span>{b.book.shortTitle}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
+                        active ? 'bg-white/20 text-white' : 'bg-app-accent/10 text-app-accent'
+                      }`}
+                    >
+                      {formatDigits(b.chapters.length)}
+                    </span>
+                  </span>
                 </button>
               )
             })}
@@ -63,7 +73,7 @@ export function ContinueReadingCard({ index }: { index: BookIndex }) {
 
           <button
             onClick={() => navigate('/library')}
-            className="text-xs text-app-accent font-semibold hover:underline flex items-center gap-1 shrink-0 cursor-pointer"
+            className="text-xs text-app-accent font-semibold hover:underline flex items-center gap-1 shrink-0 cursor-pointer px-2 py-1 rounded-xl hover:bg-app-accent/10 transition-colors"
           >
             <Library size={13} />
             <span>{isRtl ? 'المكتبة' : 'Library'}</span>
