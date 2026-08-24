@@ -82,13 +82,14 @@ export const FONT_SAMPLE_MAP: Record<FontChoice, string> = {
   plex: 'العلم والأدب الرفيع',
 }
 
-export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; labelEn: string; desc: string; descEn: string; previewClass: string }> = {
+export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; labelEn: string; desc: string; descEn: string; previewClass: string; icon: string }> = {
   andalusian: {
     label: 'أندلسي مزخرف 🕌',
     labelEn: 'Andalusian Curved 🕌',
     desc: 'أركان مقوسة متباينة مع زخارف عريقة',
     descEn: 'Asymmetrical curvilinear arches inspired by classical heritage',
     previewClass: 'rounded-tl-3xl rounded-br-3xl rounded-tr-md rounded-bl-md border-app-accent',
+    icon: '❖',
   },
   rounded: {
     label: 'انسيابي عصري 💫',
@@ -96,6 +97,7 @@ export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; labelEn: str
     desc: 'حواف مستديرة ناعمة ومتوازنة',
     descEn: 'Smooth, balanced modern rounded corners',
     previewClass: 'rounded-2xl border-app-border',
+    icon: '✦',
   },
   bordered: {
     label: 'مؤطر مذهب ⚜️',
@@ -103,6 +105,7 @@ export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; labelEn: str
     desc: 'إطار مذهب أنيق ومحدد بدقة',
     descEn: 'Distinct accent gold border with elegant shadows',
     previewClass: 'rounded-2xl border-2 border-app-accent shadow-sm',
+    icon: '◈',
   },
   pill: {
     label: 'كبسولي بيضاوي 💊',
@@ -110,6 +113,7 @@ export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; labelEn: str
     desc: 'انحناءات كاملة مريحة للعين',
     descEn: 'Full pill-shaped curvilinear contours',
     previewClass: 'rounded-[2rem] border-app-border',
+    icon: '◉',
   },
   sharp: {
     label: 'كلاسيكي هندسي 📐',
@@ -117,6 +121,7 @@ export const CARD_SHAPING_MAP: Record<CardShaping, { label: string; labelEn: str
     desc: 'حواف حادة ومستقيمة كالطبعات القديمة',
     descEn: 'Crisp, rectilinear edges like vintage manuscripts',
     previewClass: 'rounded-xs border-2 border-app-border',
+    icon: '▪',
   },
 }
 

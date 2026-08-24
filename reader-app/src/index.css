@@ -326,49 +326,90 @@ html[lang="en"] {
 }
 
 /* ---- Dynamic Card & List Shaping System ---- */
+
+/* List item bullets based on active shaping theme */
+.reader-list-item::before {
+  content: "❖";
+  font-family: var(--font-display), "Noto Naskh Arabic", serif;
+  display: inline-block;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+html[data-shaping="andalusian"] .reader-list-item::before {
+  content: "❖";
+}
+
+html[data-shaping="rounded"] .reader-list-item::before {
+  content: "✦";
+}
+
+html[data-shaping="bordered"] .reader-list-item::before {
+  content: "◈";
+}
+
+html[data-shaping="pill"] .reader-list-item::before {
+  content: "◉";
+}
+
+html[data-shaping="sharp"] .reader-list-item::before {
+  content: "▪";
+}
+
 /* 1. Andalusian Arched Theme */
 html[data-shaping="andalusian"][dir="rtl"] [class*="rounded-2xl"],
 html[data-shaping="andalusian"][dir="rtl"] [class*="rounded-3xl"],
-html[data-shaping="andalusian"][dir="rtl"] .topic-card {
+html[data-shaping="andalusian"][dir="rtl"] .topic-card,
+html[data-shaping="andalusian"][dir="rtl"] .shaping-card {
   border-radius: 1.75rem 0.5rem 1.75rem 0.5rem !important;
   transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 html[data-shaping="andalusian"][dir="ltr"] [class*="rounded-2xl"],
 html[data-shaping="andalusian"][dir="ltr"] [class*="rounded-3xl"],
-html[data-shaping="andalusian"][dir="ltr"] .topic-card {
+html[data-shaping="andalusian"][dir="ltr"] .topic-card,
+html[data-shaping="andalusian"][dir="ltr"] .shaping-card {
   border-radius: 0.5rem 1.75rem 0.5rem 1.75rem !important;
   transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-html[data-shaping="andalusian"] [class*="rounded-xl"] {
+html[data-shaping="andalusian"][dir="rtl"] [class*="rounded-xl"],
+html[data-shaping="andalusian"][dir="rtl"] [class*="rounded-lg"] {
   border-radius: 1.15rem 0.35rem 1.15rem 0.35rem !important;
+}
+
+html[data-shaping="andalusian"][dir="ltr"] [class*="rounded-xl"],
+html[data-shaping="andalusian"][dir="ltr"] [class*="rounded-lg"] {
+  border-radius: 0.35rem 1.15rem 0.35rem 1.15rem !important;
 }
 
 /* 2. Modern Rounded Theme */
 html[data-shaping="rounded"] [class*="rounded-2xl"],
 html[data-shaping="rounded"] [class*="rounded-3xl"],
-html[data-shaping="rounded"] .topic-card {
+html[data-shaping="rounded"] .topic-card,
+html[data-shaping="rounded"] .shaping-card {
   border-radius: 1.25rem !important;
   transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-html[data-shaping="rounded"] [class*="rounded-xl"] {
+html[data-shaping="rounded"] [class*="rounded-xl"],
+html[data-shaping="rounded"] [class*="rounded-lg"] {
   border-radius: 0.85rem !important;
 }
 
 /* 3. Gilded Border Theme */
 html[data-shaping="bordered"] [class*="rounded-2xl"],
 html[data-shaping="bordered"] [class*="rounded-3xl"],
-html[data-shaping="bordered"] .topic-card {
+html[data-shaping="bordered"] .topic-card,
+html[data-shaping="bordered"] .shaping-card {
   border-radius: 1.25rem !important;
   border-width: 2px !important;
   border-color: var(--rt-accent, #836A42) !important;
-  box-shadow: 0 4px 20px -2px rgba(131, 106, 66, 0.12) !important;
+  box-shadow: 0 4px 20px -2px rgba(131, 106, 66, 0.15) !important;
   transition: all 0.25s ease;
 }
 
-html[data-shaping="bordered"] [class*="rounded-xl"] {
+html[data-shaping="bordered"] [class*="rounded-xl"],
+html[data-shaping="bordered"] [class*="rounded-lg"] {
   border-radius: 0.85rem !important;
   border-width: 1.5px !important;
   border-color: var(--rt-accent, #836A42) !important;
@@ -377,12 +418,14 @@ html[data-shaping="bordered"] [class*="rounded-xl"] {
 /* 4. Pill / Capsule Theme */
 html[data-shaping="pill"] [class*="rounded-2xl"],
 html[data-shaping="pill"] [class*="rounded-3xl"],
-html[data-shaping="pill"] .topic-card {
+html[data-shaping="pill"] .topic-card,
+html[data-shaping="pill"] .shaping-card {
   border-radius: 2.25rem !important;
   transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-html[data-shaping="pill"] [class*="rounded-xl"] {
+html[data-shaping="pill"] [class*="rounded-xl"],
+html[data-shaping="pill"] [class*="rounded-lg"] {
   border-radius: 1.5rem !important;
 }
 
@@ -390,7 +433,9 @@ html[data-shaping="pill"] [class*="rounded-xl"] {
 html[data-shaping="sharp"] [class*="rounded-2xl"],
 html[data-shaping="sharp"] [class*="rounded-3xl"],
 html[data-shaping="sharp"] [class*="rounded-xl"],
-html[data-shaping="sharp"] .topic-card {
+html[data-shaping="sharp"] [class*="rounded-lg"],
+html[data-shaping="sharp"] .topic-card,
+html[data-shaping="sharp"] .shaping-card {
   border-radius: 0.25rem !important;
   border-width: 1.5px !important;
   transition: border-radius 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;

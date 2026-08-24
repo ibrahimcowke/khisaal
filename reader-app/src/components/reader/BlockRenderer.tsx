@@ -151,19 +151,22 @@ export function BlockRenderer({
           style={{ marginBottom: `${paragraphSpacing}em`, textAlign: textAlign === 'justify' ? 'justify' : 'right' }}
           className={block.type === 'numbered-list' ? 'list-decimal pr-6 space-y-3 font-serif' : 'list-none space-y-3 font-serif'}
         >
-          {(block.items ?? []).map((item, i) => (
-            <li
-              key={i}
-              className={cn(
-                'leading-loose',
-                block.type === 'list'
-                  ? 'relative pr-6 before:content-["❖"] before:absolute before:right-0 before:text-app-accent before:text-xs before:top-1'
-                  : ''
-              )}
-            >
-              {item}
-            </li>
-          ))}
+          {(block.items ?? []).map((item, i) => {
+            const cleanItem = item.replace(/^[•\-\*]\s*/, '')
+            return (
+              <li
+                key={i}
+                className={cn(
+                  'leading-loose',
+                  block.type === 'list'
+                    ? 'reader-list-item relative pr-6 before:absolute before:right-0 before:text-app-accent before:text-xs before:top-1'
+                    : ''
+                )}
+              >
+                {cleanItem}
+              </li>
+            )
+          })}
           {sourceMark}
         </ul>
       )

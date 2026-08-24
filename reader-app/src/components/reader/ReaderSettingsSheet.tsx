@@ -280,8 +280,8 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
                       <p className="text-xs text-app-text-secondary mt-1">{isRtl ? info.desc : info.descEn}</p>
                     </div>
 
-                    <div className={cn('w-6 h-6 shrink-0 flex items-center justify-center font-display text-sm font-bold', info.previewClass, 'bg-app-accent text-white')}>
-                      ❖
+                    <div className={cn('w-7 h-7 shrink-0 flex items-center justify-center font-display text-sm font-bold transition-transform group-hover:scale-110', info.previewClass, 'bg-app-accent text-white shadow-xs')}>
+                      {info.icon}
                     </div>
                   </button>
                 )
@@ -291,19 +291,25 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
 
           <div className="p-4 bg-app-surface/60 rounded-2xl border border-app-border space-y-2">
             <p className="text-xs font-semibold text-app-text">
-              {isRtl ? 'معاينة مباشرة لشكل قائمة الفهرس:' : 'Live Shaping Preview:'}
+              {isRtl ? 'معاينة مباشرة لشكل قائمة الفهرس والخصال:' : 'Live Shaping Preview:'}
             </p>
             <div className="space-y-2">
               <div className="p-3 bg-app-surface border border-app-border rounded-2xl flex items-center justify-between">
-                <span className="font-display text-sm font-bold text-app-accent">
-                  {isRtl ? 'الباب الأول: في الحكمة والمروءة' : 'Chapter 1: On Wisdom and Honor'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-app-accent text-xs font-bold">{CARD_SHAPING_MAP[s.cardShaping || 'andalusian']?.icon || '❖'}</span>
+                  <span className="font-display text-sm font-bold text-app-accent">
+                    {isRtl ? 'الباب الأول: في الحكمة والمروءة' : 'Chapter 1: On Wisdom and Honor'}
+                  </span>
+                </div>
                 <span className="text-xs text-app-muted">{formatDigits(12)}</span>
               </div>
               <div className="p-3 bg-app-accent/10 border border-app-accent rounded-2xl flex items-center justify-between">
-                <span className="font-display text-sm font-bold text-app-accent">
-                  {isRtl ? 'الباب الثاني: في الصبر والشكر' : 'Chapter 2: On Patience and Gratitude'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-app-accent text-xs font-bold">{CARD_SHAPING_MAP[s.cardShaping || 'andalusian']?.icon || '❖'}</span>
+                  <span className="font-display text-sm font-bold text-app-accent">
+                    {isRtl ? 'الباب الثاني: في الصبر والشكر' : 'Chapter 2: On Patience and Gratitude'}
+                  </span>
+                </div>
                 <span className="text-xs text-app-accent font-bold">{isRtl ? 'نشط' : 'Active'}</span>
               </div>
             </div>

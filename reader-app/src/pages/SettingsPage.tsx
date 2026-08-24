@@ -322,8 +322,8 @@ export default function SettingsPage() {
                       </p>
                     </div>
 
-                    <div className={cn('w-5 h-5 shrink-0 flex items-center justify-center font-display text-xs font-bold', info.previewClass, 'bg-app-accent text-white')}>
-                      ❖
+                    <div className={cn('w-6 h-6 shrink-0 flex items-center justify-center font-display text-xs font-bold transition-transform group-hover:scale-110', info.previewClass, 'bg-app-accent text-white shadow-xs')}>
+                      {info.icon}
                     </div>
                   </button>
                 )
