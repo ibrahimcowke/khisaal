@@ -86,7 +86,7 @@ export function QuoteCardModal({ open, onOpenChange, quoteText, sourceChapterTit
                 <BookOpen size={12} />
                 <span className="font-semibold">{index?.book.shortTitle || 'إمتاع القارئ'}</span>
               </div>
-              {sourceChapterTitle && <span className="truncate max-w-[130px]">{sourceChapterTitle}</span>}
+              {sourceChapterTitle && <span className="truncate max-w-32.5">{sourceChapterTitle}</span>}
             </div>
           </div>
         </div>
