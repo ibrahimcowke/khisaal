@@ -623,27 +623,42 @@ export default function ReaderPage() {
               chapterNumber={(index.chapterOrder.get(chapterId) ?? 0) + 1}
             />
 
-            {topics.map((topic) => (
-              <div
-                key={topic.id}
-                className={cn(
-                  'break-inside-avoid mb-6',
-                  s.readingMode === 'columns' ? 'p-4 rounded-2xl bg-app-surface/40 border border-app-border/60' : ''
-                )}
-              >
-                {topic.blocks.map((block) => (
-                  <BlockRenderer
-                    key={block.id}
-                    block={block}
-                    highlights={highlights ?? []}
-                    activeHighlightId={activeHighlightId}
-                    onHighlightClick={handleHighlightClick}
-                    isCurrent={block.id === currentBlockId}
-                    dimmed={s.readingMode === 'focus' && currentBlockId !== null && block.id !== currentBlockId}
-                  />
-                ))}
-              </div>
-            ))}
+            {(() => {
+              // Skip the first heading block if its text matches the chapter title
+              // (ChapterHeaderBanner already renders it, so we avoid duplicates)
+              let firstHeadingSkipped = false
+              return topics.map((topic) => (
+                <div
+                  key={topic.id}
+                  className={cn(
+                    'break-inside-avoid mb-6',
+                    s.readingMode === 'columns' ? 'p-4 rounded-2xl bg-app-surface/40 border border-app-border/60' : ''
+                  )}
+                >
+                  {topic.blocks.map((block) => {
+                    if (
+                      !firstHeadingSkipped &&
+                      block.type === 'heading' &&
+                      block.text?.trim() === chapter.title?.trim()
+                    ) {
+                      firstHeadingSkipped = true
+                      return null
+                    }
+                    return (
+                      <BlockRenderer
+                        key={block.id}
+                        block={block}
+                        highlights={highlights ?? []}
+                        activeHighlightId={activeHighlightId}
+                        onHighlightClick={handleHighlightClick}
+                        isCurrent={block.id === currentBlockId}
+                        dimmed={s.readingMode === 'focus' && currentBlockId !== null && block.id !== currentBlockId}
+                      />
+                    )
+                  })}
+                </div>
+              ))
+            })()}
 
             <NextChapterCard
               nextChapter={nextChapterOf()}
