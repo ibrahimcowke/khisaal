@@ -12,7 +12,7 @@ export function AppShell() {
       dir="rtl"
     >
       <Sidebar />
-      <main className={isReading ? 'flex-1 min-w-0' : 'flex-1 min-w-0 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-0'}>
+      <main className={isReading ? 'flex-1 min-w-0' : 'flex-1 min-w-0 pt-[env(safe-area-inset-top,0px)] pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-0'}>
         <Outlet />
       </main>
       <BottomNav />

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Volume2, Maximize, Minimize, PlayCircle, ChevronRight, ChevronLeft, Mic, GitBranch, Calendar, Sparkles } from 'lucide-react'
+import { Volume2, Maximize, Minimize, PlayCircle, Mic, GitBranch, Calendar, Sparkles } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { db, uid } from '../lib/db'
 import { chapterProgress as computeChapterProgress, overallProgress as computeOverallProgress, estimateMinutes } from '../lib/bookData'
@@ -573,7 +573,7 @@ export default function ReaderPage() {
         onClick={handleReaderTap}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="pt-[calc(4.25rem+env(safe-area-inset-top,0px))] pb-[calc(7rem+env(safe-area-inset-bottom,0px))] pl-[max(env(safe-area-inset-left,0px),1rem)] pr-[max(env(safe-area-inset-right,0px),1rem)] min-h-dvh transition-all duration-150 select-text"
+        className="pt-[calc(4.85rem+env(safe-area-inset-top,0px))] pb-[calc(7rem+env(safe-area-inset-bottom,0px))] pl-[max(env(safe-area-inset-left,0px),1rem)] pr-[max(env(safe-area-inset-right,0px),1rem)] min-h-dvh transition-all duration-150 select-text"
         style={{
           filter: s.brightnessOverlay > 0 ? undefined : undefined,
         }}
@@ -596,14 +596,13 @@ export default function ReaderPage() {
               chapter={chapter}
               chapterNumber={(index.chapterOrder.get(chapterId) ?? 0) + 1}
               nextChapter={nextChapterOf()}
-              onNextPage={() => goPage(1)}
-              onPrevPage={() => goPage(-1)}
               onNextChapter={() => {
                 const nxt = nextChapterOf()
                 if (nxt) setSearchParams({ c: nxt.id })
               }}
               onOpenToc={() => setTocOpen(true)}
               isDesktop={isDesktop}
+              controlsVisible={controlsVisible}
             />
           )
         ) : (
@@ -656,8 +655,6 @@ export default function ReaderPage() {
         )}
       </div>
 
-
-
       <ReaderBottomBar
         visible={controlsVisible}
         chapterLabel={`الفصل ${toArabicDigits(index.chapterOrder.get(chapterId)! + 1)}: ${chapter.title}`}
@@ -669,6 +666,25 @@ export default function ReaderPage() {
         onNext={() => (nextChapterOf() ? setSearchParams({ c: nextChapterOf()!.id }) : undefined)}
         hasPrev={!!prevChapterOf()}
         hasNext={!!nextChapterOf()}
+        isPaginated={s.readingMode === 'paginated'}
+        pageIndex={page}
+        pageCount={pages.length}
+        onPrevPage={() => {
+          if (page > 0) {
+            goPage(-1)
+          } else if (prevChapterOf()) {
+            setSearchParams({ c: prevChapterOf()!.id })
+          }
+        }}
+        onNextPage={() => {
+          if (page < pages.length - 1) {
+            goPage(1)
+          } else if (nextChapterOf()) {
+            setSearchParams({ c: nextChapterOf()!.id })
+          }
+        }}
+        onPrevChapter={() => prevChapterOf() && setSearchParams({ c: prevChapterOf()!.id })}
+        onNextChapter={() => nextChapterOf() && setSearchParams({ c: nextChapterOf()!.id })}
       />
 
       <FocusRuler />
@@ -800,11 +816,10 @@ function PaginatedView({
   chapter,
   chapterNumber,
   nextChapter,
-  onNextPage,
-  onPrevPage,
   onNextChapter,
   onOpenToc,
   isDesktop,
+  controlsVisible = true,
 }: {
   pageTopics: TopicUnit[]
   fontFamily: string
@@ -819,11 +834,10 @@ function PaginatedView({
   chapter: any
   chapterNumber: number
   nextChapter: any
-  onNextPage: () => void
-  onPrevPage: () => void
   onNextChapter: () => void
   onOpenToc: () => void
   isDesktop: boolean
+  controlsVisible?: boolean
 }) {
   const { t, isRtl, formatDigits } = useTranslation()
   const isFirstPage = pageIndex === 0
@@ -884,37 +898,22 @@ function PaginatedView({
         )}
       </motion.div>
 
-      {/* Page Turn Controller Bar at Bottom */}
-      <div className="mt-8 flex items-center justify-center gap-3 pt-3 border-t border-app-border/40 select-none">
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onPrevPage()
-          }}
-          disabled={isFirstPage && !chapter}
-          className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent disabled:opacity-30 transition-all active:scale-95 shadow-xs group"
-          title={t('prevPage')}
-        >
-          {isRtl ? <ChevronRight size={14} className="text-app-muted group-hover:text-app-accent transition-colors" /> : <ChevronLeft size={14} className="text-app-muted group-hover:text-app-accent transition-colors" />}
-          <span>{t('prevPage')}</span>
-        </button>
-
-        <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-3.5 py-1.5 rounded-full border border-app-accent/20">
-          {t('pageOf', { current: formatDigits(pageIndex + 1), total: formatDigits(pageCount) })}
-        </span>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onNextPage()
-          }}
-          className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-xl border border-app-border bg-app-surface text-app-text hover:text-app-accent hover:border-app-accent transition-all active:scale-95 shadow-xs group"
-          title={t('nextPage')}
-        >
-          <span>{t('nextPage')}</span>
-          {isRtl ? <ChevronLeft size={14} className="text-app-muted group-hover:text-app-accent transition-colors" /> : <ChevronRight size={14} className="text-app-muted group-hover:text-app-accent transition-colors" />}
-        </button>
-      </div>
+      {/* Subtle Page Footer indicator when controls are hidden */}
+      <AnimatePresence>
+        {!controlsVisible && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.2 }}
+            className="mt-6 flex items-center justify-center select-none"
+          >
+            <span className="text-xs font-semibold text-app-muted/80 bg-app-surface/70 px-3.5 py-1 rounded-full border border-app-border/60 shadow-2xs font-mono">
+              {t('pageOf', { current: formatDigits(pageIndex + 1), total: formatDigits(pageCount) })}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
