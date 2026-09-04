@@ -1,12 +1,13 @@
 import { useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Clock, Flame, Highlighter, StickyNote, Bookmark, BookOpenCheck, Target } from 'lucide-react'
+import { Clock, Flame, Highlighter, StickyNote, Bookmark, BookOpenCheck, Target, Activity } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { db } from '../lib/db'
 import { usePositionStore } from '../store/positionStore'
 import { useSettingsStore } from '../store/settingsStore'
 import { toArabicDigits, formatDuration } from '../lib/format'
 import { PageHeader } from '../components/layout/PageHeader'
+import { cn } from '../lib/cn'
 
 const WEEKDAY_LABELS = ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج']
 
@@ -20,6 +21,7 @@ export default function StatsPage() {
   const notesCount = useLiveQuery(() => (index ? db.notes.where('bookId').equals(index.book.id).count() : 0), [index?.book.id])
   const bookmarksCount = useLiveQuery(() => (index ? db.bookmarks.where('bookId').equals(index.book.id).count() : 0), [index?.book.id])
   const history = useLiveQuery(() => (index ? db.history.where('bookId').equals(index.book.id).toArray() : []), [index?.book.id])
+  const virtueLogs = useLiveQuery(() => db.virtueLogs.toArray()) || []
 
   const totalSeconds = useMemo(() => (sessions ?? []).reduce((acc, s) => acc + s.durationSeconds, 0) + position.todaySeconds, [sessions, position.todaySeconds])
 
@@ -31,6 +33,46 @@ export default function StatsPage() {
   }, [sessions, position.todaySeconds])
   const todayMinutes = Math.round(todaySeconds / 60)
   const goalProgress = Math.min(100, Math.round((todayMinutes / Math.max(1, dailyGoalMinutes)) * 100))
+
+  const heatmap30Days = useMemo(() => {
+    const days: {
+      dateStr: string
+      dayNum: number
+      readMinutes: number
+      virtuesCount: number
+      level: number
+    }[] = []
+    const now = new Date()
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now)
+      d.setDate(d.getDate() - i)
+      const dStr = d.toISOString().split('T')[0]
+      const startMs = new Date(dStr + 'T00:00:00').getTime()
+      const endMs = startMs + 86400000
+
+      const daySessions = (sessions ?? []).filter((s) => s.startedAt >= startMs && s.startedAt < endMs)
+      const readSecs = daySessions.reduce((acc, s) => acc + s.durationSeconds, 0)
+      const readMins = Math.round(readSecs / 60)
+      const virtuesCount = (virtueLogs ?? []).filter((v) => v.date === dStr && v.completed).length
+
+      let level = 0
+      if (readMins > 30 || virtuesCount >= 2) level = 4
+      else if (readMins > 15 || virtuesCount === 1) level = 3
+      else if (readMins > 5) level = 2
+      else if (readMins > 0) level = 1
+
+      days.push({
+        dateStr: dStr,
+        dayNum: d.getDate(),
+        readMinutes: readMins,
+        virtuesCount,
+        level,
+      })
+    }
+    return days
+  }, [sessions, virtueLogs])
+
+  const activeDaysCount = useMemo(() => heatmap30Days.filter((d) => d.level > 0).length, [heatmap30Days])
 
   const weeklyMinutes = useMemo(() => {
     const days = Array(7).fill(0)
@@ -110,6 +152,63 @@ export default function StatsPage() {
               <span className="text-[10px] text-app-muted">{WEEKDAY_LABELS[i]}</span>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* 30-Day Activity & Virtue Heatmap */}
+      <section className="rounded-2xl bg-app-surface border border-app-border p-5 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-semibold flex items-center gap-1.5">
+            <Activity size={15} className="text-app-accent" />
+            خريطة التقدم الأخلاقي والقراءة (آخر 30 يوماً)
+          </p>
+          <span className="text-xs text-app-accent font-semibold px-2 py-0.5 rounded-full bg-app-accent/15">
+            {toArabicDigits(activeDaysCount)} يوماً نشطاً
+          </span>
+        </div>
+
+        <p className="text-xs text-app-text-secondary mb-4 leading-relaxed">
+          مصفوفة يومية توضح كثافة جلسات القراءة ومقدار الخصال السلوكية التي تم تدبرها وتطبيقها:
+        </p>
+
+        <div className="grid grid-cols-6 sm:grid-cols-10 gap-1.5">
+          {heatmap30Days.map((d) => {
+            const colors = [
+              'bg-app-bg/80 border-app-border/40 text-app-muted/60',
+              'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300',
+              'bg-emerald-500/35 border-emerald-500/50 text-emerald-800 dark:text-emerald-200',
+              'bg-emerald-500/65 border-emerald-500 text-white font-bold',
+              'bg-emerald-600 border-emerald-400 text-white font-bold shadow-xs',
+            ]
+            return (
+              <div
+                key={d.dateStr}
+                title={`${d.dateStr}: ${d.readMinutes} دقيقة قراءة، ${d.virtuesCount} خصال مطبقة`}
+                className={cn(
+                  'aspect-square rounded-xl border flex flex-col items-center justify-center text-[10px] p-1 transition-all group relative cursor-pointer hover:scale-105',
+                  colors[d.level]
+                )}
+              >
+                <span className="font-mono">{toArabicDigits(d.dayNum)}</span>
+                {d.virtuesCount > 0 && (
+                  <span className="text-[8px] opacity-90 leading-none">★{toArabicDigits(d.virtuesCount)}</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-app-muted mt-3 pt-3 border-t border-app-border/60">
+          <div className="flex items-center gap-1.5">
+            <span>أقل نشاط</span>
+            <span className="w-2.5 h-2.5 rounded-xs bg-app-bg border border-app-border inline-block" />
+            <span className="w-2.5 h-2.5 rounded-xs bg-emerald-500/15 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-xs bg-emerald-500/35 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-xs bg-emerald-500/65 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-xs bg-emerald-600 inline-block" />
+            <span>أعلى نشاط</span>
+          </div>
+          <span>★ = خصال مطبقة ومسجلة في العادات</span>
         </div>
       </section>
 

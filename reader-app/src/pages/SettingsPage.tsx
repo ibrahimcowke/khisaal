@@ -19,9 +19,11 @@ import {
   Globe,
   Smartphone,
   CheckCircle2,
+  Bell,
 } from 'lucide-react'
 import { usePwaInstall } from '../lib/usePwaInstall'
 import { db } from '../lib/db'
+import { requestNotificationPermission, sendDailyVirtueNotification } from '../lib/notifications'
 import {
   useSettingsStore,
   FONT_FAMILY_MAP,
@@ -36,6 +38,7 @@ import {
 } from '../store/settingsStore'
 import { Switch } from '../components/ui/Switch'
 import { Slider } from '../components/ui/Slider'
+import { Button } from '../components/ui/Button'
 import { formatDuration } from '../lib/format'
 import { cn } from '../lib/cn'
 import { PageHeader } from '../components/layout/PageHeader'
@@ -574,6 +577,67 @@ export default function SettingsPage() {
             <ChevronIcon size={15} className="text-app-muted shrink-0" />
           </button>
         )}
+      </Section>
+
+      {/* Daily Virtue Notifications Section */}
+      <Section title={isRtl ? 'إشعارات خصلة اليوم والتذكير' : 'Daily Virtue Notifications'} icon={<Bell size={16} className="text-app-accent" />}>
+        <div className="flex items-center justify-between py-2">
+          <div className={`flex-1 ${isRtl ? 'text-right' : 'text-left'}`}>
+            <p className="text-xs font-semibold text-app-text">
+              {isRtl ? 'تفعيل إشعار خصلة اليوم اليومي' : 'Daily Virtue Reminder'}
+            </p>
+            <p className="text-[11px] text-app-text-secondary mt-0.5">
+              {isRtl ? 'تلقي إشعار بحكمة أو خصلة تربوية يومية على هاتفك أو حاسوبك' : 'Receive a daily virtue & wisdom reminder on your device'}
+            </p>
+          </div>
+          <Switch
+            ariaLabel={isRtl ? 'تفعيل إشعار خصلة اليوم' : 'Enable Daily Virtue Notification'}
+            checked={s.dailyVirtueNotification}
+            onCheckedChange={async (v) => {
+              if (v) {
+                const granted = await requestNotificationPermission()
+                if (granted) {
+                  s.setDailyVirtueNotification(true)
+                  setStatus(isRtl ? 'تم تفعيل إشعارات خصلة اليوم بنجاح ✓' : 'Daily notifications enabled ✓')
+                  setTimeout(() => setStatus(null), 3000)
+                } else {
+                  s.setDailyVirtueNotification(false)
+                  setStatus(isRtl ? 'يرجى السماح بالإشعارات في إعدادات المتصفح' : 'Please enable browser notification permission')
+                  setTimeout(() => setStatus(null), 3000)
+                }
+              } else {
+                s.setDailyVirtueNotification(false)
+              }
+            }}
+          />
+        </div>
+
+        <div className="pt-3 border-t border-app-border flex items-center justify-between">
+          <span className="text-xs text-app-muted">
+            {isRtl ? 'تجربة وصول الإشعار الفوري:' : 'Test push alert:'}
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs py-1.5 px-3 gap-1.5"
+            onClick={async () => {
+              const success = await sendDailyVirtueNotification({
+                title: 'بر الوالدين وصلة الرحم',
+                snippet: 'من أعظم خصال المروءة وحسن العهد التي أوصى بها اللسان النبوي الشريف.',
+                chapterId: 'chapter-001',
+              })
+              if (success) {
+                setStatus(isRtl ? 'تم إرسال إشعار تجريبي بنجاح 🔔' : 'Test notification sent 🔔')
+              } else {
+                setStatus(isRtl ? 'يرجى السماح بالإشعارات في المتصفح أولاً' : 'Please enable browser notifications first')
+              }
+              setTimeout(() => setStatus(null), 3500)
+            }}
+          >
+            <Bell size={13} />
+            {isRtl ? 'إرسال إشعار تجريبي 🔔' : 'Send Test Alert 🔔'}
+          </Button>
+        </div>
       </Section>
 
       {/* More Options */}

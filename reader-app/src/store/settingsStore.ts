@@ -174,6 +174,7 @@ interface SettingsState {
   // Goals & Productivity
   dailyGoalMinutes: number
   pomodoroMinutes: number
+  dailyVirtueNotification: boolean
 
   setLanguage: (l: 'ar' | 'en') => void
   setTheme: (t: ReaderTheme) => void
@@ -201,6 +202,7 @@ interface SettingsState {
   setAmbientVolume: (v: number) => void
   setDailyGoalMinutes: (n: number) => void
   setPomodoroMinutes: (n: number) => void
+  setDailyVirtueNotification: (b: boolean) => void
   resetSettings: () => void
 }
 
@@ -211,6 +213,7 @@ const DEFAULT_SETTINGS = {
   cardShaping: 'andalusian' as CardShaping,
   edgeToEdgeDisplay: true,
   appFollowsReaderTheme: true,
+  dailyVirtueNotification: false,
   fontFamily: 'amiri' as FontChoice,
   fontSize: 24,
   lineHeight: 'normal' as LineHeightPreset,
@@ -265,6 +268,7 @@ export const useSettingsStore = create<SettingsState>()(
       setAmbientVolume: (ambientVolume) => set({ ambientVolume }),
       setDailyGoalMinutes: (dailyGoalMinutes) => set({ dailyGoalMinutes }),
       setPomodoroMinutes: (pomodoroMinutes) => set({ pomodoroMinutes }),
+      setDailyVirtueNotification: (dailyVirtueNotification) => set({ dailyVirtueNotification }),
       resetSettings: () => set({ ...DEFAULT_SETTINGS }),
     }),
     { name: 'imtaa-reader-settings' }

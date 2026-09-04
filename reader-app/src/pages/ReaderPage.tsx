@@ -135,6 +135,30 @@ export default function ReaderPage() {
           visitedAt: Date.now(),
           durationSeconds: seconds,
         })
+
+        // Auto-link virtue to Habit Tracker if read for >= 15 seconds
+        if (seconds >= 15) {
+          const todayStr = new Date().toISOString().split('T')[0]
+          db.virtueLogs
+            .where('date')
+            .equals(todayStr)
+            .and((l) => l.traitId === chapter.id)
+            .first()
+            .then((existing) => {
+              if (!existing) {
+                db.virtueLogs.add({
+                  id: uid('vlog'),
+                  date: todayStr,
+                  traitId: chapter.id,
+                  traitTitle: chapter.title,
+                  category: chapter.tags[0] || 'الخصال والآداب',
+                  completed: true,
+                  createdAt: Date.now(),
+                })
+              }
+            })
+            .catch(() => {})
+        }
       }
     }
   }, [chapterId]) // eslint-disable-line react-hooks/exhaustive-deps

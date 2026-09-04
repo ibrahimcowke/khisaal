@@ -8,6 +8,7 @@ import {
   Calendar,
   HeartHandshake,
   Quote,
+  HelpCircle,
 } from 'lucide-react'
 import { PageHeader } from '../components/layout/PageHeader'
 import { useTranslation } from '../lib/i18n'
@@ -25,6 +26,15 @@ export default function ToolsHubPage() {
       path: '/khisal-assessment',
       badge: isRtl ? 'جديد 🌟' : 'New 🌟',
       color: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-600',
+    },
+    {
+      id: 'quiz',
+      title: isRtl ? 'اختبار وتحدي الخصال (Quiz)' : 'Virtue Quiz Challenge',
+      desc: isRtl ? 'اختبار تفاعلي سريع لتخمين أبواب الخصال من خلال شروحها ونصوصها' : 'Interactive quiz to guess virtue chapters from excerpts and explanations',
+      icon: HelpCircle,
+      path: '/quiz',
+      badge: isRtl ? 'تحدي 🎯' : 'Quiz 🎯',
+      color: 'from-fuchsia-500/20 to-purple-500/10 border-fuchsia-500/30 text-fuchsia-600',
     },
     {
       id: 'speed-reader',
