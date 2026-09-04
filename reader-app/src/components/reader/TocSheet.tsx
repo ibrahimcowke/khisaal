@@ -37,6 +37,11 @@ export function TocSheet({
     () => db.notes.where('bookId').equals(index.book.id).reverse().toArray(),
     [index.book.id]
   )
+  const readChapterIds = useLiveQuery(async () => {
+    if (!index?.book?.id) return new Set<string>()
+    const hist = await db.history.where('bookId').equals(index.book.id).toArray()
+    return new Set(hist.map((h) => h.chapterId))
+  }, [index?.book?.id])
 
   const filteredChapters = useMemo(() => {
     if (!searchFilter.trim()) return index.chapters
@@ -98,23 +103,32 @@ export function TocSheet({
               {filteredChapters.map((c, i) => {
                 const isCurrent = c.id === currentChapterId
 
+                const isRead = readChapterIds?.has(c.id)
+
                 return (
                   <li key={c.id}>
                     <button
                       onClick={() => onSelectChapter(c.id)}
                       className={cn(
-                        'w-full text-right p-3 rounded-2xl border text-sm flex items-center justify-between gap-3 transition-all group hover:shadow-2xs cursor-pointer',
+                        'w-full text-right p-3 rounded-2xl border text-sm flex items-center justify-between gap-3 transition-all group hover:shadow-2xs cursor-pointer relative overflow-hidden',
                         isCurrent
                           ? 'bg-app-accent/10 border-app-accent text-app-accent font-bold shadow-2xs'
+                          : isRead
+                          ? 'bg-app-surface/90 border-app-border text-app-text hover:border-app-accent/50'
                           : 'bg-app-surface border-app-border text-app-text hover:border-app-accent/50'
                       )}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      {isRead && !isCurrent && (
+                        <div className="absolute top-0 right-0 bottom-0 w-0.5 bg-emerald-500/70" />
+                      )}
+                      <div className="flex items-center gap-2.5 min-w-0 pr-0.5">
                         <div
                           className={cn(
                             'w-6.5 h-6.5 rounded-xl flex items-center justify-center shrink-0 font-display text-xs font-bold transition-colors',
                             isCurrent
                               ? 'bg-app-accent text-white shadow-2xs'
+                              : isRead
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-mono'
                               : 'bg-app-bg text-app-text-secondary group-hover:bg-app-accent/15 group-hover:text-app-accent'
                           )}
                         >
@@ -122,11 +136,16 @@ export function TocSheet({
                         </div>
 
                         <div className="min-w-0">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <p className="truncate font-display text-xs sm:text-sm">{c.title}</p>
                             {isCurrent && (
                               <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-app-accent text-white font-sans shrink-0 font-normal">
                                 {isRtl ? 'الحالي' : 'Current'}
+                              </span>
+                            )}
+                            {isRead && !isCurrent && (
+                              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-sans shrink-0 font-normal">
+                                {isRtl ? 'مقروء ✓' : 'Read ✓'}
                               </span>
                             )}
                           </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { BookOpen, Bookmark, List, ChevronLeft } from 'lucide-react'
+import { BookOpen, Bookmark, List, ChevronLeft, CheckCircle2 } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { usePositionStore } from '../store/positionStore'
 import { overallProgress, estimateMinutes } from '../lib/bookData'
@@ -9,6 +9,7 @@ import { db, uid } from '../lib/db'
 import { Button } from '../components/ui/Button'
 import { toArabicDigits } from '../lib/format'
 import { PageHeader } from '../components/layout/PageHeader'
+import { cn } from '../lib/cn'
 
 export default function BookDetailPage() {
   const { bookId } = useParams<{ bookId: string }>()
@@ -43,6 +44,15 @@ export default function BookDetailPage() {
   const progress = position.chapterId ? overallProgress(index, position.chapterId) : 0
   const minutesTotal = estimateMinutes(book.totalWords)
   const visibleChapters = showFullToc ? chapters : chapters.slice(0, 15)
+
+  const readChapterIds = useLiveQuery(async () => {
+    if (!index?.book?.id) return new Set<string>()
+    const hist = await db.history.where('bookId').equals(index.book.id).toArray()
+    return new Set(hist.map((h) => h.chapterId))
+  }, [index?.book?.id])
+
+  const readCount = readChapterIds?.size ?? 0
+  const readPercentage = Math.round((readCount / Math.max(chapters.length, 1)) * 100)
 
   async function toggleBookBookmark() {
     if ((bookmarked ?? 0) > 0) {
@@ -119,34 +129,72 @@ export default function BookDetailPage() {
       </section>
 
       <section className="bg-app-surface p-6 rounded-3xl border border-app-border">
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-app-border">
-          <h2 className="text-sm font-bold text-app-text flex items-center gap-2">
-            <List size={16} className="text-app-accent" />
-            <span>فهرس الأبواب والفصول</span>
-          </h2>
-          <span className="text-xs text-app-muted">{toArabicDigits(chapters.length)} فصلاً</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-2 border-b border-app-border">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-bold text-app-text flex items-center gap-2">
+              <List size={16} className="text-app-accent" />
+              <span>فهرس الأبواب والفصول</span>
+            </h2>
+            <span className="text-xs text-app-muted font-serif">({toArabicDigits(chapters.length)} فصلاً)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              قرأت {toArabicDigits(readCount)} من {toArabicDigits(chapters.length)} ({toArabicDigits(readPercentage)}٪)
+            </span>
+          </div>
         </div>
+
+        {/* Visual Progress Bar on Index */}
+        <div className="w-full bg-app-border/60 h-2 rounded-full overflow-hidden mb-4">
+          <div
+            className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+            style={{ width: `${readPercentage}%` }}
+          />
+        </div>
+
         <div className="rounded-2xl border border-app-border divide-y divide-app-border overflow-hidden bg-app-bg/30">
-          {visibleChapters.map((c, i) => (
-            <button
-              key={c.id}
-              onClick={() => navigate(`/book/${book.id}/read?c=${c.id}`)}
-              className="w-full flex items-center justify-between px-4 py-3.5 text-sm hover:bg-app-accent/5 transition-colors text-right group"
-            >
-              <div className="flex items-center gap-2.5 truncate">
-                <span className="text-xs text-app-muted font-bold w-5 text-center shrink-0">
-                  {toArabicDigits(i + 1)}
-                </span>
-                <span className="truncate group-hover:text-app-accent transition-colors font-medium">
-                  {c.title}
-                </span>
-              </div>
-              <span className="text-app-muted text-xs shrink-0 flex items-center gap-1">
-                {toArabicDigits(c.sourcePageStart)}
-                <ChevronLeft size={13} />
-              </span>
-            </button>
-          ))}
+          {visibleChapters.map((c, i) => {
+            const isRead = readChapterIds?.has(c.id)
+            return (
+              <button
+                key={c.id}
+                onClick={() => navigate(`/book/${book.id}/read?c=${c.id}`)}
+                className={cn(
+                  'w-full flex items-center justify-between px-4 py-3.5 text-sm hover:bg-app-accent/5 transition-colors text-right group relative overflow-hidden',
+                  isRead && 'bg-emerald-500/[0.04]'
+                )}
+              >
+                {isRead && (
+                  <div className="absolute top-0 right-0 bottom-0 w-1 bg-emerald-500" />
+                )}
+                <div className="flex items-center gap-2.5 truncate pr-1">
+                  <span
+                    className={cn(
+                      'text-xs font-bold w-5 text-center shrink-0',
+                      isRead ? 'text-emerald-600 dark:text-emerald-400 font-mono' : 'text-app-muted'
+                    )}
+                  >
+                    {toArabicDigits(i + 1)}
+                  </span>
+                  <span className="truncate group-hover:text-app-accent transition-colors font-medium">
+                    {c.title}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 mr-2">
+                  {isRead && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full">
+                      <CheckCircle2 size={10} />
+                      مقروء
+                    </span>
+                  )}
+                  <span className="text-app-muted text-xs flex items-center gap-1">
+                    {toArabicDigits(c.sourcePageStart)}
+                    <ChevronLeft size={13} />
+                  </span>
+                </div>
+              </button>
+            )
+          })}
         </div>
         {!showFullToc && chapters.length > 15 && (
           <button

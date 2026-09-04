@@ -115,7 +115,7 @@ export function SelectionToolbar({
               <ToolbarAction icon={<BrainCircuit size={16} className="text-amber-300" />} label="شرح وبيان" onClick={() => { onAiExplain(); onDismiss() }} />
             )}
             {onCardQuote && (
-              <ToolbarAction icon={<Sparkles size={16} className="text-amber-300" />} label="بطاقة 4K" onClick={() => { onCardQuote(); onDismiss() }} />
+              <ToolbarAction icon={<Sparkles size={16} className="text-amber-300" />} label="مشاركة كصورة" onClick={() => { onCardQuote(); onDismiss() }} />
             )}
             <ToolbarAction icon={<Quote size={16} />} label="اقتباس" onClick={() => { onSaveQuote(); onDismiss() }} />
             <ToolbarAction icon={<BookText size={16} />} label="معنى" onClick={() => { onLookup(); onDismiss() }} />

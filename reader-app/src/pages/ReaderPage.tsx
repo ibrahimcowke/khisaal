@@ -31,6 +31,7 @@ import { AiExplainerSheet } from '../components/reader/AiExplainerSheet'
 import { VoiceNotesSheet } from '../components/reader/VoiceNotesSheet'
 import { ChapterHeaderBanner } from '../components/reader/ChapterHeaderBanner'
 import { NextChapterCard } from '../components/reader/NextChapterCard'
+import { RelatedKhisalsCard } from '../components/reader/RelatedKhisalsCard'
 import { FloatingDesktopNav } from '../components/reader/FloatingDesktopNav'
 import { TopReadingProgressLine } from '../components/reader/TopReadingProgressLine'
 import { IconButton } from '../components/ui/IconButton'
@@ -603,6 +604,8 @@ export default function ReaderPage() {
               onOpenToc={() => setTocOpen(true)}
               isDesktop={isDesktop}
               controlsVisible={controlsVisible}
+              allChapters={index.chapters}
+              onSelectChapter={(id) => setSearchParams({ c: id })}
             />
           )
         ) : (
@@ -659,6 +662,14 @@ export default function ReaderPage() {
                 </div>
               ))
             })()}
+
+            {chapter && index && (
+              <RelatedKhisalsCard
+                currentChapter={chapter}
+                allChapters={index.chapters}
+                onSelectChapter={(id) => setSearchParams({ c: id })}
+              />
+            )}
 
             <NextChapterCard
               nextChapter={nextChapterOf()}
@@ -835,6 +846,8 @@ function PaginatedView({
   onOpenToc,
   isDesktop,
   controlsVisible = true,
+  allChapters,
+  onSelectChapter,
 }: {
   pageTopics: TopicUnit[]
   fontFamily: string
@@ -853,6 +866,8 @@ function PaginatedView({
   onOpenToc: () => void
   isDesktop: boolean
   controlsVisible?: boolean
+  allChapters?: any[]
+  onSelectChapter?: (id: string) => void
 }) {
   const { t, isRtl, formatDigits } = useTranslation()
   const isFirstPage = pageIndex === 0
@@ -902,7 +917,14 @@ function PaginatedView({
         </div>
 
         {isLastPage && (
-          <div className="mt-8">
+          <div className="mt-8 space-y-6">
+            {chapter && allChapters && onSelectChapter && (
+              <RelatedKhisalsCard
+                currentChapter={chapter}
+                allChapters={allChapters}
+                onSelectChapter={onSelectChapter}
+              />
+            )}
             <NextChapterCard
               nextChapter={nextChapter}
               onNext={onNextChapter}
