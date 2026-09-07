@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft, LayoutDashboard, Search, Bookmark, SlidersHorizontal, List, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowLeft, LayoutDashboard, Search, Bookmark, SlidersHorizontal, List, Sparkles, Share2, Printer } from 'lucide-react'
 import { AmbientSoundPlayer } from './AmbientSoundPlayer'
 import { PomodoroTimer } from './PomodoroTimer'
 import { useTranslation } from '../../lib/i18n'
@@ -15,6 +15,8 @@ export function ReaderTopBar({
   onOpenSearch,
   onOpenSettings,
   onOpenMore,
+  onShareDeepLink,
+  onExportPdf,
 }: {
   visible: boolean
   title: string
@@ -25,6 +27,8 @@ export function ReaderTopBar({
   onOpenSearch: () => void
   onOpenSettings: () => void
   onOpenMore: () => void
+  onShareDeepLink?: () => void
+  onExportPdf?: () => void
 }) {
   const navigate = useNavigate()
   const { t, isRtl } = useTranslation()
@@ -111,6 +115,28 @@ export function ReaderTopBar({
               >
                 <Bookmark size={16} fill={isBookmarked ? 'currentColor' : 'none'} />
               </button>
+
+              {onShareDeepLink && (
+                <button
+                  onClick={onShareDeepLink}
+                  className="h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text-secondary hover:text-app-accent hover:border-app-accent/60 transition-all active:scale-95 shadow-2xs cursor-pointer"
+                  aria-label="مشاركة رابط الخصلة"
+                  title="مشاركة رابط الخصلة المباشر (Deep Link)"
+                >
+                  <Share2 size={16} />
+                </button>
+              )}
+
+              {onExportPdf && (
+                <button
+                  onClick={onExportPdf}
+                  className="hidden md:flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-app-surface border border-app-border text-app-text-secondary hover:text-app-accent hover:border-app-accent/60 transition-all active:scale-95 shadow-2xs cursor-pointer"
+                  aria-label="تصدير كـ PDF"
+                  title="تصدير هذا الباب كـ PDF وطباعته"
+                >
+                  <Printer size={16} />
+                </button>
+              )}
 
               <button
                 onClick={onOpenSettings}

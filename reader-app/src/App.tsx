@@ -51,6 +51,7 @@ const ToolsHubPage = lazyWithRetry(() => import('./pages/ToolsHubPage'))
 const KhisalAssessmentPage = lazyWithRetry(() => import('./pages/KhisalAssessmentPage'))
 const SpeedReaderPage = lazyWithRetry(() => import('./pages/SpeedReaderPage'))
 const QuizPage = lazyWithRetry(() => import('./pages/QuizPage'))
+const CompareKhisalsPage = lazyWithRetry(() => import('./pages/CompareKhisalsPage'))
 
 function PageFallback() {
   return <div className="min-h-screen flex items-center justify-center text-app-text-secondary text-sm">جارٍ التحميل...</div>
@@ -82,6 +83,7 @@ export default function App() {
               <Route path="/khisal-assessment" element={<KhisalAssessmentPage />} />
               <Route path="/speed-reader" element={<SpeedReaderPage />} />
               <Route path="/quiz" element={<QuizPage />} />
+              <Route path="/compare" element={<CompareKhisalsPage />} />
               <Route path="/trait-tree" element={<TraitTreePage />} />
               <Route path="/mindmap" element={<MindmapPage />} />
               <Route path="/reading-plan" element={<ReadingPlanPage />} />

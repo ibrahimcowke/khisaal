@@ -42,7 +42,7 @@ export type FontChoice =
   | 'plex'
 
 export type LineHeightPreset = 'compact' | 'normal' | 'comfortable' | 'spacious'
-export type ReadingMode = 'paginated' | 'scroll' | 'columns' | 'focus'
+export type ReadingMode = 'paginated' | 'scroll' | 'columns' | 'focus' | 'cards'
 export type TextAlign = 'right' | 'justify'
 export type AmbientSoundType = 'off' | 'rain' | 'breeze' | 'fire' | 'library' | 'waves'
 

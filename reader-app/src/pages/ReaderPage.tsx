@@ -10,6 +10,7 @@ import { createAnchor } from '../lib/textAnchor'
 import { useSettingsStore, FONT_FAMILY_MAP, LINE_HEIGHT_MAP } from '../store/settingsStore'
 import { usePositionStore } from '../store/positionStore'
 import { BlockRenderer } from '../components/reader/BlockRenderer'
+import { CardDeckView } from '../components/reader/CardDeckView'
 import { ReaderTopBar } from '../components/reader/ReaderTopBar'
 import { ReaderBottomBar } from '../components/reader/ReaderBottomBar'
 import { TocSheet } from '../components/reader/TocSheet'
@@ -422,7 +423,7 @@ export default function ReaderPage() {
   async function toggleBookmark() {
     if (!index || !chapter) return
     if (isBookmarked && bookmarks) {
-      await db.bookmarks.bulkDelete(bookmarks.map((b) => b.id))
+      await db.bookmarks.bulkDelete(bookmarks.map((b: { id: string }) => b.id))
     } else {
       await db.bookmarks.add({
         id: uid('bm'),
@@ -528,6 +529,17 @@ export default function ReaderPage() {
         }}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenMore={() => {}}
+        onShareDeepLink={() => {
+          const url = `${window.location.origin}/book/${index.book.id}/read?c=${chapter.id}`
+          if (navigator.share) {
+            navigator.share({ title: chapter.title, url }).catch(() => {})
+          } else {
+            navigator.clipboard.writeText(url)
+          }
+        }}
+        onExportPdf={() => {
+          window.print()
+        }}
       />
 
       {/* Desktop-only extra actions row anchored top-left */}
@@ -603,7 +615,26 @@ export default function ReaderPage() {
           filter: s.brightnessOverlay > 0 ? undefined : undefined,
         }}
       >
-        {s.readingMode === 'paginated' ? (
+        {s.readingMode === 'cards' && chapter ? (
+          <CardDeckView
+            chapter={chapter}
+            fontFamily={fontFamily}
+            fontSize={s.fontSize}
+            lineHeight={lineHeight}
+            onNextChapter={() => {
+              const nxt = nextChapterOf()
+              if (nxt) setSearchParams({ c: nxt.id })
+            }}
+            onPrevChapter={() => {
+              const prv = prevChapterOf()
+              if (prv) setSearchParams({ c: prv.id })
+            }}
+            onOpenStudio={(text) => {
+              setQuoteStudioText(text)
+              setQuoteStudioOpen(true)
+            }}
+          />
+        ) : s.readingMode === 'paginated' ? (
           !pagesReady ? (
             <div className="flex items-center justify-center min-h-[70vh] text-app-muted text-sm">جارٍ تجهيز الصفحات...</div>
           ) : (

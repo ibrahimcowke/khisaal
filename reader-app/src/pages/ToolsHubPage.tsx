@@ -9,6 +9,7 @@ import {
   HeartHandshake,
   Quote,
   HelpCircle,
+  Columns,
 } from 'lucide-react'
 import { PageHeader } from '../components/layout/PageHeader'
 import { useTranslation } from '../lib/i18n'
@@ -35,6 +36,15 @@ export default function ToolsHubPage() {
       path: '/quiz',
       badge: isRtl ? 'تحدي 🎯' : 'Quiz 🎯',
       color: 'from-fuchsia-500/20 to-purple-500/10 border-fuchsia-500/30 text-fuchsia-600',
+    },
+    {
+      id: 'compare',
+      title: isRtl ? 'مقارنة الخصال والحكم' : 'Virtues Comparison Tool',
+      desc: isRtl ? 'مقارنة دلالية وموضوعية جنباً إلى جنب بين بابين لمعاينة الترابط والفروق' : 'Side-by-side comparison between two virtue chapters with tag overlap analysis',
+      icon: Columns,
+      path: '/compare',
+      badge: isRtl ? 'مقارنة ⚖️' : 'Compare ⚖️',
+      color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-600',
     },
     {
       id: 'speed-reader',

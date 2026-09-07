@@ -35,6 +35,7 @@ export function ReaderSettingsSheet({ open, onOpenChange }: { open: boolean; onO
   const READING_MODES: { key: ReadingMode; label: string; desc: string }[] = [
     { key: 'paginated', label: isRtl ? 'تقليب الصفحات 📖' : 'Book Pages 📖', desc: isRtl ? 'قراءة صفحة بصفحة كالكتاب المطبوع' : 'Page-by-page book flip' },
     { key: 'scroll', label: isRtl ? 'تمرير متصل 📜' : 'Continuous Scroll 📜', desc: isRtl ? 'تمرير انسيابي مستمر' : 'Smooth infinite scrolling' },
+    { key: 'cards', label: isRtl ? 'عرض البطاقات 🎴' : 'Card Deck 🎴', desc: isRtl ? 'بطاقات فردية مركزة لكل خصلة وحكمة' : 'Focused swipeable card deck' },
     { key: 'columns', label: isRtl ? 'عمودين (مكتبي) 📰' : 'Dual Columns 📰', desc: isRtl ? 'تخطيط صحفي مزدوج' : 'Side-by-side newspaper layout' },
     { key: 'focus', label: isRtl ? 'وضع التركيز 🎯' : 'Focus Mode 🎯', desc: isRtl ? 'إبراز الفقرة النشطة وتعتيم الباقي' : 'Highlight active paragraph' },
   ]
