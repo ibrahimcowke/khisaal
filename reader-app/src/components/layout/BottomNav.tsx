@@ -42,6 +42,9 @@ export function BottomNav() {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
+  const isReading = /\/book\/[^/]+\/(read|chapter)/.test(location.pathname) || location.pathname === '/editor'
+  if (isReading) return null
+
   // Close popup menu when route changes
   useEffect(() => {
     setMenuOpen(false)
