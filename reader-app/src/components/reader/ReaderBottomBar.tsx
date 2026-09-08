@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, ChevronLeft, ChevronsRight, ChevronsLeft, Compass, Clock } from 'lucide-react'
 import { useTranslation } from '../../lib/i18n'
+import { cn } from '../../lib/cn'
 
 export function ReaderBottomBar({
-  visible,
+  visible = true,
   chapterLabel,
   chapterProgress,
   overallProgress,
@@ -21,7 +22,7 @@ export function ReaderBottomBar({
   onPrevChapter,
   onNextChapter,
 }: {
-  visible: boolean
+  visible?: boolean
   chapterLabel: string
   chapterProgress: number
   overallProgress: number
@@ -41,6 +42,7 @@ export function ReaderBottomBar({
 }) {
   const { t, isRtl, formatDigits } = useTranslation()
 
+  // In RTL: Previous arrow points Right (backward in text flow), Next arrow points Left (forward)
   const PrevChevron = isRtl ? ChevronRight : ChevronLeft
   const NextChevron = isRtl ? ChevronLeft : ChevronRight
   const PrevDoubleChevron = isRtl ? ChevronsRight : ChevronsLeft
@@ -53,16 +55,16 @@ export function ReaderBottomBar({
     <AnimatePresence>
       {visible && (
         <motion.footer
-          initial={{ y: 60, opacity: 0, scale: 0.96 }}
+          initial={{ y: 40, opacity: 0, scale: 0.98 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
-          exit={{ y: 60, opacity: 0, scale: 0.96 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-[calc(3.75rem+max(env(safe-area-inset-bottom,0px),0.5rem))] sm:bottom-20 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 w-auto sm:w-125 z-30 pointer-events-auto select-none"
+          exit={{ y: 40, opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed bottom-[calc(3.75rem+max(env(safe-area-inset-bottom,0px),0.35rem))] sm:bottom-16 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 w-auto sm:w-115 z-30 pointer-events-auto select-none"
         >
-          <div className="rounded-2xl sm:rounded-3xl bg-app-surface/95 dark:bg-app-surface/90 backdrop-blur-2xl border border-app-border/90 shadow-2xl shadow-black/10 dark:shadow-black/40 p-2.5 sm:p-3 space-y-2">
-            {/* Precision Interactive Scrubber */}
+          <div className="rounded-2xl sm:rounded-3xl bg-app-surface/95 dark:bg-app-surface/90 backdrop-blur-2xl border border-app-border/90 shadow-xl shadow-black/10 dark:shadow-black/40 px-2 sm:px-3 py-1.5 space-y-1">
+            {/* Precision Slim Interactive Scrubber */}
             <div
-              className="relative h-1.5 hover:h-2 rounded-full bg-app-border/60 cursor-pointer group transition-all mx-1"
+              className="relative h-1 hover:h-1.5 rounded-full bg-app-border/60 cursor-pointer group transition-all mx-1"
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect()
                 const rawRatio = (e.clientX - rect.left) / rect.width
@@ -75,186 +77,143 @@ export function ReaderBottomBar({
                 style={{ width: `${chapterProgress}%` }}
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 h-3.5 w-3.5 rounded-full bg-app-accent border-2 border-app-surface shadow-xs group-hover:scale-125 transition-transform"
-                style={isRtl ? { right: `calc(${chapterProgress}% - 7px)` } : { left: `calc(${chapterProgress}% - 7px)` }}
+                className="absolute top-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-app-accent border-2 border-app-surface shadow-xs group-hover:scale-125 transition-transform"
+                style={isRtl ? { right: `calc(${chapterProgress}% - 5px)` } : { left: `calc(${chapterProgress}% - 5px)` }}
               />
             </div>
 
-            {/* Navigation & Status Capsule */}
-            {isPaginated ? (
-              /* === Paginated Mode Unified Bottom Bar === */
-              <div className="flex items-center justify-between gap-1.5 pt-0.5">
-                {/* Previous Navigation (Page / Chapter) */}
-                <div className="flex items-center gap-1 shrink-0">
-                  {hasPrev && (
-                    <button
-                      onClick={(e) => {
-                        ;(e.currentTarget as HTMLElement)?.blur?.()
-                        ;(onPrevChapter || onPrev)?.()
-                      }}
-                      className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
-                      title={t('prevChapter')}
-                      aria-label={t('prevChapter')}
-                    >
-                      <PrevDoubleChevron size={14} />
-                    </button>
+            {/* Navigation & Status Row */}
+            <div className="flex items-center justify-between gap-1 pt-0.5">
+              {/* Previous Group (Backward) */}
+              <div className="flex items-center gap-1 shrink-0">
+                {/* Skip to Previous Chapter */}
+                <button
+                  onClick={(e) => {
+                    ;(e.currentTarget as HTMLElement)?.blur?.()
+                    onPrevChapter?.()
+                  }}
+                  disabled={!hasPrev}
+                  className={cn(
+                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
+                    hasPrev ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
                   )}
+                  title={t('prevChapter')}
+                  aria-label={t('prevChapter')}
+                >
+                  <PrevDoubleChevron size={14} />
+                </button>
 
-                  <button
-                    onClick={(e) => {
-                      ;(e.currentTarget as HTMLElement)?.blur?.()
-                      onPrevPage?.()
-                    }}
-                    disabled={isFirstPage && !hasPrev}
-                    className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text hover:text-app-accent disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold cursor-pointer disabled:pointer-events-none shadow-xs group"
-                    title={isFirstPage && hasPrev ? t('prevChapter') : t('prevPage')}
-                  >
-                    <PrevChevron size={15} className="text-app-accent shrink-0 group-hover:-translate-x-0.5 transition-transform" />
-                    <span>{isFirstPage && hasPrev ? t('prevChapter') : t('prevPage')}</span>
-                  </button>
-                </div>
-
-                {/* Center Page & Chapter Information */}
-                <div className="flex-1 min-w-0 px-1 text-center flex flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span className="text-xs font-bold text-app-accent bg-app-accent/10 px-3 py-0.5 rounded-full border border-app-accent/20 font-mono shadow-2xs">
-                      {t('pageOf', { current: formatDigits(pageIndex + 1), total: formatDigits(pageCount) })}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-1.5 text-[10px] text-app-muted mt-0.5 font-sans font-medium">
-                    <span className="truncate max-w-30 sm:max-w-45 font-bold font-display text-app-text">
-                      {chapterLabel}
-                    </span>
-                    <span>·</span>
-                    <span className="text-app-accent font-bold font-mono">
-                      {formatDigits(chapterProgress)}%
-                    </span>
-                    <span>·</span>
-                    <span className="flex items-center gap-0.5 font-serif">
-                      <Clock size={10} className="shrink-0 text-app-muted" />
-                      {timeRemainingLabel}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Next Navigation (Page / Chapter) */}
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={(e) => {
-                      ;(e.currentTarget as HTMLElement)?.blur?.()
-                      onNextPage?.()
-                    }}
-                    disabled={isLastPage && !hasNext}
-                    className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text hover:text-app-accent disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold cursor-pointer disabled:pointer-events-none shadow-xs group"
-                    title={isLastPage && hasNext ? t('nextChapter') : t('nextPage')}
-                  >
-                    <span>{isLastPage && hasNext ? t('nextChapter') : t('nextPage')}</span>
-                    <NextChevron size={15} className="text-app-accent shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-
-                  {hasNext && (
-                    <button
-                      onClick={(e) => {
-                        ;(e.currentTarget as HTMLElement)?.blur?.()
-                        ;(onNextChapter || onNext)?.()
-                      }}
-                      className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
-                      title={t('nextChapter')}
-                      aria-label={t('nextChapter')}
-                    >
-                      <NextDoubleChevron size={14} />
-                    </button>
+                {/* Step to Previous Page / Screen */}
+                <button
+                  onClick={(e) => {
+                    ;(e.currentTarget as HTMLElement)?.blur?.()
+                    if (isPaginated) onPrevPage?.()
+                    else onPrev?.()
+                  }}
+                  disabled={isPaginated ? (isFirstPage && !hasPrev) : !hasPrev}
+                  className={cn(
+                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border bg-app-bg/80 text-app-text transition-all active:scale-90 cursor-pointer shadow-xs',
+                    (isPaginated ? (!isFirstPage || hasPrev) : hasPrev)
+                      ? 'hover:bg-app-accent/15 hover:border-app-accent/60 hover:text-app-accent text-app-accent'
+                      : 'opacity-20 pointer-events-none'
                   )}
-                </div>
+                  title={isPaginated && isFirstPage && hasPrev ? t('prevChapter') : t('prevPage')}
+                  aria-label={isPaginated && isFirstPage && hasPrev ? t('prevChapter') : t('prevPage')}
+                >
+                  <PrevChevron size={16} />
+                </button>
               </div>
-            ) : (
-              /* === Continuous Scroll / Focus Mode Chapter Navigation Bar === */
-              <div className="flex items-center justify-between gap-1.5 pt-0.5">
-                {/* Previous Navigation (Screen/Page & Chapter) */}
-                <div className="flex items-center gap-1 shrink-0">
-                  {onPrevChapter && hasPrev && (
-                    <button
-                      onClick={(e) => {
-                        ;(e.currentTarget as HTMLElement)?.blur?.()
-                        onPrevChapter()
-                      }}
-                      className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
-                      title={t('prevChapter')}
-                      aria-label={t('prevChapter')}
-                    >
-                      <PrevDoubleChevron size={14} />
-                    </button>
-                  )}
 
-                  <button
-                    onClick={(e) => {
-                      ;(e.currentTarget as HTMLElement)?.blur?.()
-                      onPrev?.()
-                    }}
-                    disabled={!hasPrev}
-                    className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs group"
-                    title={t('prevPage')}
-                  >
-                    <PrevChevron size={15} className="text-app-accent shrink-0 group-hover:-translate-x-0.5 transition-transform" />
-                    <span>{isRtl ? 'السابق' : 'Prev'}</span>
-                  </button>
-                </div>
+              {/* Center Page & Chapter Information */}
+              <div className="flex-1 min-w-0 px-1.5 text-center flex flex-col items-center justify-center">
+                {isPaginated ? (
+                  <>
+                    <div className="flex items-center justify-center">
+                      <span className="text-[10.5px] font-bold text-app-accent bg-app-accent/10 px-2.5 py-0.2 rounded-full border border-app-accent/20 font-mono shadow-2xs">
+                        {t('pageOf', { current: formatDigits(pageIndex + 1), total: formatDigits(pageCount) })}
+                      </span>
+                    </div>
 
-                {/* Center Chapter Info & Metrics */}
-                <div className="flex-1 min-w-0 px-2 text-center flex flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-1.5 w-full text-xs font-bold text-app-text truncate font-display">
-                    <Compass size={12} className="text-app-accent shrink-0" />
-                    <span className="truncate">{chapterLabel}</span>
-                  </div>
+                    <div className="flex items-center justify-center gap-1.5 text-[9.5px] text-app-muted mt-0.5 font-sans font-medium w-full max-w-full">
+                      <span className="truncate max-w-28 sm:max-w-44 font-bold font-display text-app-text">
+                        {chapterLabel}
+                      </span>
+                      <span>·</span>
+                      <span className="text-app-accent font-bold font-mono shrink-0">
+                        {formatDigits(chapterProgress)}%
+                      </span>
+                      <span>·</span>
+                      <span className="shrink-0 flex items-center gap-0.5 font-serif">
+                        <Clock size={9} className="shrink-0 text-app-muted" />
+                        {timeRemainingLabel}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-center gap-1 w-full text-[11px] font-bold text-app-text truncate font-display">
+                      <Compass size={11} className="text-app-accent shrink-0" />
+                      <span className="truncate max-w-36 sm:max-w-56">{chapterLabel}</span>
+                    </div>
 
-                  <div className="flex items-center justify-center gap-2 text-[10px] text-app-muted mt-0.5 font-sans font-medium">
-                    <span className="text-app-accent font-bold font-mono">
-                      {formatDigits(chapterProgress)}%
-                    </span>
-                    <span>·</span>
-                    <span className="flex items-center gap-1 font-serif">
-                      <Clock size={10} className="shrink-0 text-app-muted" />
-                      {timeRemainingLabel}
-                    </span>
-                    <span className="hidden sm:inline">·</span>
-                    <span className="hidden sm:inline font-mono">
-                      {t('bookProgress', { percent: formatDigits(overallProgress) })}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Next Navigation (Screen/Page & Chapter) */}
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={(e) => {
-                      ;(e.currentTarget as HTMLElement)?.blur?.()
-                      onNext?.()
-                    }}
-                    disabled={!hasNext}
-                    className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs group"
-                    title={t('nextPage')}
-                  >
-                    <span>{isRtl ? 'التالي' : 'Next'}</span>
-                    <NextChevron size={15} className="text-app-accent shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-
-                  {onNextChapter && hasNext && (
-                    <button
-                      onClick={(e) => {
-                        ;(e.currentTarget as HTMLElement)?.blur?.()
-                        onNextChapter()
-                      }}
-                      className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
-                      title={t('nextChapter')}
-                      aria-label={t('nextChapter')}
-                    >
-                      <NextDoubleChevron size={14} />
-                    </button>
-                  )}
-                </div>
+                    <div className="flex items-center justify-center gap-1.5 text-[9.5px] text-app-muted mt-0.5 font-sans font-medium">
+                      <span className="text-app-accent font-bold font-mono">
+                        {formatDigits(chapterProgress)}%
+                      </span>
+                      <span>·</span>
+                      <span className="flex items-center gap-0.5 font-serif">
+                        <Clock size={9} className="shrink-0 text-app-muted" />
+                        {timeRemainingLabel}
+                      </span>
+                      <span className="hidden sm:inline">·</span>
+                      <span className="hidden sm:inline font-mono">
+                        {t('bookProgress', { percent: formatDigits(overallProgress) })}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
-            )}
+
+              {/* Next Group (Forward) */}
+              <div className="flex items-center gap-1 shrink-0">
+                {/* Step to Next Page / Screen */}
+                <button
+                  onClick={(e) => {
+                    ;(e.currentTarget as HTMLElement)?.blur?.()
+                    if (isPaginated) onNextPage?.()
+                    else onNext?.()
+                  }}
+                  disabled={isPaginated ? (isLastPage && !hasNext) : !hasNext}
+                  className={cn(
+                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border bg-app-bg/80 text-app-text transition-all active:scale-90 cursor-pointer shadow-xs',
+                    (isPaginated ? (!isLastPage || hasNext) : hasNext)
+                      ? 'hover:bg-app-accent/15 hover:border-app-accent/60 hover:text-app-accent text-app-accent'
+                      : 'opacity-20 pointer-events-none'
+                  )}
+                  title={isPaginated && isLastPage && hasNext ? t('nextChapter') : t('nextPage')}
+                  aria-label={isPaginated && isLastPage && hasNext ? t('nextChapter') : t('nextPage')}
+                >
+                  <NextChevron size={16} />
+                </button>
+
+                {/* Skip to Next Chapter */}
+                <button
+                  onClick={(e) => {
+                    ;(e.currentTarget as HTMLElement)?.blur?.()
+                    onNextChapter?.()
+                  }}
+                  disabled={!hasNext}
+                  className={cn(
+                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
+                    hasNext ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
+                  )}
+                  title={t('nextChapter')}
+                  aria-label={t('nextChapter')}
+                >
+                  <NextDoubleChevron size={14} />
+                </button>
+              </div>
+            </div>
           </div>
         </motion.footer>
       )}

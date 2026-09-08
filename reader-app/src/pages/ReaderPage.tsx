@@ -135,7 +135,6 @@ export default function ReaderPage() {
   const autoScroll = useAutoScroll(s.autoScrollSpeed)
   useWakeLock(s.keepScreenOn)
   const sessionStartRef = useRef<number>(Date.now())
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const highlights = useLiveQuery(
     () => (index && chapterId ? db.highlights.where('chapterId').equals(chapterId).toArray() : []),
@@ -275,23 +274,14 @@ export default function ReaderPage() {
     return () => clearTimeout(t)
   }, [currentBlockId, chapterId, index])
 
-  // ---------- Auto-hide controls ----------
-  const resetHideTimer = useCallback(() => {
-    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-    hideTimerRef.current = setTimeout(() => setControlsVisible(false), 3200)
-  }, [])
-
+  // ---------- Controls visibility (Permanent/Stay - no auto-hide timer) ----------
   const showControls = useCallback(() => {
     setControlsVisible(true)
-    resetHideTimer()
-  }, [resetHideTimer])
+  }, [])
 
   useEffect(() => {
     showControls()
-    return () => {
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-    }
-  }, [chapterId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [chapterId, showControls])
 
   // ---------- Keyboard shortcuts ----------
   useEffect(() => {
@@ -981,7 +971,7 @@ export default function ReaderPage() {
       </div>
 
       <ReaderBottomBar
-        visible={controlsVisible}
+        visible={true}
         chapterLabel={`الفصل ${toArabicDigits(index.chapterOrder.get(chapterId)! + 1)}: ${chapter.title}`}
         chapterProgress={s.readingMode === 'paginated' ? Math.round(((page + 1) / Math.max(1, pages.length)) * 100) : cProgress}
         overallProgress={oProgress}
