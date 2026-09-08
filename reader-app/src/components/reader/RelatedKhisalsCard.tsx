@@ -66,7 +66,7 @@ export function RelatedKhisalsCard({
   if (related.length === 0) return null
 
   return (
-    <div className="my-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-app-accent/5 via-app-surface to-app-accent/10 border border-app-accent/20 p-3.5 sm:p-5 shadow-2xs transition-all">
+    <div className="my-6 rounded-2xl sm:rounded-3xl bg-linear-to-br from-app-accent/5 via-app-surface to-app-accent/10 border border-app-accent/20 p-3.5 sm:p-5 shadow-2xs transition-all">
       {/* Collapsed Header / Toggle Trigger */}
       <button
         type="button"
@@ -130,7 +130,7 @@ export function RelatedKhisalsCard({
                   <button
                     key={chapter.id}
                     onClick={() => onSelectChapter(chapter.id)}
-                    className="group flex flex-col justify-between text-right p-3.5 rounded-2xl bg-app-surface/90 hover:bg-app-accent/10 border border-app-border/80 hover:border-app-accent/50 transition-all text-right shadow-2xs hover:shadow-xs cursor-pointer active:scale-98"
+                    className="group flex flex-col justify-between text-right p-3.5 rounded-2xl bg-app-surface/90 hover:bg-app-accent/10 border border-app-border/80 hover:border-app-accent/50 transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-98"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
@@ -158,7 +158,7 @@ export function RelatedKhisalsCard({
                           </span>
                         ))}
                       </div>
-                      <div className="flex items-center justify-end gap-1 text-xs text-app-accent font-medium group-hover:translate-x-[-2px] transition-transform">
+                      <div className="flex items-center justify-end gap-1 text-xs text-app-accent font-medium group-hover:-translate-x-0.5 transition-transform">
                         <span>{isRtl ? 'قراءة الخصلة' : 'Read'}</span>
                         <ArrowLeft size={12} className={isRtl ? '' : 'rotate-180'} />
                       </div>
