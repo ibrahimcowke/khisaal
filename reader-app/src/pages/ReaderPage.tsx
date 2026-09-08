@@ -279,6 +279,37 @@ export default function ReaderPage() {
     textAlign: s.textAlign,
   })
 
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0
+    }
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 0
+    }
+  }, [])
+
+  // Whenever chapterId changes, reset page to 0 and immediately jump to top
+  useEffect(() => {
+    setPage(0)
+    scrollToTop()
+    const raf = requestAnimationFrame(() => {
+      scrollToTop()
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [chapterId, scrollToTop])
+
+  // Whenever page changes within paginated mode, immediately jump to top
+  useEffect(() => {
+    scrollToTop()
+    const raf = requestAnimationFrame(() => {
+      scrollToTop()
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [page, scrollToTop])
+
   useEffect(() => {
     if (pages.length > 0 && page >= pages.length) setPage(pages.length - 1)
   }, [pages, page])
@@ -290,6 +321,7 @@ export default function ReaderPage() {
       if (next >= pages.length) return Math.max(0, pages.length - 1)
       return next
     })
+    scrollToTop()
   }
 
   function nextChapterOf() {
@@ -307,9 +339,12 @@ export default function ReaderPage() {
     if (s.readingMode === 'paginated') {
       if (page < pages.length - 1) {
         goPage(1)
+        scrollToTop()
       } else if (nextChapterOf()) {
         const nxt = nextChapterOf()!
         setSearchParams({ c: nxt.id })
+        setPage(0)
+        scrollToTop()
         toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
       }
     } else {
@@ -324,19 +359,23 @@ export default function ReaderPage() {
       } else if (nextChapterOf()) {
         const nxt = nextChapterOf()!
         setSearchParams({ c: nxt.id })
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setPage(0)
+        scrollToTop()
         toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
       }
     }
-  }, [s.readingMode, page, pages.length, index, chapter, isRtl, toast, setSearchParams])
+  }, [s.readingMode, page, pages.length, index, chapter, isRtl, toast, setSearchParams, scrollToTop])
 
   const handleReaderPrev = useCallback(() => {
     if (s.readingMode === 'paginated') {
       if (page > 0) {
         goPage(-1)
+        scrollToTop()
       } else if (prevChapterOf()) {
         const prv = prevChapterOf()!
         setSearchParams({ c: prv.id })
+        setPage(0)
+        scrollToTop()
         toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
       }
     } else {
@@ -346,10 +385,12 @@ export default function ReaderPage() {
       } else if (prevChapterOf()) {
         const prv = prevChapterOf()!
         setSearchParams({ c: prv.id })
+        setPage(0)
+        scrollToTop()
         toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
       }
     }
-  }, [s.readingMode, page, index, chapter, isRtl, toast, setSearchParams])
+  }, [s.readingMode, page, index, chapter, isRtl, toast, setSearchParams, scrollToTop])
 
   // ---------- Mobile Touch Swipe Gestures & Tap zones ----------
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
@@ -507,7 +548,9 @@ export default function ReaderPage() {
 
   function jumpToChapter(id: string) {
     setSearchParams({ c: id })
+    setPage(0)
     setTocOpen(false)
+    scrollToTop()
   }
   function jumpToBlock(cId: string, blockId: string) {
     if (cId !== chapterId) {
@@ -685,11 +728,19 @@ export default function ReaderPage() {
             lineHeight={lineHeight}
             onNextChapter={() => {
               const nxt = nextChapterOf()
-              if (nxt) setSearchParams({ c: nxt.id })
+              if (nxt) {
+                setSearchParams({ c: nxt.id })
+                setPage(0)
+                scrollToTop()
+              }
             }}
             onPrevChapter={() => {
               const prv = prevChapterOf()
-              if (prv) setSearchParams({ c: prv.id })
+              if (prv) {
+                setSearchParams({ c: prv.id })
+                setPage(0)
+                scrollToTop()
+              }
             }}
             onOpenStudio={(text) => {
               setQuoteStudioText(text)
@@ -716,13 +767,21 @@ export default function ReaderPage() {
               nextChapter={nextChapterOf()}
               onNextChapter={() => {
                 const nxt = nextChapterOf()
-                if (nxt) setSearchParams({ c: nxt.id })
+                if (nxt) {
+                  setSearchParams({ c: nxt.id })
+                  setPage(0)
+                  scrollToTop()
+                }
               }}
               onOpenToc={() => setTocOpen(true)}
               isDesktop={isDesktop}
               controlsVisible={controlsVisible}
               allChapters={index.chapters}
-              onSelectChapter={(id) => setSearchParams({ c: id })}
+              onSelectChapter={(id) => {
+                setSearchParams({ c: id })
+                setPage(0)
+                scrollToTop()
+              }}
               onOpenStudio={(text) => {
                 setQuoteStudioText(text)
                 setQuoteStudioOpen(true)
@@ -879,7 +938,14 @@ export default function ReaderPage() {
 
             <NextChapterCard
               nextChapter={nextChapterOf()}
-              onNext={() => nextChapterOf() && setSearchParams({ c: nextChapterOf()!.id })}
+              onNext={() => {
+                const nxt = nextChapterOf()
+                if (nxt) {
+                  setSearchParams({ c: nxt.id })
+                  setPage(0)
+                  scrollToTop()
+                }
+              }}
               onOpenToc={() => setTocOpen(true)}
               isLastChapter={!nextChapterOf()}
             />
@@ -903,8 +969,22 @@ export default function ReaderPage() {
         pageCount={pages.length}
         onPrevPage={handleReaderPrev}
         onNextPage={handleReaderNext}
-        onPrevChapter={() => prevChapterOf() && setSearchParams({ c: prevChapterOf()!.id })}
-        onNextChapter={() => nextChapterOf() && setSearchParams({ c: nextChapterOf()!.id })}
+        onPrevChapter={() => {
+          const prv = prevChapterOf()
+          if (prv) {
+            setSearchParams({ c: prv.id })
+            setPage(0)
+            scrollToTop()
+          }
+        }}
+        onNextChapter={() => {
+          const nxt = nextChapterOf()
+          if (nxt) {
+            setSearchParams({ c: nxt.id })
+            setPage(0)
+            scrollToTop()
+          }
+        }}
       />
 
       <FocusRuler />
