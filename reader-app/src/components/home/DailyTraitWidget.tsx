@@ -6,10 +6,13 @@ import { db, uid } from '../../lib/db'
 import { useBook } from '../../context/BookContext'
 import { useTranslation } from '../../lib/i18n'
 
+import { useToast } from '../../context/ToastContext'
+
 export function DailyTraitWidget() {
   const { isRtl } = useTranslation()
   const { index } = useBook()
   const navigate = useNavigate()
+  const toast = useToast()
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
   const logs = useLiveQuery(() => db.virtueLogs.toArray()) || []
@@ -33,6 +36,9 @@ export function DailyTraitWidget() {
     if (!todayTrait) return
     if (todayLog) {
       await db.virtueLogs.update(todayLog.id, { completed: !todayLog.completed })
+      if (!todayLog.completed) {
+        toast.habit(isRtl ? 'تم تسجيل خصلة اليوم!' : 'Daily Trait Practiced!', todayTrait.title)
+      }
     } else {
       await db.virtueLogs.add({
         id: uid('vl'),
@@ -43,6 +49,7 @@ export function DailyTraitWidget() {
         completed: true,
         createdAt: Date.now(),
       })
+      toast.habit(isRtl ? 'تم تسجيل خصلة اليوم!' : 'Daily Trait Practiced!', todayTrait.title)
     }
   }
 

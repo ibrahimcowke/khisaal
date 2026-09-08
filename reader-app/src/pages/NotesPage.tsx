@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useNavigate } from 'react-router-dom'
-import { StickyNote, Trash2, Search, Star, FolderPlus, Tag } from 'lucide-react'
+import { StickyNote, Trash2, Search, Star, FolderPlus, Tag, Printer } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { db } from '../lib/db'
 import { normalizeArabic } from '../lib/arabicNormalize'
 import { formatRelativeDay } from '../lib/format'
 import { cn } from '../lib/cn'
+import { printStudySheet } from '../lib/StudySheetExporter'
 import { AddToCollectionSheet } from '../components/collections/AddToCollectionSheet'
 import { TagEditorSheet } from '../components/collections/TagEditorSheet'
 import { PageHeader } from '../components/layout/PageHeader'
@@ -45,16 +46,41 @@ export default function NotesPage() {
     return list
   }, [notes, query, chapterFilter, tagFilter])
 
+  const handlePrintSheet = () => {
+    if (!filtered || filtered.length === 0) return
+    const items = filtered.map((n) => {
+      const ch = index?.chapterById.get(n.chapterId)
+      return {
+        heading: ch?.title || 'ملاحظة',
+        body: n.body,
+        note: n.selectedText ? `«${n.selectedText}»` : undefined,
+      }
+    })
+    printStudySheet(isRtl ? 'المذكرة الدراسية والملاحظات' : 'Study Notes Sheet', items)
+  }
+
   if (loading || !index) {
     return <div className="min-h-screen flex items-center justify-center text-app-text-secondary text-sm">{t('loading')}</div>
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-5 pt-6 sm:pt-8 pb-10 animate-fade-in">
-      <PageHeader
-        title={t('notes')}
-        count={notes ? formatDigits(notes.length) : undefined}
-      />
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <PageHeader
+          title={t('notes')}
+          count={notes ? formatDigits(notes.length) : undefined}
+        />
+        {filtered.length > 0 && (
+          <button
+            onClick={handlePrintSheet}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-app-border bg-app-surface text-xs font-semibold text-app-text hover:border-app-accent cursor-pointer shadow-2xs"
+            title={isRtl ? 'طباعة المذكرة' : 'Print Sheet'}
+          >
+            <Printer size={14} className="text-app-accent" />
+            <span>{isRtl ? 'طباعة المذكرة' : 'Print Sheet'}</span>
+          </button>
+        )}
+      </div>
 
       <div className="relative mb-4">
         <Search size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-app-muted" />

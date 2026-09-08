@@ -44,6 +44,7 @@ import { cn } from '../lib/cn'
 import { PageHeader } from '../components/layout/PageHeader'
 import { useTranslation } from '../lib/i18n'
 import { AdvancedExporterModal } from '../components/library/AdvancedExporterModal'
+import { useToast } from '../context/ToastContext'
 
 const GOALS = [10, 15, 20, 30, 45, 60, 90]
 const POMODORO_OPTIONS = [15, 20, 25, 30, 45, 60]
@@ -52,6 +53,7 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const s = useSettingsStore()
   const { t, lang, setLanguage, isRtl, formatDigits } = useTranslation()
+  const toast = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [confirmClear, setConfirmClear] = useState(false)
@@ -107,6 +109,7 @@ export default function SettingsPage() {
     a.download = `imtaa-reader-backup-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
+    toast.success(isRtl ? 'تم تصدير النسخة الاحتياطية بنجاح! 💾' : 'Backup exported successfully! 💾')
     setStatus(isRtl ? 'تم تصدير النسخة الاحتياطية بنجاح 💾' : 'Backup exported successfully 💾')
     setTimeout(() => setStatus(null), 3000)
   }

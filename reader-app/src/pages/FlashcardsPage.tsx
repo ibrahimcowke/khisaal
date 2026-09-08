@@ -14,20 +14,35 @@ import {
   Volume2,
   VolumeX,
   Calendar,
+  Printer,
 } from 'lucide-react'
 import { db, uid, type Flashcard } from '../lib/db'
 import { useBook } from '../context/BookContext'
 import { useTranslation } from '../lib/i18n'
+import { useToast } from '../context/ToastContext'
 import { Button } from '../components/ui/Button'
 import { Sheet } from '../components/ui/Sheet'
 import { cn } from '../lib/cn'
 
+import { printStudySheet } from '../lib/StudySheetExporter'
+
 export default function FlashcardsPage() {
   const { isRtl, formatDigits } = useTranslation()
   const { index } = useBook()
+  const toast = useToast()
   const cards = useLiveQuery(() => db.flashcards.toArray()) || []
   
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
+
+  const handlePrintCards = () => {
+    if (!cards || cards.length === 0) return
+    const items = cards.map((c) => ({
+      heading: c.front,
+      body: c.back,
+      note: c.category ? `التصنيف: ${c.category}` : undefined,
+    }))
+    printStudySheet(isRtl ? 'بطاقات الحفظ والمراجعة' : 'Flashcards Study Sheet', items)
+  }
 
   const dueCards = useMemo(() => {
     return cards.filter((c) => !c.dueDate || c.dueDate <= todayStr)
@@ -126,6 +141,7 @@ export default function FlashcardsPage() {
     setFrontText('')
     setBackText('')
     setNewCardOpen(false)
+    toast.success(isRtl ? 'تمت إضافة البطاقة بنجاح!' : 'Card Added Successfully!')
   }
 
   const handleGenerateVirtueDeck = async () => {
@@ -155,6 +171,9 @@ export default function FlashcardsPage() {
 
       if (newItems.length > 0) {
         await db.flashcards.bulkAdd(newItems)
+        toast.sparkles(isRtl ? 'تم توليد حزمة البطاقات!' : 'Deck Generated!', isRtl ? `تمت إضافة ${formatDigits(newItems.length)} بطاقة جديدة` : `Added ${newItems.length} new cards`)
+      } else {
+        toast.info(isRtl ? 'جميع البطاقات الحالية موجودة' : 'All Cards Present')
       }
     } finally {
       setGeneratingDecks(false)
@@ -198,6 +217,17 @@ export default function FlashcardsPage() {
           >
             {autoSpeak ? <Volume2 size={14} className="text-emerald-500" /> : <VolumeX size={14} />}
             <span>{autoSpeak ? (isRtl ? 'النطق مفعل' : 'TTS On') : (isRtl ? 'نطق صوتي' : 'TTS')}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePrintCards}
+            className="text-xs gap-1.5"
+            disabled={cards.length === 0}
+          >
+            <Printer size={14} />
+            <span>{isRtl ? 'طباعة البطاقات' : 'Print Cards'}</span>
           </Button>
 
           <Button

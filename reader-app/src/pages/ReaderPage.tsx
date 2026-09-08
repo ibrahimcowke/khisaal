@@ -40,12 +40,14 @@ import type { HighlightColor } from '../lib/types'
 import { usePagination, type TopicUnit } from '../components/reader/usePagination'
 import { toArabicDigits } from '../lib/format'
 import { useTranslation } from '../lib/i18n'
+import { useToast } from '../context/ToastContext'
 import { cn } from '../lib/cn'
 
 export default function ReaderPage() {
   const { bookId } = useParams<{ bookId: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
   const { index, currentBookId, selectBook, loading } = useBook()
+  const { isRtl } = useTranslation()
   const s = useSettingsStore()
   const position = usePositionStore()
 
@@ -76,7 +78,9 @@ export default function ReaderPage() {
   const [aiExplainOpen, setAiExplainOpen] = useState(false)
   const [aiExplainText, setAiExplainText] = useState('')
   const [voiceNotesOpen, setVoiceNotesOpen] = useState(false)
+  const [isSplitView, setIsSplitView] = useState(false)
   const navigate = useNavigate()
+  const toast = useToast()
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -424,6 +428,7 @@ export default function ReaderPage() {
     if (!index || !chapter) return
     if (isBookmarked && bookmarks) {
       await db.bookmarks.bulkDelete(bookmarks.map((b: { id: string }) => b.id))
+      toast.info(isRtl ? 'تمت إزالة العلامة المرجعية' : 'Bookmark Removed')
     } else {
       await db.bookmarks.add({
         id: uid('bm'),
@@ -433,6 +438,7 @@ export default function ReaderPage() {
         title: chapter.title,
         createdAt: Date.now(),
       })
+      toast.bookmark(isRtl ? 'تمت إضافة العلامة المرجعية!' : 'Bookmark Added!', chapter.title)
     }
   }
 
@@ -540,6 +546,8 @@ export default function ReaderPage() {
         onExportPdf={() => {
           window.print()
         }}
+        isSplitView={isSplitView}
+        onToggleSplitView={() => setIsSplitView((v) => !v)}
       />
 
       {/* Desktop-only extra actions row anchored top-left */}

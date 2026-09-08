@@ -1,7 +1,8 @@
-import { Play, Pause, SkipBack, SkipForward, X, Volume2 } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, X, Volume2, Repeat } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { TtsController } from './useTts'
 import { useTranslation } from '../../lib/i18n'
+import { useToast } from '../../context/ToastContext'
 
 export function TtsBar({
   tts,
@@ -15,6 +16,14 @@ export function TtsBar({
   totalBlocks?: number
 }) {
   const { isRtl, formatDigits } = useTranslation()
+  const toast = useToast()
+
+  const toggleLoopMode = () => {
+    const nextLoop = tts.loopCount === 1 ? 3 : tts.loopCount === 3 ? 5 : tts.loopCount === 5 ? 999 : 1
+    tts.setLoopCount(nextLoop)
+    const label = nextLoop === 999 ? (isRtl ? 'تكرار مستمر' : 'Infinite Loop') : (isRtl ? `تكرار ${formatDigits(nextLoop)} مرات` : `Loop ${nextLoop}x`)
+    toast.info(isRtl ? 'وضع الحفظ والتكرار' : 'Audio Memorization Loop', label)
+  }
 
   return (
     <motion.div
@@ -43,7 +52,7 @@ export function TtsBar({
         <button
           onClick={tts.prev}
           aria-label="Previous block"
-          className="h-8 w-8 flex items-center justify-center rounded-xl hover:bg-app-bg text-app-text transition-colors"
+          className="h-8 w-8 flex items-center justify-center rounded-xl hover:bg-app-bg text-app-text transition-colors cursor-pointer"
         >
           <SkipBack size={15} />
         </button>
@@ -51,7 +60,7 @@ export function TtsBar({
         <button
           onClick={() => (tts.paused ? tts.resume() : tts.pause())}
           aria-label={tts.paused ? 'Play' : 'Pause'}
-          className="h-10 w-10 flex items-center justify-center rounded-xl bg-app-accent text-white hover:opacity-90 active:scale-95 transition-all shadow-md"
+          className="h-10 w-10 flex items-center justify-center rounded-xl bg-app-accent text-white hover:opacity-90 active:scale-95 transition-all shadow-md cursor-pointer"
         >
           {tts.paused ? <Play size={17} className="fill-white" /> : <Pause size={17} className="fill-white" />}
         </button>
@@ -59,11 +68,25 @@ export function TtsBar({
         <button
           onClick={tts.next}
           aria-label="Next block"
-          className="h-8 w-8 flex items-center justify-center rounded-xl hover:bg-app-bg text-app-text transition-colors"
+          className="h-8 w-8 flex items-center justify-center rounded-xl hover:bg-app-bg text-app-text transition-colors cursor-pointer"
         >
           <SkipForward size={15} />
         </button>
       </div>
+
+      {/* Repeat Loop Mode Button */}
+      <button
+        onClick={toggleLoopMode}
+        title={isRtl ? 'وضع تكرار الحفظ' : 'Memorization Loop'}
+        className={`h-8 px-2 flex items-center gap-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          tts.loopCount > 1
+            ? 'bg-app-accent text-white shadow-2xs'
+            : 'bg-app-bg text-app-muted hover:text-app-text'
+        }`}
+      >
+        <Repeat size={14} />
+        <span>{tts.loopCount === 999 ? '∞' : `${tts.loopCount}×`}</span>
+      </button>
 
       {/* Speed Rate Selector */}
       <div className="flex items-center gap-1 pl-1 border-l border-app-border/80">
@@ -85,7 +108,7 @@ export function TtsBar({
             onClose()
           }}
           aria-label="Close audio player"
-          className="h-8 w-8 flex items-center justify-center rounded-xl hover:bg-red-500/10 text-app-muted hover:text-red-500 transition-colors ml-1"
+          className="h-8 w-8 flex items-center justify-center rounded-xl hover:bg-red-500/10 text-app-muted hover:text-red-500 transition-colors ml-1 cursor-pointer"
         >
           <X size={15} />
         </button>

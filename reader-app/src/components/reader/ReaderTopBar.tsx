@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft, LayoutDashboard, Search, Bookmark, SlidersHorizontal, List, Sparkles, Share2, Printer } from 'lucide-react'
+import { ArrowRight, ArrowLeft, LayoutDashboard, Search, Bookmark, SlidersHorizontal, List, Sparkles, Share2, Printer, Columns } from 'lucide-react'
 import { AmbientSoundPlayer } from './AmbientSoundPlayer'
 import { PomodoroTimer } from './PomodoroTimer'
 import { useTranslation } from '../../lib/i18n'
@@ -10,6 +10,7 @@ export function ReaderTopBar({
   title,
   bookTitle,
   isBookmarked,
+  isSplitView = false,
   onToggleBookmark,
   onOpenToc,
   onOpenSearch,
@@ -17,11 +18,13 @@ export function ReaderTopBar({
   onOpenMore,
   onShareDeepLink,
   onExportPdf,
+  onToggleSplitView,
 }: {
   visible: boolean
   title: string
   bookTitle?: string
   isBookmarked: boolean
+  isSplitView?: boolean
   onToggleBookmark: () => void
   onOpenToc: () => void
   onOpenSearch: () => void
@@ -29,6 +32,7 @@ export function ReaderTopBar({
   onOpenMore: () => void
   onShareDeepLink?: () => void
   onExportPdf?: () => void
+  onToggleSplitView?: () => void
 }) {
   const navigate = useNavigate()
   const { t, isRtl } = useTranslation()
@@ -135,6 +139,21 @@ export function ReaderTopBar({
                   title="تصدير هذا الباب كـ PDF وطباعته"
                 >
                   <Printer size={16} />
+                </button>
+              )}
+
+              {onToggleSplitView && (
+                <button
+                  onClick={onToggleSplitView}
+                  className={`hidden md:flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all active:scale-95 shadow-2xs cursor-pointer ${
+                    isSplitView
+                      ? 'bg-app-accent text-white border-app-accent shadow-xs'
+                      : 'bg-app-surface border-app-border text-app-text-secondary hover:text-app-accent hover:border-app-accent/60'
+                  }`}
+                  aria-label="عرض الشرح والتعليقات المزدوج"
+                  title="عرض الشرح والتعليقات المزدوج (Split View)"
+                >
+                  <Columns size={16} />
                 </button>
               )}
 

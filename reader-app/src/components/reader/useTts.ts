@@ -7,7 +7,10 @@ export interface TtsController {
   paused: boolean
   currentIndex: number
   rate: number
+  loopCount: number
+  currentLoop: number
   setRate: (r: number) => void
+  setLoopCount: (c: number) => void
   speakSentences: (sentences: string[], startIndex?: number) => void
   pause: () => void
   resume: () => void
@@ -22,9 +25,17 @@ export function useTts(): TtsController {
   const [speaking, setSpeaking] = useState(false)
   const [paused, setPaused] = useState(false)
   const [rate, setRate] = useState(1)
+  const [loopCount, setLoopCount] = useState(1)
+  const [currentLoop, setCurrentLoop] = useState(0)
   const [currentIndex, setCurrentIndex] = useState(0)
   const sentencesRef = useRef<string[]>([])
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
+  const loopCountRef = useRef(1)
+  const currentLoopRef = useRef(0)
+
+  useEffect(() => {
+    loopCountRef.current = loopCount
+  }, [loopCount])
 
   useEffect(() => {
     if (!supported) return
@@ -44,7 +55,13 @@ export function useTts(): TtsController {
       window.speechSynthesis.cancel()
       const sentences = sentencesRef.current
       if (index < 0 || index >= sentences.length) {
-        setSpeaking(false)
+        if (currentLoopRef.current + 1 < loopCountRef.current) {
+          currentLoopRef.current += 1
+          setCurrentLoop(currentLoopRef.current)
+          speakFrom(0)
+        } else {
+          setSpeaking(false)
+        }
         return
       }
       const utter = new SpeechSynthesisUtterance(sentences[index])
@@ -55,6 +72,10 @@ export function useTts(): TtsController {
         if (index + 1 < sentences.length) {
           setCurrentIndex(index + 1)
           speakFrom(index + 1)
+        } else if (currentLoopRef.current + 1 < loopCountRef.current) {
+          currentLoopRef.current += 1
+          setCurrentLoop(currentLoopRef.current)
+          speakFrom(0)
         } else {
           setSpeaking(false)
         }
@@ -70,6 +91,8 @@ export function useTts(): TtsController {
   const speakSentences = useCallback(
     (sentences: string[], startIndex = 0) => {
       sentencesRef.current = sentences
+      currentLoopRef.current = 0
+      setCurrentLoop(0)
       speakFrom(startIndex)
     },
     [speakFrom]
@@ -92,10 +115,12 @@ export function useTts(): TtsController {
     window.speechSynthesis.cancel()
     setSpeaking(false)
     setPaused(false)
+    currentLoopRef.current = 0
+    setCurrentLoop(0)
   }, [supported])
 
   const next = useCallback(() => speakFrom(currentIndex + 1), [speakFrom, currentIndex])
   const prev = useCallback(() => speakFrom(Math.max(0, currentIndex - 1)), [speakFrom, currentIndex])
 
-  return { supported, hasArabicVoice, speaking, paused, currentIndex, rate, setRate, speakSentences, pause, resume, stop, next, prev }
+  return { supported, hasArabicVoice, speaking, paused, currentIndex, rate, loopCount, currentLoop, setRate, setLoopCount, speakSentences, pause, resume, stop, next, prev }
 }

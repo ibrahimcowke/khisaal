@@ -2,6 +2,7 @@ import { Suspense, lazy, type ComponentType } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppShell } from './components/layout/AppShell'
 import { BookProvider } from './context/BookContext'
+import { ToastProvider } from './context/ToastContext'
 import { ThemeEffect } from './context/ThemeEffect'
 
 // Resilient dynamic importer that auto-reloads if a new deployment changes chunk hashes
@@ -68,46 +69,48 @@ function ChapterToRead() {
 
 export default function App() {
   return (
-    <BookProvider>
-      <ThemeEffect />
-      <BrowserRouter>
-        <Suspense fallback={<PageFallback />}>
-          <Routes>
-            <Route element={<AppShell />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/library" element={<LibraryPage />} />
-              <Route path="/book/:bookId" element={<BookDetailPage />} />
-              <Route path="/book/:bookId/read" element={<ReaderPage />} />
-              <Route path="/book/:bookId/chapter/:chapterId" element={<ChapterToRead />} />
-              <Route path="/tools" element={<ToolsHubPage />} />
-              <Route path="/khisal-assessment" element={<KhisalAssessmentPage />} />
-              <Route path="/speed-reader" element={<SpeedReaderPage />} />
-              <Route path="/quiz" element={<QuizPage />} />
-              <Route path="/compare" element={<CompareKhisalsPage />} />
-              <Route path="/trait-tree" element={<TraitTreePage />} />
-              <Route path="/mindmap" element={<MindmapPage />} />
-              <Route path="/reading-plan" element={<ReadingPlanPage />} />
-              <Route path="/habit-tracker" element={<HabitTrackerPage />} />
-              <Route path="/flashcards" element={<FlashcardsPage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/bookmarks" element={<BookmarksPage />} />
-              <Route path="/highlights" element={<HighlightsPage />} />
-              <Route path="/notes" element={<NotesPage />} />
-              <Route path="/collections" element={<CollectionsPage />} />
-              <Route path="/collections/:collectionId" element={<CollectionDetailPage />} />
-              <Route path="/quotes" element={<QuotesPage />} />
-              <Route path="/history" element={<HistoryPage />} />
-              <Route path="/favorites" element={<FavoritesPage />} />
-              <Route path="/reading-stats" element={<StatsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/editor" element={<EditorPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/more" element={<MorePage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </BookProvider>
+    <ToastProvider>
+      <BookProvider>
+        <ThemeEffect />
+        <BrowserRouter>
+          <Suspense fallback={<PageFallback />}>
+            <Routes>
+              <Route element={<AppShell />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/library" element={<LibraryPage />} />
+                <Route path="/book/:bookId" element={<BookDetailPage />} />
+                <Route path="/book/:bookId/read" element={<ReaderPage />} />
+                <Route path="/book/:bookId/chapter/:chapterId" element={<ChapterToRead />} />
+                <Route path="/tools" element={<ToolsHubPage />} />
+                <Route path="/khisal-assessment" element={<KhisalAssessmentPage />} />
+                <Route path="/speed-reader" element={<SpeedReaderPage />} />
+                <Route path="/quiz" element={<QuizPage />} />
+                <Route path="/compare" element={<CompareKhisalsPage />} />
+                <Route path="/trait-tree" element={<TraitTreePage />} />
+                <Route path="/mindmap" element={<MindmapPage />} />
+                <Route path="/reading-plan" element={<ReadingPlanPage />} />
+                <Route path="/habit-tracker" element={<HabitTrackerPage />} />
+                <Route path="/flashcards" element={<FlashcardsPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/bookmarks" element={<BookmarksPage />} />
+                <Route path="/highlights" element={<HighlightsPage />} />
+                <Route path="/notes" element={<NotesPage />} />
+                <Route path="/collections" element={<CollectionsPage />} />
+                <Route path="/collections/:collectionId" element={<CollectionDetailPage />} />
+                <Route path="/quotes" element={<QuotesPage />} />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="/reading-stats" element={<StatsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/editor" element={<EditorPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/more" element={<MorePage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Route>
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </BookProvider>
+    </ToastProvider>
   )
 }

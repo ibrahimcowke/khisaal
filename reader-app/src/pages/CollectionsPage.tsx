@@ -1,24 +1,30 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useNavigate } from 'react-router-dom'
-import { FolderHeart, Plus, Trash2 } from 'lucide-react'
+import { FolderHeart, Plus, Trash2, Sparkles, Bookmark, Flame } from 'lucide-react'
 import { db, uid } from '../lib/db'
 import { Sheet } from '../components/ui/Sheet'
 import { Button } from '../components/ui/Button'
 import { PageHeader } from '../components/layout/PageHeader'
 import { EmptyState } from '../components/ui/EmptyState'
 import { useTranslation } from '../lib/i18n'
+import { useToast } from '../context/ToastContext'
 
 export default function CollectionsPage() {
   const navigate = useNavigate()
   const { t, isRtl, formatDigits } = useTranslation()
+  const toast = useToast()
   const collections = useLiveQuery(() => db.collections.orderBy('createdAt').reverse().toArray(), [])
+  const bookmarksCount = useLiveQuery(() => db.bookmarks.count()) ?? 0
+  const highlightsCount = useLiveQuery(() => db.highlights.count()) ?? 0
+  const virtueLogsCount = useLiveQuery(() => db.virtueLogs.count()) ?? 0
   const [creating, setCreating] = useState(false)
   const [name, setName] = useState('')
 
   async function createCollection() {
     if (!name.trim()) return
     await db.collections.add({ id: uid('col'), name: name.trim(), itemIds: [], createdAt: Date.now() })
+    toast.success(isRtl ? 'تمت إضافة المجموعة!' : 'Collection Created!', name.trim())
     setName('')
     setCreating(false)
   }
@@ -35,6 +41,40 @@ export default function CollectionsPage() {
           </Button>
         }
       />
+
+      {/* Smart Auto-Collections */}
+      <div className="mb-6 space-y-2">
+        <h3 className="text-xs font-bold text-app-muted uppercase tracking-wide flex items-center gap-1.5">
+          <Sparkles size={13} className="text-app-accent" />
+          <span>{isRtl ? 'المجموعات الذكية التلقائية' : 'Smart Auto Collections'}</span>
+        </h3>
+        <div className="grid grid-cols-3 gap-2.5">
+          <button
+            onClick={() => navigate('/bookmarks')}
+            className="p-3 rounded-2xl bg-app-surface border border-app-border text-right hover:border-app-accent/60 transition-all cursor-pointer group shadow-2xs"
+          >
+            <Bookmark size={16} className="text-purple-500 mb-1.5" />
+            <p className="text-xs font-bold text-app-text group-hover:text-app-accent truncate">{isRtl ? 'العلامات' : 'Bookmarks'}</p>
+            <p className="text-[10px] text-app-muted">{formatDigits(bookmarksCount)} {isRtl ? 'عنصر' : 'items'}</p>
+          </button>
+          <button
+            onClick={() => navigate('/highlights')}
+            className="p-3 rounded-2xl bg-app-surface border border-app-border text-right hover:border-app-accent/60 transition-all cursor-pointer group shadow-2xs"
+          >
+            <Sparkles size={16} className="text-amber-500 mb-1.5" />
+            <p className="text-xs font-bold text-app-text group-hover:text-app-accent truncate">{isRtl ? 'التظليلات' : 'Highlights'}</p>
+            <p className="text-[10px] text-app-muted">{formatDigits(highlightsCount)} {isRtl ? 'عنصر' : 'items'}</p>
+          </button>
+          <button
+            onClick={() => navigate('/habit-tracker')}
+            className="p-3 rounded-2xl bg-app-surface border border-app-border text-right hover:border-app-accent/60 transition-all cursor-pointer group shadow-2xs"
+          >
+            <Flame size={16} className="text-orange-500 mb-1.5" />
+            <p className="text-xs font-bold text-app-text group-hover:text-app-accent truncate">{isRtl ? 'العادات اليومية' : 'Habit Logs'}</p>
+            <p className="text-[10px] text-app-muted">{formatDigits(virtueLogsCount)} {isRtl ? 'سجل' : 'logs'}</p>
+          </button>
+        </div>
+      </div>
 
       {!collections || collections.length === 0 ? (
         <EmptyState
