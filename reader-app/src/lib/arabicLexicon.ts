@@ -149,7 +149,7 @@ export const CLASSICAL_LEXICON: Record<string, LexiconEntry> = {
     source: 'لسان العرب',
     synonyms: ['سجية', 'طباع', 'شيمة', 'خلق'],
     antonyms: [],
-    examples: ['جامع المنظومات الأخلاقية: الخصال المائتان.'],
+    examples: ['جامع المنظومات الأخلاقية: أكثر من 600 خصلة وحكمة.'],
   },
   'وفاء': {
     word: 'وَفَاء',

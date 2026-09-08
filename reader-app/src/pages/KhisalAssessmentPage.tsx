@@ -176,7 +176,7 @@ export default function KhisalAssessmentPage() {
   const getRank = (pct: number) => {
     if (pct >= 85) return { title: isRtl ? 'صاحب مروءة رفيعة وخلق سامٍ 🌟' : 'High Virtue & Nobility 🌟', desc: isRtl ? 'تتمتع بحصانة خلقية عالية واتباع راسخ للآداب والخصال النبيلة.' : 'Exemplary moral character with deep adherence to noble virtues.' }
     if (pct >= 65) return { title: isRtl ? 'سالك سبيل الفضائل والمجاهدة 🌿' : 'Path of Virtue & Striving 🌿', desc: isRtl ? 'لديك أرضية قيمية طيبة وتحتاج فقط إلى تعزيز بعض الخصال الدقيقة كالتغافل وحفظ اللسان.' : 'Solid values foundation; continue refining subtle habits like speech discipline.' }
-    return { title: isRtl ? 'مستفتح لباب التهذيب والمراجعة 📖' : 'Beginning Moral Refinement 📖', desc: isRtl ? 'فرصة سانحة للنهوض واستثمار موسوعة الخصال لتجديد السلوك والارتقاء بالمروءة.' : 'A prime opportunity to study the 200 Khisals and cultivate moral habits.' }
+    return { title: isRtl ? 'مستفتح لباب التهذيب والمراجعة 📖' : 'Beginning Moral Refinement 📖', desc: isRtl ? 'فرصة سانحة للنهوض واستثمار موسوعة الخصال (أكثر من 600 خصلة وحكمة) لتجديد السلوك والارتقاء بالمروءة.' : 'A prime opportunity to study over 600 Khisals and wisdoms and cultivate moral habits.' }
   }
 
   const rankInfo = getRank(percentage)

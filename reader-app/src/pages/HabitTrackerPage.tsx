@@ -174,7 +174,7 @@ export default function HabitTrackerPage() {
           }`}
         >
           <BookOpen size={14} />
-          <span>{isRtl ? 'الخصال المائتان (200 خصلة)' : '200 Khisals Book'}</span>
+          <span>{isRtl ? 'موسوعة الخصال (أكثر من 600 خصلة وحكمة)' : 'Encyclopedia of Khisals (600+ Traits)'}</span>
         </button>
 
         <button

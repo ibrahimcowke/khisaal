@@ -113,7 +113,7 @@ export function QuoteStudioModal({
   onOpenChange,
   quoteText,
   sourceChapterTitle,
-  bookTitle = 'موسوعة الخصال المائتان',
+  bookTitle = 'موسوعة الخصال والحكم (أكثر من 600 خصلة وحكمة)',
   author = 'إبراهيم عوكي',
 }: QuoteStudioProps) {
   const [aspect, setAspect] = useState<AspectRatio>('1:1')

@@ -36,8 +36,8 @@ export const TRANSLATIONS = {
     copied: 'تم النسخ بنجاح',
 
     // App & Header
-    appTitle: 'الخصال المائتان وإمتاع القارئ',
-    appSubtitle: 'موسوعة الأخلاق والآداب والحكم العربية',
+    appTitle: 'موسوعة الخصال وإمتاع القارئ',
+    appSubtitle: 'موسوعة الأخلاق والآداب والحكم العربية (أكثر من 600 خصلة وحكمة)',
     greetingMorning: 'صباح الخير',
     greetingDay: 'طاب يومك',
     greetingEvening: 'مساء الخير',
@@ -180,8 +180,8 @@ export const TRANSLATIONS = {
     copied: 'Copied successfully',
 
     // App & Header
-    appTitle: 'The 200 Moral Traits & Reader',
-    appSubtitle: 'Encyclopedia of Arabic Ethics, Manners, and Wisdom',
+    appTitle: 'Encyclopedia of Khisals (600+ Traits) & Reader',
+    appSubtitle: 'Encyclopedia of Arabic Ethics, Manners, and Wisdom (Over 600 Traits & Wisdoms)',
     greetingMorning: 'Good Morning',
     greetingDay: 'Good Afternoon',
     greetingEvening: 'Good Evening',
@@ -268,7 +268,7 @@ export const TRANSLATIONS = {
 
     // 30-Day Plan
     readingPlanTitle: '30-Day Moral Reading Journey',
-    readingPlanSubtitle: 'Structured daily plan to explore the 200 traits and noble ethics',
+    readingPlanSubtitle: 'Structured daily plan to explore over 600 traits and noble ethics',
     dayPlan: 'Day {day}',
     completedDays: '{count} of 30 days completed',
     planCompleted: 'Completed',

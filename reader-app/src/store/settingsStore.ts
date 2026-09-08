@@ -73,7 +73,7 @@ export const FONT_LABEL_MAP: Record<FontChoice, string> = {
 export const FONT_SAMPLE_MAP: Record<FontChoice, string> = {
   amiri: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
   ruqaa: 'روائع الكلم والحِكَم',
-  naskh: 'الخصال المائتان والآداب',
+  naskh: 'أكثر من 600 خصلة وحكمة والآداب',
   scheherazade: 'جامع المنظومات الأخلاقية',
   cairo: 'جمال القراءة والأناقة',
   tajawal: 'تهذيب السلوك والمروءة',

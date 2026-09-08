@@ -75,7 +75,7 @@ export default function ToolsHubPage() {
     },
     {
       id: 'trait-tree',
-      title: isRtl ? 'شجرة الخصال المائتان' : 'Virtue Trait Tree',
+      title: isRtl ? 'شجرة الخصال ومكارم الأخلاق (600+ خصلة)' : 'Virtue Trait Tree (600+ Traits)',
       desc: isRtl ? 'تسلسل شجري هرمي لخصال السلوك من الثنائيات إلى الثمانيات' : 'Hierarchical virtue tree organizing traits from doubles to eights',
       icon: GitBranch,
       path: '/trait-tree',
