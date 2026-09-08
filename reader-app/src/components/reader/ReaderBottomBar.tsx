@@ -159,16 +159,29 @@ export function ReaderBottomBar({
             ) : (
               /* === Continuous Scroll / Focus Mode Chapter Navigation Bar === */
               <div className="flex items-center justify-between gap-1.5 pt-0.5">
-                {/* Previous Chapter Button */}
-                <button
-                  onClick={onPrev}
-                  disabled={!hasPrev}
-                  className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs"
-                  title={t('prevChapter')}
-                >
-                  <PrevChevron size={15} className="text-app-accent shrink-0" />
-                  <span className="hidden sm:inline text-xs">{isRtl ? 'السابق' : 'Prev'}</span>
-                </button>
+                {/* Previous Navigation (Screen/Page & Chapter) */}
+                <div className="flex items-center gap-1 shrink-0">
+                  {onPrevChapter && hasPrev && (
+                    <button
+                      onClick={onPrevChapter}
+                      className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
+                      title={t('prevChapter')}
+                      aria-label={t('prevChapter')}
+                    >
+                      <PrevDoubleChevron size={14} />
+                    </button>
+                  )}
+
+                  <button
+                    onClick={onPrev}
+                    disabled={!hasPrev}
+                    className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs group"
+                    title={t('prevPage')}
+                  >
+                    <PrevChevron size={15} className="text-app-accent shrink-0 group-hover:-translate-x-0.5 transition-transform" />
+                    <span>{isRtl ? 'السابق' : 'Prev'}</span>
+                  </button>
+                </div>
 
                 {/* Center Chapter Info & Metrics */}
                 <div className="flex-1 min-w-0 px-2 text-center flex flex-col items-center justify-center">
@@ -193,16 +206,29 @@ export function ReaderBottomBar({
                   </div>
                 </div>
 
-                {/* Next Chapter Button */}
-                <button
-                  onClick={onNext}
-                  disabled={!hasNext}
-                  className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs"
-                  title={t('nextChapter')}
-                >
-                  <span className="hidden sm:inline text-xs">{isRtl ? 'التالي' : 'Next'}</span>
-                  <NextChevron size={15} className="text-app-accent shrink-0" />
-                </button>
+                {/* Next Navigation (Screen/Page & Chapter) */}
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={onNext}
+                    disabled={!hasNext}
+                    className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs group"
+                    title={t('nextPage')}
+                  >
+                    <span>{isRtl ? 'التالي' : 'Next'}</span>
+                    <NextChevron size={15} className="text-app-accent shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+
+                  {onNextChapter && hasNext && (
+                    <button
+                      onClick={onNextChapter}
+                      className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
+                      title={t('nextChapter')}
+                      aria-label={t('nextChapter')}
+                    >
+                      <NextDoubleChevron size={14} />
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

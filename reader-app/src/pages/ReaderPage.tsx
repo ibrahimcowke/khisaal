@@ -303,6 +303,54 @@ export default function ReaderPage() {
     return index.chapters[order - 1] ?? null
   }
 
+  const handleReaderNext = useCallback(() => {
+    if (s.readingMode === 'paginated') {
+      if (page < pages.length - 1) {
+        goPage(1)
+      } else if (nextChapterOf()) {
+        const nxt = nextChapterOf()!
+        setSearchParams({ c: nxt.id })
+        toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
+      }
+    } else {
+      // In continuous scroll, focus, or columns mode
+      const scrollPos = window.scrollY
+      const maxScroll = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        document.body.scrollHeight - window.innerHeight
+      )
+      if (scrollPos < maxScroll - 60) {
+        window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'smooth' })
+      } else if (nextChapterOf()) {
+        const nxt = nextChapterOf()!
+        setSearchParams({ c: nxt.id })
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
+      }
+    }
+  }, [s.readingMode, page, pages.length, index, chapter, isRtl, toast, setSearchParams])
+
+  const handleReaderPrev = useCallback(() => {
+    if (s.readingMode === 'paginated') {
+      if (page > 0) {
+        goPage(-1)
+      } else if (prevChapterOf()) {
+        const prv = prevChapterOf()!
+        setSearchParams({ c: prv.id })
+        toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
+      }
+    } else {
+      const scrollPos = window.scrollY
+      if (scrollPos > 60) {
+        window.scrollBy({ top: -window.innerHeight * 0.75, behavior: 'smooth' })
+      } else if (prevChapterOf()) {
+        const prv = prevChapterOf()!
+        setSearchParams({ c: prv.id })
+        toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
+      }
+    }
+  }, [s.readingMode, page, index, chapter, isRtl, toast, setSearchParams])
+
   // ---------- Mobile Touch Swipe Gestures & Tap zones ----------
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
 
@@ -324,15 +372,14 @@ export default function ReaderPage() {
     const elapsed = Date.now() - touchStartRef.current.time
     touchStartRef.current = null
 
-    // Ensure it's a decisive horizontal swipe (> 45px, mostly horizontal, duration < 600ms)
-    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4 && elapsed < 600) {
-      if (s.readingMode === 'paginated') {
-        // Swiping left advances to next page, swiping right goes to previous page
-        if (deltaX < 0) {
-          goPage(1)
-        } else {
-          goPage(-1)
-        }
+    // Ensure it's a decisive horizontal swipe (> 40px, mostly horizontal, duration < 700ms)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && elapsed < 700) {
+      if (deltaX < 0) {
+        // Swipe Left: Advance to next page / screen / chapter
+        handleReaderNext()
+      } else {
+        // Swipe Right: Go back to prev page / screen / chapter
+        handleReaderPrev()
       }
     }
   }
@@ -345,11 +392,13 @@ export default function ReaderPage() {
     // Physical zones: left 25%, center 50%, right 25% (screen-space, not logical rtl)
     if (s.readingMode === 'paginated') {
       if (relX < 0.25) {
-        goPage(inverted ? -1 : 1)
+        if (inverted) handleReaderPrev()
+        else handleReaderNext()
         return
       }
       if (relX > 0.75) {
-        goPage(inverted ? 1 : -1)
+        if (inverted) handleReaderNext()
+        else handleReaderPrev()
         return
       }
     }
@@ -751,27 +800,15 @@ export default function ReaderPage() {
         overallProgress={oProgress}
         timeRemainingLabel={`${toArabicDigits(minutesRemaining)} د متبقية`}
         onScrub={handleScrub}
-        onPrev={() => (prevChapterOf() ? setSearchParams({ c: prevChapterOf()!.id }) : undefined)}
-        onNext={() => (nextChapterOf() ? setSearchParams({ c: nextChapterOf()!.id }) : undefined)}
-        hasPrev={!!prevChapterOf()}
-        hasNext={!!nextChapterOf()}
+        onPrev={handleReaderPrev}
+        onNext={handleReaderNext}
+        hasPrev={s.readingMode === 'paginated' ? page > 0 || !!prevChapterOf() : true}
+        hasNext={s.readingMode === 'paginated' ? page < pages.length - 1 || !!nextChapterOf() : true}
         isPaginated={s.readingMode === 'paginated'}
         pageIndex={page}
         pageCount={pages.length}
-        onPrevPage={() => {
-          if (page > 0) {
-            goPage(-1)
-          } else if (prevChapterOf()) {
-            setSearchParams({ c: prevChapterOf()!.id })
-          }
-        }}
-        onNextPage={() => {
-          if (page < pages.length - 1) {
-            goPage(1)
-          } else if (nextChapterOf()) {
-            setSearchParams({ c: nextChapterOf()!.id })
-          }
-        }}
+        onPrevPage={handleReaderPrev}
+        onNextPage={handleReaderNext}
         onPrevChapter={() => prevChapterOf() && setSearchParams({ c: prevChapterOf()!.id })}
         onNextChapter={() => nextChapterOf() && setSearchParams({ c: nextChapterOf()!.id })}
       />
