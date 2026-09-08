@@ -7,21 +7,25 @@ export function Tabs({
   onValueChange,
   tabs,
   children,
+  className,
+  listClassName,
 }: {
   value: string
   onValueChange: (v: string) => void
   tabs: { value: string; label: string; icon?: ReactNode }[]
   children: ReactNode
+  className?: string
+  listClassName?: string
 }) {
   return (
-    <RadixTabs.Root value={value} onValueChange={onValueChange}>
-      <RadixTabs.List className="flex gap-1 border-b border-app-border mb-4 overflow-x-auto no-scrollbar">
+    <RadixTabs.Root value={value} onValueChange={onValueChange} className={className}>
+      <RadixTabs.List className={cn('flex gap-1 border-b border-app-border mb-4 overflow-x-auto no-scrollbar shrink-0', listClassName)}>
         {tabs.map((t) => (
           <RadixTabs.Trigger
             key={t.value}
             value={t.value}
             className={cn(
-              'flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-medium text-app-text-secondary border-b-2 border-transparent whitespace-nowrap transition-colors',
+              'flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-medium text-app-text-secondary border-b-2 border-transparent whitespace-nowrap transition-colors cursor-pointer',
               'data-[state=active]:text-app-accent data-[state=active]:border-app-accent'
             )}
           >

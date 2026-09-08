@@ -49,9 +49,9 @@ export function ReaderSearchSheet({
   }, [query, scope, index, currentChapterId])
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange} title="البحث في الكتاب" className="max-w-lg mx-auto">
-      <div className="space-y-3">
-        <div className="relative">
+    <Sheet open={open} onOpenChange={onOpenChange} title="البحث في الكتاب" className="max-w-lg mx-auto" bodyClassName="flex flex-col h-full overflow-hidden px-4 sm:px-5 py-4">
+      <div className="flex flex-col h-full min-h-0 flex-1 space-y-3">
+        <div className="relative shrink-0">
           <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-app-muted" />
           <input
             autoFocus
@@ -62,24 +62,24 @@ export function ReaderSearchSheet({
             className="w-full rounded-xl border border-app-border bg-app-bg/40 py-2.5 pr-9 pl-3 text-sm focus:outline-none focus:ring-2 focus:ring-app-accent/40"
           />
         </div>
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 text-xs shrink-0">
           <button
             onClick={() => setScope('chapter')}
-            className={scope === 'chapter' ? 'text-app-accent font-medium' : 'text-app-muted'}
+            className={scope === 'chapter' ? 'text-app-accent font-medium cursor-pointer' : 'text-app-muted cursor-pointer'}
           >
             هذا الفصل
           </button>
           <span className="text-app-border">|</span>
           <button
             onClick={() => setScope('book')}
-            className={scope === 'book' ? 'text-app-accent font-medium' : 'text-app-muted'}
+            className={scope === 'book' ? 'text-app-accent font-medium cursor-pointer' : 'text-app-muted cursor-pointer'}
           >
             الكتاب كاملاً
           </button>
           {query && <span className="mr-auto text-app-muted">{toArabicDigits(results.length)} نتيجة</span>}
         </div>
 
-        <ul className="max-h-[50vh] overflow-y-auto space-y-1">
+        <ul className="flex-1 min-h-0 overflow-y-auto space-y-1 custom-scrollbar overscroll-contain touch-pan-y">
           {results.map((r) => {
             const segments = highlightMatches(r.text, query)
             return (
@@ -89,13 +89,13 @@ export function ReaderSearchSheet({
                     onJump(r.chapterId, r.blockId)
                     onOpenChange(false)
                   }}
-                  className="w-full text-right rounded-lg px-3 py-2.5 hover:bg-black/5"
+                  className="w-full text-right rounded-lg px-3 py-2.5 hover:bg-black/5 cursor-pointer"
                 >
                   <p className="text-xs text-app-accent mb-1">{r.chapterTitle}</p>
                   <p className="text-sm leading-relaxed line-clamp-2">
                     {segments.map((s, i) =>
                       s.match ? (
-                        <mark key={i} className="bg-app-highlight rounded-[2px]">{s.text}</mark>
+                        <mark key={i} className="bg-app-highlight rounded-xs">{s.text}</mark>
                       ) : (
                         <span key={i}>{s.text}</span>
                       )

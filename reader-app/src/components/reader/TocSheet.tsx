@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { List, Bookmark as BookmarkIcon, StickyNote, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Sheet } from '../ui/Sheet'
@@ -28,6 +28,7 @@ export function TocSheet({
   const [tab, setTab] = useState('toc')
   const [searchFilter, setSearchFilter] = useState('')
   const { isRtl, formatDigits } = useTranslation()
+  const currentChapterRef = useRef<HTMLLIElement | null>(null)
 
   const bookmarks = useLiveQuery(
     () => db.bookmarks.where('bookId').equals(index.book.id).reverse().toArray(),
@@ -49,6 +50,16 @@ export function TocSheet({
     return index.chapters.filter((c) => normalizeArabic(c.title).includes(q))
   }, [index.chapters, searchFilter])
 
+  // Scroll active chapter into view when TocSheet opens
+  useEffect(() => {
+    if (open && tab === 'toc') {
+      const timer = setTimeout(() => {
+        currentChapterRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      }, 150)
+      return () => clearTimeout(timer)
+    }
+  }, [open, tab, currentChapterId])
+
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight
 
   return (
@@ -57,10 +68,12 @@ export function TocSheet({
       onOpenChange={onOpenChange}
       title={isRtl ? 'فهرس الكتاب والعلامات' : 'Table of Contents & Bookmarks'}
       className="max-w-xl mx-auto"
+      bodyClassName="flex flex-col h-full overflow-hidden px-4 sm:px-5 py-4"
     >
       <Tabs
         value={tab}
         onValueChange={setTab}
+        className="flex flex-col h-full min-h-0 flex-1"
         tabs={[
           {
             value: 'toc',
@@ -79,9 +92,9 @@ export function TocSheet({
           },
         ]}
       >
-        <TabPanel value="toc" className="space-y-3">
+        <TabPanel value="toc" className="flex-1 min-h-0 flex flex-col space-y-3 data-[state=inactive]:hidden">
           {/* Quick Filter in TOC */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <Search size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
             <input
               value={searchFilter}
@@ -99,14 +112,13 @@ export function TocSheet({
               description={isRtl ? 'جرب البحث بكلمات أخرى' : 'Try different keywords'}
             />
           ) : (
-            <ul className="max-h-[58vh] overflow-y-auto space-y-1.5 pr-0.5 custom-scrollbar">
+            <ul className="flex-1 min-h-0 overflow-y-auto space-y-1.5 pr-0.5 custom-scrollbar overscroll-contain touch-pan-y">
               {filteredChapters.map((c, i) => {
                 const isCurrent = c.id === currentChapterId
-
                 const isRead = readChapterIds?.has(c.id)
 
                 return (
-                  <li key={c.id}>
+                  <li key={c.id} ref={isCurrent ? currentChapterRef : null}>
                     <button
                       onClick={() => onSelectChapter(c.id)}
                       className={cn(
@@ -164,7 +176,7 @@ export function TocSheet({
           )}
         </TabPanel>
 
-        <TabPanel value="bookmarks" className="space-y-3">
+        <TabPanel value="bookmarks" className="flex-1 min-h-0 flex flex-col space-y-3 data-[state=inactive]:hidden">
           {!bookmarks || bookmarks.length === 0 ? (
             <EmptyState
               icon={BookmarkIcon}
@@ -172,7 +184,7 @@ export function TocSheet({
               description={isRtl ? 'يمكنك حفظ أي فقرة أثناء القراءة بالضغط على أيقونة العلامة المرجعية.' : 'Add bookmarks while reading to quickly jump back to favorite sections.'}
             />
           ) : (
-            <ul className="max-h-[58vh] overflow-y-auto space-y-2 pr-0.5 custom-scrollbar">
+            <ul className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-0.5 custom-scrollbar overscroll-contain touch-pan-y">
               {bookmarks.map((b) => {
                 const chapter = index.chapterById.get(b.chapterId)
                 return (
@@ -200,7 +212,7 @@ export function TocSheet({
           )}
         </TabPanel>
 
-        <TabPanel value="notes" className="space-y-3">
+        <TabPanel value="notes" className="flex-1 min-h-0 flex flex-col space-y-3 data-[state=inactive]:hidden">
           {!notes || notes.length === 0 ? (
             <EmptyState
               icon={StickyNote}
@@ -208,7 +220,7 @@ export function TocSheet({
               description={isRtl ? 'حدد أي نص أثناء القراءة لتدوين أفكارك وتعليقاتك وفوائدك.' : 'Highlight text while reading to jot down your notes and insights.'}
             />
           ) : (
-            <ul className="max-h-[58vh] overflow-y-auto space-y-2 pr-0.5 custom-scrollbar">
+            <ul className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-0.5 custom-scrollbar overscroll-contain touch-pan-y">
               {notes.map((n) => (
                 <li key={n.id}>
                   <button
