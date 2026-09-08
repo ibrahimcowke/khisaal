@@ -670,8 +670,8 @@ export default function ReaderPage() {
         className={cn(
           'min-h-dvh transition-all duration-150 select-text',
           s.readingMode === 'paginated'
-            ? 'pt-[calc(3.75rem+env(safe-area-inset-top,0px))] pb-[calc(5rem+env(safe-area-inset-bottom,0px))] px-3 sm:px-4'
-            : 'pt-[calc(4.85rem+env(safe-area-inset-top,0px))] pb-[calc(7rem+env(safe-area-inset-bottom,0px))] pl-[max(env(safe-area-inset-left,0px),1rem)] pr-[max(env(safe-area-inset-right,0px),1rem)]'
+            ? 'pt-[calc(3.75rem+env(safe-area-inset-top,0px))] pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] px-3 sm:px-4'
+            : 'pt-[calc(4.85rem+env(safe-area-inset-top,0px))] pb-[calc(9rem+env(safe-area-inset-bottom,0px))] pl-[max(env(safe-area-inset-left,0px),1rem)] pr-[max(env(safe-area-inset-right,0px),1rem)]'
         )}
         style={{
           filter: s.brightnessOverlay > 0 ? undefined : undefined,
