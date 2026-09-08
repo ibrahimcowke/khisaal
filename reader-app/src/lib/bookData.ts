@@ -10,20 +10,57 @@ export const BOOK_FILES: Record<string, string> = {
 const cacheMap = new Map<string, BookData>()
 const inflightMap = new Map<string, Promise<BookData>>()
 
+async function fetchWithRetry(file: string, retries = 3): Promise<BookData> {
+  let lastError: unknown = null
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const res = await fetch(file, { cache: 'default' })
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      }
+      const contentType = res.headers.get('content-type')
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error('Received HTML instead of JSON')
+      }
+      return (await res.json()) as BookData
+    } catch (err) {
+      lastError = err
+      if (attempt < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)))
+      }
+    }
+  }
+
+  // Fallback: Check browser Cache Storage directly (populated by ServiceWorker / PWA)
+  if (typeof window !== 'undefined' && 'caches' in window) {
+    try {
+      const match = await caches.match(file)
+      if (match && match.ok) {
+        return (await match.json()) as BookData
+      }
+    } catch {
+      // ignore cache fallback error
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error('تعذر تحميل بيانات الكتاب')
+}
+
 export async function loadBook(bookId = 'imtaa-al-qari-vol-1'): Promise<BookData> {
   const targetId = BOOK_FILES[bookId] ? bookId : 'imtaa-al-qari-vol-1'
   if (cacheMap.has(targetId)) return cacheMap.get(targetId)!
   if (inflightMap.has(targetId)) return inflightMap.get(targetId)!
 
   const file = BOOK_FILES[targetId] || '/data/book.json'
-  const promise = fetch(file)
-    .then((r) => {
-      if (!r.ok) throw new Error('تعذر تحميل بيانات الكتاب')
-      return r.json() as Promise<BookData>
-    })
+  const promise = fetchWithRetry(file)
     .then((data) => {
       cacheMap.set(targetId, data)
+      inflightMap.delete(targetId)
       return data
+    })
+    .catch((err) => {
+      inflightMap.delete(targetId)
+      throw err
     })
 
   inflightMap.set(targetId, promise)

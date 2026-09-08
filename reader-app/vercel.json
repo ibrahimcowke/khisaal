@@ -5,7 +5,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!data/|assets/|icons/|sw\\.js|favicon\\.svg|manifest\\.webmanifest|workbox-.*\\.js).*)",
       "destination": "/index.html"
     }
   ],
@@ -25,6 +25,10 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400, stale-while-revalidate"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         }
       ]
     },
