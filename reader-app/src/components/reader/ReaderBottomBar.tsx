@@ -86,23 +86,6 @@ export function ReaderBottomBar({
             <div className="flex items-center justify-between gap-1 pt-0.5">
               {/* Previous Group (Backward) */}
               <div className="flex items-center gap-1 shrink-0">
-                {/* Skip to Previous Chapter */}
-                <button
-                  onClick={(e) => {
-                    ;(e.currentTarget as HTMLElement)?.blur?.()
-                    onPrevChapter?.()
-                  }}
-                  disabled={!hasPrev}
-                  className={cn(
-                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
-                    hasPrev ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
-                  )}
-                  title={t('prevChapter')}
-                  aria-label={t('prevChapter')}
-                >
-                  <PrevDoubleChevron size={14} />
-                </button>
-
                 {/* Step to Previous Page / Screen */}
                 <button
                   onClick={(e) => {
@@ -121,6 +104,23 @@ export function ReaderBottomBar({
                   aria-label={isPaginated && isFirstPage && hasPrev ? t('prevChapter') : t('prevPage')}
                 >
                   <PrevChevron size={16} />
+                </button>
+
+                {/* Skip to Previous Chapter */}
+                <button
+                  onClick={(e) => {
+                    ;(e.currentTarget as HTMLElement)?.blur?.()
+                    onPrevChapter?.()
+                  }}
+                  disabled={!hasPrev}
+                  className={cn(
+                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
+                    hasPrev ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
+                  )}
+                  title={t('prevChapter')}
+                  aria-label={t('prevChapter')}
+                >
+                  <PrevDoubleChevron size={14} />
                 </button>
               </div>
 
@@ -176,6 +176,23 @@ export function ReaderBottomBar({
 
               {/* Next Group (Forward) */}
               <div className="flex items-center gap-1 shrink-0">
+                {/* Skip to Next Chapter */}
+                <button
+                  onClick={(e) => {
+                    ;(e.currentTarget as HTMLElement)?.blur?.()
+                    onNextChapter?.()
+                  }}
+                  disabled={!hasNext}
+                  className={cn(
+                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
+                    hasNext ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
+                  )}
+                  title={t('nextChapter')}
+                  aria-label={t('nextChapter')}
+                >
+                  <NextDoubleChevron size={14} />
+                </button>
+
                 {/* Step to Next Page / Screen */}
                 <button
                   onClick={(e) => {
@@ -194,23 +211,6 @@ export function ReaderBottomBar({
                   aria-label={isPaginated && isLastPage && hasNext ? t('nextChapter') : t('nextPage')}
                 >
                   <NextChevron size={16} />
-                </button>
-
-                {/* Skip to Next Chapter */}
-                <button
-                  onClick={(e) => {
-                    ;(e.currentTarget as HTMLElement)?.blur?.()
-                    onNextChapter?.()
-                  }}
-                  disabled={!hasNext}
-                  className={cn(
-                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
-                    hasNext ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
-                  )}
-                  title={t('nextChapter')}
-                  aria-label={t('nextChapter')}
-                >
-                  <NextDoubleChevron size={14} />
                 </button>
               </div>
             </div>
