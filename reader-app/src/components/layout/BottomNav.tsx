@@ -348,7 +348,7 @@ export function BottomNav() {
                   to={item.to}
                   end={item.end}
                   className={cn(
-                    'relative flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 py-1 px-1 sm:px-3 min-h-[48px] sm:min-h-9 rounded-xl sm:rounded-full transition-all duration-150 active:scale-95 touch-manipulation group select-none cursor-pointer',
+                    'relative flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 py-1 px-1 sm:px-3 min-h-12 sm:min-h-9 rounded-xl sm:rounded-full transition-all duration-150 active:scale-95 touch-manipulation group select-none cursor-pointer',
                     isActive
                       ? 'text-app-accent font-bold'
                       : 'text-app-text-secondary hover:text-app-text hover:bg-black/5 dark:hover:bg-white/5'
@@ -388,7 +388,7 @@ export function BottomNav() {
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
               className={cn(
-                'w-full relative flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 py-1 px-1 sm:px-3 min-h-[48px] sm:min-h-9 rounded-xl sm:rounded-full transition-all duration-150 active:scale-95 touch-manipulation group select-none cursor-pointer',
+                'w-full relative flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 py-1 px-1 sm:px-3 min-h-12 sm:min-h-9 rounded-xl sm:rounded-full transition-all duration-150 active:scale-95 touch-manipulation group select-none cursor-pointer',
                 isMoreActive
                   ? 'text-app-accent font-bold'
                   : 'text-app-text-secondary hover:text-app-text hover:bg-black/5 dark:hover:bg-white/5'
