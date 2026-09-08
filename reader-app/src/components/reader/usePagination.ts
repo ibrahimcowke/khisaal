@@ -34,8 +34,9 @@ export function groupChapterIntoTopics(chapter: Chapter | null): TopicUnit[] {
           return true
         }
       }
-      // Break very long contiguous prose blocks so they fit comfortably on mobile screens
-      if (current.length >= 3 && (block.type === 'paragraph' || block.type === 'list' || block.type === 'quote')) {
+      // Only break exceptionally long monolithic texts if a single section exceeds 10 blocks or 320 words
+      const totalWords = current.reduce((acc, b) => acc + (b.text?.split(/\s+/).filter(Boolean).length || 0), 0)
+      if (current.length >= 10 && totalWords > 320 && (block.type === 'paragraph' || block.type === 'quote')) {
         return true
       }
     }

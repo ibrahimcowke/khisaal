@@ -116,11 +116,11 @@ export function BlockRenderer({
         <h2
           data-block-id={block.id}
           style={wrapperStyle}
-          className="font-display font-bold leading-relaxed pt-5 pb-3 text-xl sm:text-2xl text-app-accent border-b border-app-accent/20 mb-6 flex items-center justify-center gap-2 text-center"
+          className="font-display font-bold leading-snug sm:leading-relaxed pt-2 sm:pt-5 pb-2 sm:pb-3 text-lg sm:text-2xl text-app-accent border-b border-app-accent/20 mb-3 sm:mb-6 flex items-center justify-center gap-2 text-center"
         >
-          <span className="text-app-accent/50 text-base">❖</span>
+          <span className="text-app-accent/50 text-xs sm:text-base">❖</span>
           <span>{body}</span>
-          <span className="text-app-accent/50 text-base">❖</span>
+          <span className="text-app-accent/50 text-xs sm:text-base">❖</span>
           {sourceMark}
         </h2>
       )
@@ -129,11 +129,11 @@ export function BlockRenderer({
         <blockquote
           data-block-id={block.id}
           style={wrapperStyle}
-          className="border-r-4 border-app-accent bg-app-accent/5 my-5 px-6 py-4 rounded-2xl leading-relaxed text-app-text font-serif italic shadow-2xs"
+          className="border-r-4 border-app-accent bg-app-accent/5 my-3 sm:my-5 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl leading-relaxed text-app-text font-serif italic shadow-2xs text-sm sm:text-base"
         >
           {body}
           {block.attribution && (
-            <footer className="mt-2 text-xs text-app-accent font-sans not-italic font-semibold flex items-center gap-1.5 opacity-85">
+            <footer className="mt-1.5 sm:mt-2 text-xs text-app-accent font-sans not-italic font-semibold flex items-center gap-1.5 opacity-85">
               <span>—</span>
               <span>{block.attribution}</span>
             </footer>
@@ -147,7 +147,10 @@ export function BlockRenderer({
         <ul
           data-block-id={block.id}
           style={{ marginBottom: `${paragraphSpacing}em`, textAlign: textAlign === 'justify' ? 'justify' : 'right' }}
-          className={block.type === 'numbered-list' ? 'list-decimal pr-6 space-y-3 font-serif' : 'list-none space-y-3 font-serif'}
+          className={cn(
+            'p-3 sm:p-5 rounded-2xl bg-app-accent/6 border border-app-accent/20 my-3 sm:my-4 shadow-2xs',
+            block.type === 'numbered-list' ? 'list-decimal pr-7 space-y-2 sm:space-y-3 font-serif' : 'list-none space-y-2 sm:space-y-3 font-serif'
+          )}
         >
           {(block.items ?? []).map((item, i) => {
             const cleanItem = item.replace(/^[•\-\*]\s*/, '')
@@ -155,14 +158,14 @@ export function BlockRenderer({
               <li
                 key={i}
                 className={cn(
-                  'leading-loose relative',
-                  block.type === 'list' ? 'pr-6 sm:pr-7' : ''
+                  'leading-relaxed sm:leading-loose relative text-sm sm:text-base font-semibold text-app-text',
+                  block.type === 'list' ? 'pr-5 sm:pr-7' : ''
                 )}
               >
                 {block.type === 'list' && (
                   <span
                     aria-hidden="true"
-                    className="absolute right-0 top-1 text-app-accent font-bold text-xs select-none pointer-events-none"
+                    className="absolute right-0 top-0.5 sm:top-1 text-app-accent font-bold text-xs select-none pointer-events-none"
                     style={{ fontFamily: '"Segoe UI Symbol", "Apple Color Emoji", "Noto Color Emoji", "Amiri", serif' }}
                   >
                     {listIcon}
@@ -177,10 +180,10 @@ export function BlockRenderer({
       )
     case 'divider':
       return (
-        <div data-block-id={block.id} className="my-10 flex items-center justify-center gap-4 text-app-accent/50 select-none">
-          <span className="h-px w-16 sm:w-24 bg-linear-to-l from-app-accent/40 to-transparent" />
-          <span className="text-xs font-display tracking-widest">❖ ❖ ❖</span>
-          <span className="h-px w-16 sm:w-24 bg-linear-to-r from-app-accent/40 to-transparent" />
+        <div data-block-id={block.id} className="my-4 sm:my-10 flex items-center justify-center gap-4 text-app-accent/50 select-none">
+          <span className="h-px w-12 sm:w-24 bg-linear-to-l from-app-accent/40 to-transparent" />
+          <span className="text-[10px] sm:text-xs font-display tracking-widest">❖ ❖ ❖</span>
+          <span className="h-px w-12 sm:w-24 bg-linear-to-r from-app-accent/40 to-transparent" />
         </div>
       )
     case 'verse':
@@ -189,7 +192,7 @@ export function BlockRenderer({
         <div
           data-block-id={block.id}
           style={wrapperStyle}
-          className="my-6 py-4 px-6 bg-app-accent/5 rounded-3xl border border-app-accent/20 text-center font-display text-lg sm:text-xl leading-loose text-app-accent shadow-xs relative overflow-hidden"
+          className="my-3 sm:my-6 py-3 sm:py-4 px-4 sm:px-6 bg-app-accent/5 rounded-3xl border border-app-accent/20 text-center font-display text-base sm:text-xl leading-relaxed sm:leading-loose text-app-accent shadow-xs relative overflow-hidden"
         >
           <div className="absolute top-1 right-2 text-app-accent/20 text-xs select-none">❧</div>
           <div className="absolute bottom-1 left-2 text-app-accent/20 text-xs select-none">☙</div>
@@ -202,7 +205,7 @@ export function BlockRenderer({
         <div
           data-block-id={block.id}
           style={{ marginBottom: `${paragraphSpacing}em` }}
-          className="rounded-3xl bg-linear-to-br from-app-accent/10 to-app-surface border border-app-accent/30 px-6 py-5 my-5 shadow-xs leading-relaxed"
+          className="rounded-2xl sm:rounded-3xl bg-linear-to-br from-app-accent/10 to-app-surface border border-app-accent/30 px-4 sm:px-6 py-3 sm:py-5 my-3 sm:my-5 shadow-xs leading-relaxed text-sm sm:text-base"
         >
           {body}
           {sourceMark}
@@ -213,7 +216,7 @@ export function BlockRenderer({
         <p
           data-block-id={block.id}
           style={wrapperStyle}
-          className={cn(isCurrent ? 'relative' : undefined, 'leading-loose font-serif')}
+          className={cn(isCurrent ? 'relative' : undefined, 'leading-relaxed sm:leading-loose font-serif')}
         >
           {body}
           {sourceMark}

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Volume2, Maximize, Minimize, PlayCircle, Mic, GitBranch, Calendar, Sparkles } from 'lucide-react'
+import { Volume2, Maximize, Minimize, PlayCircle, Mic, GitBranch, Calendar, Sparkles, Copy, CheckCircle2 } from 'lucide-react'
 import { useBook } from '../context/BookContext'
 import { db, uid } from '../lib/db'
 import { chapterProgress as computeChapterProgress, overallProgress as computeOverallProgress, estimateMinutes } from '../lib/bookData'
@@ -667,7 +667,12 @@ export default function ReaderPage() {
         onClick={handleReaderTap}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="pt-[calc(4.85rem+env(safe-area-inset-top,0px))] pb-[calc(7rem+env(safe-area-inset-bottom,0px))] pl-[max(env(safe-area-inset-left,0px),1rem)] pr-[max(env(safe-area-inset-right,0px),1rem)] min-h-dvh transition-all duration-150 select-text"
+        className={cn(
+          'min-h-dvh transition-all duration-150 select-text',
+          s.readingMode === 'paginated'
+            ? 'pt-[calc(3.75rem+env(safe-area-inset-top,0px))] pb-[calc(5rem+env(safe-area-inset-bottom,0px))] px-3 sm:px-4'
+            : 'pt-[calc(4.85rem+env(safe-area-inset-top,0px))] pb-[calc(7rem+env(safe-area-inset-bottom,0px))] pl-[max(env(safe-area-inset-left,0px),1rem)] pr-[max(env(safe-area-inset-right,0px),1rem)]'
+        )}
         style={{
           filter: s.brightnessOverlay > 0 ? undefined : undefined,
         }}
@@ -718,6 +723,14 @@ export default function ReaderPage() {
               controlsVisible={controlsVisible}
               allChapters={index.chapters}
               onSelectChapter={(id) => setSearchParams({ c: id })}
+              onOpenStudio={(text) => {
+                setQuoteStudioText(text)
+                setQuoteStudioOpen(true)
+              }}
+              onSpeak={(text) => {
+                tts.speakSentences(text.split(/(?<=[.؟!:])\s+/).filter(Boolean))
+                setTtsActive(true)
+              }}
             />
           )
         ) : (
@@ -742,37 +755,118 @@ export default function ReaderPage() {
               // Skip the first heading block if its text matches the chapter title
               // (ChapterHeaderBanner already renders it, so we avoid duplicates)
               let firstHeadingSkipped = false
-              return topics.map((topic) => (
-                <div
-                  key={topic.id}
-                  className={cn(
-                    'break-inside-avoid mb-6',
-                    s.readingMode === 'columns' ? 'p-4 rounded-2xl bg-app-surface/40 border border-app-border/60' : ''
-                  )}
-                >
-                  {topic.blocks.map((block) => {
-                    if (
-                      !firstHeadingSkipped &&
-                      block.type === 'heading' &&
-                      block.text?.trim() === chapter.title?.trim()
-                    ) {
-                      firstHeadingSkipped = true
-                      return null
-                    }
-                    return (
-                      <BlockRenderer
-                        key={block.id}
-                        block={block}
-                        highlights={highlights ?? []}
-                        activeHighlightId={activeHighlightId}
-                        onHighlightClick={handleHighlightClick}
-                        isCurrent={block.id === currentBlockId}
-                        dimmed={s.readingMode === 'focus' && currentBlockId !== null && block.id !== currentBlockId}
-                      />
-                    )
-                  })}
-                </div>
-              ))
+              return topics.map((topic) => {
+                const topicText = topic.blocks
+                  .map((b) => b.text || (b.items || []).join('\n'))
+                  .filter(Boolean)
+                  .join('\n\n')
+
+                return (
+                  <div
+                    key={topic.id}
+                    className={cn(
+                      'break-inside-avoid mb-4 sm:mb-6 p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-app-surface/90 border border-app-border/80 shadow-xs flex flex-col justify-between transition-all',
+                      s.readingMode === 'columns' ? 'p-4 rounded-2xl bg-app-surface/40 border border-app-border/60' : ''
+                    )}
+                  >
+                    <div>
+                      {topic.blocks.map((block) => {
+                        if (
+                          !firstHeadingSkipped &&
+                          block.type === 'heading' &&
+                          block.text?.trim() === chapter.title?.trim()
+                        ) {
+                          firstHeadingSkipped = true
+                          return null
+                        }
+                        return (
+                          <BlockRenderer
+                            key={block.id}
+                            block={block}
+                            highlights={highlights ?? []}
+                            activeHighlightId={activeHighlightId}
+                            onHighlightClick={handleHighlightClick}
+                            isCurrent={block.id === currentBlockId}
+                            dimmed={s.readingMode === 'focus' && currentBlockId !== null && block.id !== currentBlockId}
+                          />
+                        )
+                      })}
+                    </div>
+
+                    {/* Useful Action Bar on each Khisal Card in scroll mode */}
+                    <div className="mt-3.5 pt-2.5 border-t border-app-border/50 flex items-center justify-between gap-2 flex-wrap text-xs select-none">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            if (topicText) {
+                              tts.speakSentences(topicText.split(/(?<=[.؟!:])\s+/).filter(Boolean))
+                              setTtsActive(true)
+                              toast.info(isRtl ? 'الاستماع للخصلة' : 'Listening', chapter?.title)
+                            }
+                          }}
+                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                          title={isRtl ? 'الاستماع الصوتي لهذه الخصلة' : 'Listen to this trait'}
+                        >
+                          <Volume2 size={14} className="text-app-accent shrink-0" />
+                          <span className="hidden min-[360px]:inline text-[11px]">{isRtl ? 'استماع' : 'Listen'}</span>
+                        </button>
+
+                        <button
+                          onClick={async () => {
+                            if (topicText) {
+                              await navigator.clipboard.writeText(topicText)
+                              toast.success(isRtl ? 'تم نسخ نص الخصلة بنجاح' : 'Copied to clipboard')
+                            }
+                          }}
+                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                          title={isRtl ? 'نسخ نص الخصلة' : 'Copy text'}
+                        >
+                          <Copy size={14} className="text-app-accent shrink-0" />
+                          <span className="hidden min-[360px]:inline text-[11px]">{isRtl ? 'نسخ' : 'Copy'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            if (topicText) {
+                              setQuoteStudioText(topicText)
+                              setQuoteStudioOpen(true)
+                            }
+                          }}
+                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                          title={isRtl ? 'تصميم بطاقة اقتباس 4K' : 'Design 4K Card'}
+                        >
+                          <Sparkles size={14} className="text-app-accent shrink-0" />
+                          <span className="hidden sm:inline text-[11px]">{isRtl ? 'بطاقة 4K' : 'Card'}</span>
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={async () => {
+                          const todayStr = new Date().toISOString().split('T')[0]
+                          await db.virtueLogs.add({
+                            id: uid('vlog'),
+                            date: todayStr,
+                            traitId: chapter?.id || '',
+                            traitTitle: chapter?.title || 'خصلة كريمة',
+                            category: chapter?.tags?.[0] || 'الخصال والآداب',
+                            completed: true,
+                            createdAt: Date.now(),
+                          })
+                          toast.habit(
+                            isRtl ? 'ما شاء الله! سُجلت الخصلة في جدول عاداتك اليومية' : 'Habit logged for today!',
+                            chapter?.title
+                          )
+                        }}
+                        className="h-8 px-2.5 sm:px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition-all flex items-center gap-1.5 cursor-pointer font-bold text-[11px] active:scale-95 shadow-2xs shrink-0"
+                        title={isRtl ? 'سجل تطبيق هذه الخصلة في جدول اليوم' : 'Mark practiced today'}
+                      >
+                        <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
+                        <span>{isRtl ? 'طبّقتُ هذا' : 'Practiced'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })
             })()}
 
             {chapter && index && (
@@ -948,6 +1042,8 @@ function PaginatedView({
   controlsVisible = true,
   allChapters,
   onSelectChapter,
+  onOpenStudio,
+  onSpeak,
 }: {
   pageTopics: TopicUnit[]
   fontFamily: string
@@ -968,53 +1064,189 @@ function PaginatedView({
   controlsVisible?: boolean
   allChapters?: any[]
   onSelectChapter?: (id: string) => void
+  onOpenStudio?: (text: string) => void
+  onSpeak?: (text: string) => void
 }) {
   const { t, isRtl, formatDigits } = useTranslation()
+  const toast = useToast()
   const isFirstPage = pageIndex === 0
   const isLastPage = pageIndex === pageCount - 1
   const isMultiTopicDesktop = isDesktop && pageTopics.length >= 2
 
+  // Optimal responsive scaling on mobile screens so content fits naturally
+  const mobileFontSize = !isDesktop ? Math.min(fontSize, 18.5) : fontSize
+  const mobileLineHeight = !isDesktop ? Math.min(lineHeight, 1.85) : lineHeight
+
+  const extractPlainText = (topic: TopicUnit) => {
+    return topic.blocks
+      .map((b) => b.text || (b.items || []).join('\n'))
+      .filter(Boolean)
+      .join('\n\n')
+  }
+
   return (
-    <div className="flex flex-col items-center justify-between min-h-[78vh] py-2">
+    <div className="flex flex-col items-center justify-between min-h-[78vh] py-1 sm:py-2">
       <motion.div
         key={pageIndex}
-        initial={{ opacity: 0, x: isRtl ? -12 : 12 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: isRtl ? 12 : -12 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
+        initial={{ opacity: 0, x: isRtl ? -18 : 18, scale: 0.99 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        exit={{ opacity: 0, x: isRtl ? 18 : -18, scale: 0.99 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
         className="mx-auto w-full flex-1 touch-pan-y"
-        style={{ maxWidth: isMultiTopicDesktop ? Math.max(textWidth, 1100) : textWidth, fontFamily, fontSize, lineHeight }}
+        style={{
+          maxWidth: isMultiTopicDesktop ? Math.max(textWidth, 1100) : textWidth,
+          fontFamily,
+          fontSize: mobileFontSize,
+          lineHeight: mobileLineHeight,
+        }}
       >
         {isFirstPage && chapter && (
-          <div className="mb-6">
-            <ChapterHeaderBanner chapter={chapter} chapterNumber={chapterNumber} />
-          </div>
+          <ChapterHeaderBanner chapter={chapter} chapterNumber={chapterNumber} />
         )}
 
         <div
           className={cn(
             isMultiTopicDesktop
-              ? 'grid grid-cols-1 md:grid-cols-2 gap-8 items-start'
-              : 'flex flex-col gap-6'
+              ? 'grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start'
+              : 'flex flex-col gap-4 sm:gap-6'
           )}
         >
-          {pageTopics.map((topic) => (
-            <div
-              key={topic.id}
-              className="topic-card p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-app-surface/90 backdrop-blur-xs border border-app-border/90 shadow-xs flex flex-col justify-start"
-            >
-              {topic.blocks.map((block) => (
-                <BlockRenderer
-                  key={block.id}
-                  block={block}
-                  highlights={highlights}
-                  activeHighlightId={activeHighlightId}
-                  onHighlightClick={onHighlightClick}
-                />
-              ))}
-            </div>
-          ))}
+          {pageTopics.map((topic, topicIdx) => {
+            const rawText = extractPlainText(topic)
+            return (
+              <div
+                key={topic.id || topicIdx}
+                className="topic-card p-3.5 sm:p-7 rounded-2xl sm:rounded-3xl bg-app-surface/95 border border-app-border/80 shadow-xs flex flex-col justify-between transition-all"
+              >
+                <div>
+                  {/* Subtle top indicator on page 2+ or multi-topic */}
+                  {(!isFirstPage || pageTopics.length > 1) && (
+                    <div className="flex items-center justify-between pb-2 mb-3 border-b border-app-border/40 text-xs text-app-muted">
+                      <span className="font-display font-bold text-app-accent flex items-center gap-1.5 truncate">
+                        <span className="text-xs text-app-accent/60">❖</span>
+                        <span>{chapter?.title}</span>
+                      </span>
+                      {pageCount > 1 && (
+                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-app-accent/10 text-app-accent font-mono text-[11px] font-semibold">
+                          {formatDigits(pageIndex + 1)} / {formatDigits(pageCount)}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="space-y-1 sm:space-y-2">
+                    {topic.blocks.map((block) => {
+                      // On first page, ChapterHeaderBanner already renders chapter.title, skip duplicate heading
+                      if (
+                        isFirstPage &&
+                        block.type === 'heading' &&
+                        block.text?.trim() === chapter?.title?.trim()
+                      ) {
+                        return null
+                      }
+                      return (
+                        <BlockRenderer
+                          key={block.id}
+                          block={block}
+                          highlights={highlights}
+                          activeHighlightId={activeHighlightId}
+                          onHighlightClick={onHighlightClick}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Useful Khisal Action Micro-Toolbar */}
+                <div className="mt-4 pt-3 border-t border-app-border/50 flex items-center justify-between gap-2 flex-wrap text-xs select-none">
+                  <div className="flex items-center gap-1">
+                    {onSpeak && (
+                      <button
+                        onClick={() => {
+                          if (rawText) {
+                            onSpeak(rawText)
+                            toast.info(isRtl ? 'الاستماع للخصلة' : 'Listening', chapter?.title)
+                          }
+                        }}
+                        className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                        title={isRtl ? 'الاستماع الصوتي لهذه الخصلة' : 'Listen to this trait'}
+                      >
+                        <Volume2 size={14} className="text-app-accent shrink-0" />
+                        <span className="hidden min-[360px]:inline text-[11px]">{isRtl ? 'استماع' : 'Listen'}</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={async () => {
+                        if (rawText) {
+                          await navigator.clipboard.writeText(rawText)
+                          toast.success(isRtl ? 'تم نسخ نص الخصلة بنجاح' : 'Copied to clipboard')
+                        }
+                      }}
+                      className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                      title={isRtl ? 'نسخ نص الخصلة' : 'Copy text'}
+                    >
+                      <Copy size={14} className="text-app-accent shrink-0" />
+                      <span className="hidden min-[360px]:inline text-[11px]">{isRtl ? 'نسخ' : 'Copy'}</span>
+                    </button>
+
+                    {onOpenStudio && (
+                      <button
+                        onClick={() => {
+                          if (rawText) onOpenStudio(rawText)
+                        }}
+                        className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                        title={isRtl ? 'تصميم بطاقة اقتباس 4K' : 'Design 4K Card'}
+                      >
+                        <Sparkles size={14} className="text-app-accent shrink-0" />
+                        <span className="hidden sm:inline text-[11px]">{isRtl ? 'بطاقة 4K' : 'Card'}</span>
+                      </button>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={async () => {
+                      const todayStr = new Date().toISOString().split('T')[0]
+                      await db.virtueLogs.add({
+                        id: uid('vlog'),
+                        date: todayStr,
+                        traitId: chapter?.id || '',
+                        traitTitle: chapter?.title || 'خصلة كريمة',
+                        category: chapter?.tags?.[0] || 'الخصال والآداب',
+                        completed: true,
+                        createdAt: Date.now(),
+                      })
+                      toast.habit(
+                        isRtl ? 'ما شاء الله! سُجلت الخصلة في جدول عاداتك اليومية' : 'Habit logged for today!',
+                        chapter?.title
+                      )
+                    }}
+                    className="h-8 px-2.5 sm:px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition-all flex items-center gap-1.5 cursor-pointer font-bold text-[11px] active:scale-95 shadow-2xs shrink-0"
+                    title={isRtl ? 'سجل تطبيق هذه الخصلة في جدول اليوم' : 'Mark practiced today'}
+                  >
+                    <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
+                    <span>{isRtl ? 'طبّقتُ هذا' : 'Practiced'}</span>
+                  </button>
+                </div>
+              </div>
+            )
+          })}
         </div>
+
+        {/* Smooth Page Dots Indicator on Mobile/Desktop */}
+        {pageCount > 1 && (
+          <div className="mt-4 sm:mt-6 flex items-center justify-center gap-1.5 select-none py-1">
+            {Array.from({ length: Math.min(pageCount, 8) }).map((_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  'h-1.5 rounded-full transition-all duration-300',
+                  i === pageIndex ? 'w-6 bg-app-accent shadow-xs' : 'w-1.5 bg-app-border/80'
+                )}
+              />
+            ))}
+          </div>
+        )}
 
         {isLastPage && (
           <div className="mt-8 space-y-6">
@@ -1043,9 +1275,9 @@ function PaginatedView({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.2 }}
-            className="mt-6 flex items-center justify-center select-none"
+            className="mt-4 flex items-center justify-center select-none"
           >
-            <span className="text-xs font-semibold text-app-muted/80 bg-app-surface/70 px-3.5 py-1 rounded-full border border-app-border/60 shadow-2xs font-mono">
+            <span className="text-xs font-semibold text-app-muted/80 bg-app-surface/80 px-3.5 py-1 rounded-full border border-app-border/60 shadow-2xs font-mono">
               {t('pageOf', { current: formatDigits(pageIndex + 1), total: formatDigits(pageCount) })}
             </span>
           </motion.div>
