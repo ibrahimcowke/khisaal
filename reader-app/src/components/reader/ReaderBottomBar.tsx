@@ -88,7 +88,10 @@ export function ReaderBottomBar({
                 <div className="flex items-center gap-1 shrink-0">
                   {hasPrev && (
                     <button
-                      onClick={onPrevChapter || onPrev}
+                      onClick={(e) => {
+                        ;(e.currentTarget as HTMLElement)?.blur?.()
+                        ;(onPrevChapter || onPrev)?.()
+                      }}
                       className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
                       title={t('prevChapter')}
                       aria-label={t('prevChapter')}
@@ -98,7 +101,10 @@ export function ReaderBottomBar({
                   )}
 
                   <button
-                    onClick={onPrevPage}
+                    onClick={(e) => {
+                      ;(e.currentTarget as HTMLElement)?.blur?.()
+                      onPrevPage?.()
+                    }}
                     disabled={isFirstPage && !hasPrev}
                     className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text hover:text-app-accent disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold cursor-pointer disabled:pointer-events-none shadow-xs group"
                     title={isFirstPage && hasPrev ? t('prevChapter') : t('prevPage')}
@@ -135,7 +141,10 @@ export function ReaderBottomBar({
                 {/* Next Navigation (Page / Chapter) */}
                 <div className="flex items-center gap-1 shrink-0">
                   <button
-                    onClick={onNextPage}
+                    onClick={(e) => {
+                      ;(e.currentTarget as HTMLElement)?.blur?.()
+                      onNextPage?.()
+                    }}
                     disabled={isLastPage && !hasNext}
                     className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text hover:text-app-accent disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold cursor-pointer disabled:pointer-events-none shadow-xs group"
                     title={isLastPage && hasNext ? t('nextChapter') : t('nextPage')}
@@ -146,7 +155,10 @@ export function ReaderBottomBar({
 
                   {hasNext && (
                     <button
-                      onClick={onNextChapter || onNext}
+                      onClick={(e) => {
+                        ;(e.currentTarget as HTMLElement)?.blur?.()
+                        ;(onNextChapter || onNext)?.()
+                      }}
                       className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
                       title={t('nextChapter')}
                       aria-label={t('nextChapter')}
@@ -163,7 +175,10 @@ export function ReaderBottomBar({
                 <div className="flex items-center gap-1 shrink-0">
                   {onPrevChapter && hasPrev && (
                     <button
-                      onClick={onPrevChapter}
+                      onClick={(e) => {
+                        ;(e.currentTarget as HTMLElement)?.blur?.()
+                        onPrevChapter()
+                      }}
                       className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
                       title={t('prevChapter')}
                       aria-label={t('prevChapter')}
@@ -173,7 +188,10 @@ export function ReaderBottomBar({
                   )}
 
                   <button
-                    onClick={onPrev}
+                    onClick={(e) => {
+                      ;(e.currentTarget as HTMLElement)?.blur?.()
+                      onPrev?.()
+                    }}
                     disabled={!hasPrev}
                     className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs group"
                     title={t('prevPage')}
@@ -209,7 +227,10 @@ export function ReaderBottomBar({
                 {/* Next Navigation (Screen/Page & Chapter) */}
                 <div className="flex items-center gap-1 shrink-0">
                   <button
-                    onClick={onNext}
+                    onClick={(e) => {
+                      ;(e.currentTarget as HTMLElement)?.blur?.()
+                      onNext?.()
+                    }}
                     disabled={!hasNext}
                     className="h-8 px-2.5 sm:px-3.5 rounded-xl border border-app-border bg-app-bg/80 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-text disabled:opacity-25 transition-all active:scale-95 flex items-center gap-1 text-xs font-bold shrink-0 cursor-pointer disabled:pointer-events-none shadow-xs group"
                     title={t('nextPage')}
@@ -220,7 +241,10 @@ export function ReaderBottomBar({
 
                   {onNextChapter && hasNext && (
                     <button
-                      onClick={onNextChapter}
+                      onClick={(e) => {
+                        ;(e.currentTarget as HTMLElement)?.blur?.()
+                        onNextChapter()
+                      }}
                       className="hidden min-[400px]:flex h-8 w-7 sm:w-8 items-center justify-center rounded-xl border border-app-border/80 bg-app-bg/60 hover:bg-app-accent/10 hover:border-app-accent/60 text-app-muted hover:text-app-accent transition-all active:scale-95 cursor-pointer shadow-2xs"
                       title={t('nextChapter')}
                       aria-label={t('nextChapter')}

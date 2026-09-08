@@ -84,6 +84,52 @@ export default function ReaderPage() {
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const isNavigatingRef = useRef(false)
+
+  const scrollToTop = useCallback(() => {
+    if (typeof document !== 'undefined') {
+      ;(document.activeElement as HTMLElement)?.blur?.()
+    }
+    window.scrollTo(0, 0)
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    } catch {
+      // fallback
+    }
+    if (document.documentElement) {
+      document.documentElement.scrollTop = 0
+    }
+    if (document.body) {
+      document.body.scrollTop = 0
+    }
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0
+    }
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 0
+    }
+  }, [])
+
+  const navigateToChapter = useCallback(
+    (targetChapterId: string) => {
+      isNavigatingRef.current = true
+      setSearchParams({ c: targetChapterId })
+      setPage(0)
+      scrollToTop()
+      const t1 = setTimeout(scrollToTop, 40)
+      const t2 = setTimeout(scrollToTop, 150)
+      const t3 = setTimeout(() => {
+        scrollToTop()
+        isNavigatingRef.current = false
+      }, 350)
+      return () => {
+        clearTimeout(t1)
+        clearTimeout(t2)
+        clearTimeout(t3)
+      }
+    },
+    [setSearchParams, scrollToTop]
+  )
   const { selection, clear: clearSelection } = useTextSelection(containerRef)
   const tts = useTts()
   const autoScroll = useAutoScroll(s.autoScrollSpeed)
@@ -168,21 +214,34 @@ export default function ReaderPage() {
     }
   }, [chapterId]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Set history scrollRestoration to manual to prevent browser from restoring bottom scroll on searchParam change
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+  }, [])
+
   // ---------- Restore reading position on chapter load ----------
   useEffect(() => {
     if (!chapter) return
     setPage(0)
+    setCurrentBlockId(chapter.blocks[0]?.id ?? null)
     const explicitBlock = searchParams.get('block')
-    const targetBlockId = explicitBlock || (position.chapterId === chapterId ? position.blockId : chapter.blocks[0]?.id)
-    requestAnimationFrame(() => {
-      if (targetBlockId) {
-        const el = document.querySelector(`[data-block-id="${targetBlockId}"]`)
-        el?.scrollIntoView({ block: 'start', behavior: 'auto' })
-      } else {
-        window.scrollTo(0, 0)
+    if (explicitBlock) {
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-block-id="${explicitBlock}"]`)
+        el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      })
+    } else {
+      scrollToTop()
+      const t1 = setTimeout(scrollToTop, 25)
+      const t2 = setTimeout(scrollToTop, 100)
+      return () => {
+        clearTimeout(t1)
+        clearTimeout(t2)
       }
-    })
-  }, [chapterId]) // eslint-disable-line react-hooks/exhaustive-deps
+    }
+  }, [chapterId, searchParams, scrollToTop])
 
   // ---------- Track current block via IntersectionObserver, persist position ----------
   useEffect(() => {
@@ -191,6 +250,7 @@ export default function ReaderPage() {
     if (blocks.length === 0) return
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isNavigatingRef.current) return
         const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
         if (visible.length > 0) {
           const id = visible[0].target.getAttribute('data-block-id')
@@ -279,17 +339,14 @@ export default function ReaderPage() {
     textAlign: s.textAlign,
   })
 
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-    document.documentElement.scrollTop = 0
-    document.body.scrollTop = 0
-    if (containerRef.current) {
-      containerRef.current.scrollTop = 0
+  // Whenever paginated pages are measured and ready, ensure scroll is pinned to top
+  useEffect(() => {
+    if (pagesReady) {
+      scrollToTop()
+      const t = setTimeout(scrollToTop, 40)
+      return () => clearTimeout(t)
     }
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0
-    }
-  }, [])
+  }, [pagesReady, scrollToTop])
 
   // Whenever chapterId changes, reset page to 0 and immediately jump to top
   useEffect(() => {
@@ -342,9 +399,7 @@ export default function ReaderPage() {
         scrollToTop()
       } else if (nextChapterOf()) {
         const nxt = nextChapterOf()!
-        setSearchParams({ c: nxt.id })
-        setPage(0)
-        scrollToTop()
+        navigateToChapter(nxt.id)
         toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
       }
     } else {
@@ -358,13 +413,11 @@ export default function ReaderPage() {
         window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'smooth' })
       } else if (nextChapterOf()) {
         const nxt = nextChapterOf()!
-        setSearchParams({ c: nxt.id })
-        setPage(0)
-        scrollToTop()
+        navigateToChapter(nxt.id)
         toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
       }
     }
-  }, [s.readingMode, page, pages.length, index, chapter, isRtl, toast, setSearchParams, scrollToTop])
+  }, [s.readingMode, page, pages.length, index, chapter, isRtl, toast, navigateToChapter, scrollToTop])
 
   const handleReaderPrev = useCallback(() => {
     if (s.readingMode === 'paginated') {
@@ -373,9 +426,7 @@ export default function ReaderPage() {
         scrollToTop()
       } else if (prevChapterOf()) {
         const prv = prevChapterOf()!
-        setSearchParams({ c: prv.id })
-        setPage(0)
-        scrollToTop()
+        navigateToChapter(prv.id)
         toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
       }
     } else {
@@ -384,13 +435,11 @@ export default function ReaderPage() {
         window.scrollBy({ top: -window.innerHeight * 0.75, behavior: 'smooth' })
       } else if (prevChapterOf()) {
         const prv = prevChapterOf()!
-        setSearchParams({ c: prv.id })
-        setPage(0)
-        scrollToTop()
+        navigateToChapter(prv.id)
         toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
       }
     }
-  }, [s.readingMode, page, index, chapter, isRtl, toast, setSearchParams, scrollToTop])
+  }, [s.readingMode, page, index, chapter, isRtl, toast, navigateToChapter, scrollToTop])
 
   // ---------- Mobile Touch Swipe Gestures & Tap zones ----------
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
@@ -547,10 +596,8 @@ export default function ReaderPage() {
   }
 
   function jumpToChapter(id: string) {
-    setSearchParams({ c: id })
-    setPage(0)
+    navigateToChapter(id)
     setTocOpen(false)
-    scrollToTop()
   }
   function jumpToBlock(cId: string, blockId: string) {
     if (cId !== chapterId) {
@@ -608,8 +655,8 @@ export default function ReaderPage() {
       <FloatingDesktopNav
         hasPrev={!!prevChapterOf()}
         hasNext={!!nextChapterOf()}
-        onPrev={() => prevChapterOf() && setSearchParams({ c: prevChapterOf()!.id })}
-        onNext={() => nextChapterOf() && setSearchParams({ c: nextChapterOf()!.id })}
+        onPrev={() => prevChapterOf() && navigateToChapter(prevChapterOf()!.id)}
+        onNext={() => nextChapterOf() && navigateToChapter(nextChapterOf()!.id)}
         prevTitle={prevChapterOf()?.title}
         nextTitle={nextChapterOf()?.title}
       />
@@ -728,19 +775,11 @@ export default function ReaderPage() {
             lineHeight={lineHeight}
             onNextChapter={() => {
               const nxt = nextChapterOf()
-              if (nxt) {
-                setSearchParams({ c: nxt.id })
-                setPage(0)
-                scrollToTop()
-              }
+              if (nxt) navigateToChapter(nxt.id)
             }}
             onPrevChapter={() => {
               const prv = prevChapterOf()
-              if (prv) {
-                setSearchParams({ c: prv.id })
-                setPage(0)
-                scrollToTop()
-              }
+              if (prv) navigateToChapter(prv.id)
             }}
             onOpenStudio={(text) => {
               setQuoteStudioText(text)
@@ -767,21 +806,13 @@ export default function ReaderPage() {
               nextChapter={nextChapterOf()}
               onNextChapter={() => {
                 const nxt = nextChapterOf()
-                if (nxt) {
-                  setSearchParams({ c: nxt.id })
-                  setPage(0)
-                  scrollToTop()
-                }
+                if (nxt) navigateToChapter(nxt.id)
               }}
               onOpenToc={() => setTocOpen(true)}
               isDesktop={isDesktop}
               controlsVisible={controlsVisible}
               allChapters={index.chapters}
-              onSelectChapter={(id) => {
-                setSearchParams({ c: id })
-                setPage(0)
-                scrollToTop()
-              }}
+              onSelectChapter={(id) => navigateToChapter(id)}
               onOpenStudio={(text) => {
                 setQuoteStudioText(text)
                 setQuoteStudioOpen(true)
@@ -932,7 +963,7 @@ export default function ReaderPage() {
               <RelatedKhisalsCard
                 currentChapter={chapter}
                 allChapters={index.chapters}
-                onSelectChapter={(id) => setSearchParams({ c: id })}
+                onSelectChapter={(id) => navigateToChapter(id)}
               />
             )}
 
@@ -940,11 +971,7 @@ export default function ReaderPage() {
               nextChapter={nextChapterOf()}
               onNext={() => {
                 const nxt = nextChapterOf()
-                if (nxt) {
-                  setSearchParams({ c: nxt.id })
-                  setPage(0)
-                  scrollToTop()
-                }
+                if (nxt) navigateToChapter(nxt.id)
               }}
               onOpenToc={() => setTocOpen(true)}
               isLastChapter={!nextChapterOf()}
@@ -971,19 +998,11 @@ export default function ReaderPage() {
         onNextPage={handleReaderNext}
         onPrevChapter={() => {
           const prv = prevChapterOf()
-          if (prv) {
-            setSearchParams({ c: prv.id })
-            setPage(0)
-            scrollToTop()
-          }
+          if (prv) navigateToChapter(prv.id)
         }}
         onNextChapter={() => {
           const nxt = nextChapterOf()
-          if (nxt) {
-            setSearchParams({ c: nxt.id })
-            setPage(0)
-            scrollToTop()
-          }
+          if (nxt) navigateToChapter(nxt.id)
         }}
       />
 

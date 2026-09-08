@@ -39,11 +39,26 @@ export function NextChapterCard({
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
-            <Button size="md" onClick={onNext} className="w-full sm:w-auto gap-2">
+            <Button
+              size="md"
+              onClick={(e) => {
+                ;(e.currentTarget as HTMLElement)?.blur?.()
+                onNext()
+              }}
+              className="w-full sm:w-auto gap-2"
+            >
               <span>{isRtl ? 'الانتقال للباب التالي' : 'Next Chapter'}</span>
               <ChevronIcon size={15} />
             </Button>
-            <Button size="md" variant="outline" onClick={onOpenToc} className="w-full sm:w-auto gap-2">
+            <Button
+              size="md"
+              variant="outline"
+              onClick={(e) => {
+                ;(e.currentTarget as HTMLElement)?.blur?.()
+                onOpenToc()
+              }}
+              className="w-full sm:w-auto gap-2"
+            >
               <List size={15} />
               <span>{isRtl ? 'فهرس الأبواب' : 'Table of Contents'}</span>
             </Button>
