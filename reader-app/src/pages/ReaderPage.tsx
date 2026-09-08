@@ -390,7 +390,6 @@ export default function ReaderPage() {
       } else if (nextChapterOf()) {
         const nxt = nextChapterOf()!
         navigateToChapter(nxt.id)
-        toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
       }
     } else {
       // In continuous scroll, focus, or columns mode
@@ -404,10 +403,9 @@ export default function ReaderPage() {
       } else if (nextChapterOf()) {
         const nxt = nextChapterOf()!
         navigateToChapter(nxt.id)
-        toast.info(isRtl ? 'الانتقال للباب التالي' : 'Next Chapter', nxt.title)
       }
     }
-  }, [s.readingMode, page, pages.length, index, chapter, isRtl, toast, navigateToChapter, scrollToTop])
+  }, [s.readingMode, page, pages.length, index, chapter, navigateToChapter, scrollToTop])
 
   const handleReaderPrev = useCallback(() => {
     if (s.readingMode === 'paginated') {
@@ -417,7 +415,6 @@ export default function ReaderPage() {
       } else if (prevChapterOf()) {
         const prv = prevChapterOf()!
         navigateToChapter(prv.id)
-        toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
       }
     } else {
       const scrollPos = window.scrollY
@@ -426,10 +423,9 @@ export default function ReaderPage() {
       } else if (prevChapterOf()) {
         const prv = prevChapterOf()!
         navigateToChapter(prv.id)
-        toast.info(isRtl ? 'الانتقال للباب السابق' : 'Previous Chapter', prv.title)
       }
     }
-  }, [s.readingMode, page, index, chapter, isRtl, toast, navigateToChapter, scrollToTop])
+  }, [s.readingMode, page, index, chapter, navigateToChapter, scrollToTop])
 
   // ---------- Mobile Touch Swipe Gestures & Tap zones ----------
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
