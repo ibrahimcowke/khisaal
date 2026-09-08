@@ -804,7 +804,7 @@ export default function ReaderPage() {
                               toast.info(isRtl ? 'الاستماع للخصلة' : 'Listening', chapter?.title)
                             }
                           }}
-                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted active:scale-95 text-xs font-semibold"
                           title={isRtl ? 'الاستماع الصوتي لهذه الخصلة' : 'Listen to this trait'}
                         >
                           <Volume2 size={14} className="text-app-accent shrink-0" />
@@ -818,7 +818,7 @@ export default function ReaderPage() {
                               toast.success(isRtl ? 'تم نسخ نص الخصلة بنجاح' : 'Copied to clipboard')
                             }
                           }}
-                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted active:scale-95 text-xs font-semibold"
                           title={isRtl ? 'نسخ نص الخصلة' : 'Copy text'}
                         >
                           <Copy size={14} className="text-app-accent shrink-0" />
@@ -832,7 +832,7 @@ export default function ReaderPage() {
                               setQuoteStudioOpen(true)
                             }
                           }}
-                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                          className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted active:scale-95 text-xs font-semibold"
                           title={isRtl ? 'تصميم بطاقة اقتباس 4K' : 'Design 4K Card'}
                         >
                           <Sparkles size={14} className="text-app-accent shrink-0" />
@@ -1168,7 +1168,7 @@ function PaginatedView({
                             toast.info(isRtl ? 'الاستماع للخصلة' : 'Listening', chapter?.title)
                           }
                         }}
-                        className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                        className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted active:scale-95 text-xs font-semibold"
                         title={isRtl ? 'الاستماع الصوتي لهذه الخصلة' : 'Listen to this trait'}
                       >
                         <Volume2 size={14} className="text-app-accent shrink-0" />
@@ -1183,7 +1183,7 @@ function PaginatedView({
                           toast.success(isRtl ? 'تم نسخ نص الخصلة بنجاح' : 'Copied to clipboard')
                         }
                       }}
-                      className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                      className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted active:scale-95 text-xs font-semibold"
                       title={isRtl ? 'نسخ نص الخصلة' : 'Copy text'}
                     >
                       <Copy size={14} className="text-app-accent shrink-0" />
@@ -1195,7 +1195,7 @@ function PaginatedView({
                         onClick={() => {
                           if (rawText) onOpenStudio(rawText)
                         }}
-                        className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted hover:text-app-text active:scale-95 text-xs font-semibold"
+                        className="h-8 px-2 sm:px-2.5 rounded-xl hover:bg-app-accent/10 hover:text-app-accent border border-transparent hover:border-app-accent/20 transition-all flex items-center gap-1.5 cursor-pointer text-app-muted active:scale-95 text-xs font-semibold"
                         title={isRtl ? 'تصميم بطاقة اقتباس 4K' : 'Design 4K Card'}
                       >
                         <Sparkles size={14} className="text-app-accent shrink-0" />

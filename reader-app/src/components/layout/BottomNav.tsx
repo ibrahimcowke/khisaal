@@ -338,7 +338,7 @@ export function BottomNav() {
                       {isActive && (
                         <motion.div
                           layoutId="floatingNavActivePill"
-                          className="absolute inset-0 bg-gradient-to-r from-app-accent to-emerald-600 rounded-xl sm:rounded-full shadow-md shadow-app-accent/25 z-0"
+                          className="absolute inset-0 bg-linear-to-r from-app-accent to-emerald-600 rounded-xl sm:rounded-full shadow-md shadow-app-accent/25 z-0"
                           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                         />
                       )}
@@ -392,7 +392,7 @@ export function BottomNav() {
             {isMoreActive && (
               <motion.div
                 layoutId="floatingNavActivePill"
-                className="absolute inset-0 bg-gradient-to-r from-app-accent to-emerald-600 rounded-xl sm:rounded-full shadow-md shadow-app-accent/25 z-0"
+                className="absolute inset-0 bg-linear-to-r from-app-accent to-emerald-600 rounded-xl sm:rounded-full shadow-md shadow-app-accent/25 z-0"
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
               />
             )}

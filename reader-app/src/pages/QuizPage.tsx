@@ -524,7 +524,7 @@ export default function QuizPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="rounded-3xl bg-app-surface border border-app-border p-6 sm:p-8 text-center space-y-6 shadow-sm"
         >
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-app-accent/25 to-app-accent/10 border border-app-accent/30 text-app-accent mx-auto flex items-center justify-center shadow-inner">
+          <div className="w-20 h-20 rounded-3xl bg-linear-to-br from-app-accent/25 to-app-accent/10 border border-app-accent/30 text-app-accent mx-auto flex items-center justify-center shadow-inner">
             <Trophy size={36} />
           </div>
 
