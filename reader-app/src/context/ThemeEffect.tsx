@@ -17,7 +17,13 @@ export function ThemeEffect() {
     document.documentElement.setAttribute('data-accent', accentColor || 'gold')
     document.documentElement.setAttribute('data-shaping', cardShaping || 'andalusian')
     document.documentElement.setAttribute('data-edge-to-edge', edgeToEdgeDisplay ? 'true' : 'false')
-    document.documentElement.style.colorScheme = theme === 'night' || theme === 'oled' ? 'dark' : 'light'
+    const isDark = ['night', 'oled', 'twilight', 'cyber', 'neon', 'synthwave'].includes(theme)
+    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light'
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
   }, [language, theme, accentColor, cardShaping, edgeToEdgeDisplay])
 
   useEffect(() => {

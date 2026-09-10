@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type ReaderTheme = 'paper' | 'warm' | 'coffee' | 'green' | 'mint' | 'sepia' | 'olive' | 'gray' | 'twilight' | 'night' | 'oled'
+export type ReaderTheme = 'paper' | 'warm' | 'coffee' | 'green' | 'mint' | 'sepia' | 'olive' | 'gray' | 'twilight' | 'night' | 'oled' | 'cyber' | 'neon' | 'synthwave'
 export type AccentChoice = 'gold' | 'emerald' | 'indigo' | 'crimson' | 'amber'
 export type CardShaping = 'rounded' | 'andalusian' | 'sharp' | 'pill' | 'bordered'
 
@@ -29,6 +29,9 @@ export const THEMES: ThemeConfig[] = [
   { key: 'twilight', label: 'غسق كحلي 🌌', labelEn: 'Twilight Indigo', desc: 'داكن ناعم مريح للعين قبل النوم بديل للأسود', descEn: 'Soft night twilight easing eye strain before sleep', bg: '#1A1922', surface: '#24222E', text: '#DFDCED', accent: '#9E8DDF' },
   { key: 'night', label: 'ليلي مخملي 🌙', labelEn: 'Velvet Night', desc: 'قراءة ليلية متوازنة في الظلام', descEn: 'Deep velvet night mode for low light', bg: '#11110F', surface: '#1C1B18', text: '#DDD8CE', accent: '#D4A853' },
   { key: 'oled', label: 'أسود نقي 🖤', labelEn: 'Pure OLED Black', desc: 'أسود خالص لشاشات OLED وتوفير البطارية', descEn: 'True black for OLED panels & battery saving', bg: '#000000', surface: '#0C0C0C', text: '#CCCCCC', accent: '#9A8256' },
+  { key: 'cyber', label: 'سايبر رقمي ⚡', labelEn: 'Cyberpunk ⚡', desc: 'أزرق سيبراني كهربائي مستقبلي عالي التباين', descEn: 'Futuristic high-contrast electric cyber blue', bg: '#0B111E', surface: '#131E31', text: '#E2F1FF', accent: '#00E5FF' },
+  { key: 'neon', label: 'نيون أخضر 💚', labelEn: 'Electric Neon 💚', desc: 'خلفية فحمية داكنة مع توهج نيون أخضر مشع', descEn: 'Deep void charcoal with glowing electric green', bg: '#080F0A', surface: '#112015', text: '#E8FFE8', accent: '#22C55E' },
+  { key: 'synthwave', label: 'سينث ويف 🔮', labelEn: 'Synthwave Glow 🔮', desc: 'بنفسجي ريترو كوني مع وميض وردي متوهج', descEn: 'Retro cosmic purple with neon magenta glow', bg: '#140A21', surface: '#221238', text: '#FDF2F8', accent: '#F43F5E' },
 ]
 export type FontChoice =
   | 'amiri'

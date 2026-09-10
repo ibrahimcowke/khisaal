@@ -54,20 +54,36 @@ export function ReaderBottomBar({
   return (
     <AnimatePresence>
       {visible && (
-        <motion.footer
-          initial={{ y: 40, opacity: 0, scale: 0.98 }}
-          animate={{ y: 0, opacity: 1, scale: 1 }}
-          exit={{ y: 40, opacity: 0, scale: 0.98 }}
-          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-[max(env(safe-area-inset-bottom,0px),0.5rem)] sm:bottom-4 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 w-auto sm:w-115 z-30 pointer-events-auto select-none"
-        >
-          <div className="rounded-2xl sm:rounded-3xl bg-app-surface/95 dark:bg-app-surface/90 backdrop-blur-2xl border border-app-border/90 shadow-xl shadow-black/10 dark:shadow-black/40 px-2 sm:px-3 py-1.5 space-y-1">
+        <div className="fixed bottom-0 inset-x-0 z-50 pointer-events-none select-none sm:bottom-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-115">
+          <motion.footer
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="pointer-events-auto bg-app-surface/96 dark:bg-app-surface/92 backdrop-blur-2xl border-t border-app-border/80 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_30px_rgba(0,0,0,0.5)] px-2.5 pt-1.5 pb-[max(env(safe-area-inset-bottom,0px),0.5rem)] sm:rounded-3xl sm:border sm:border-app-border/90 sm:shadow-xl sm:px-3 sm:py-1.5 sm:pb-1.5 space-y-1"
+          >
             {/* Precision Slim Interactive Scrubber */}
             <div
-              className="relative h-1 hover:h-1.5 rounded-full bg-app-border/60 cursor-pointer group transition-all mx-1"
+              className="relative h-1.5 hover:h-2 rounded-full bg-app-border/60 cursor-pointer group transition-all mx-1 touch-none"
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect()
                 const rawRatio = (e.clientX - rect.left) / rect.width
+                const ratio = isRtl ? 1 - rawRatio : rawRatio
+                onScrub(Math.min(1, Math.max(0, ratio)))
+              }}
+              onTouchStart={(e) => {
+                const touch = e.touches[0]
+                if (!touch) return
+                const rect = e.currentTarget.getBoundingClientRect()
+                const rawRatio = (touch.clientX - rect.left) / rect.width
+                const ratio = isRtl ? 1 - rawRatio : rawRatio
+                onScrub(Math.min(1, Math.max(0, ratio)))
+              }}
+              onTouchMove={(e) => {
+                const touch = e.touches[0]
+                if (!touch) return
+                const rect = e.currentTarget.getBoundingClientRect()
+                const rawRatio = (touch.clientX - rect.left) / rect.width
                 const ratio = isRtl ? 1 - rawRatio : rawRatio
                 onScrub(Math.min(1, Math.max(0, ratio)))
               }}
@@ -77,8 +93,8 @@ export function ReaderBottomBar({
                 style={{ width: `${chapterProgress}%` }}
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-app-accent border-2 border-app-surface shadow-xs group-hover:scale-125 transition-transform"
-                style={isRtl ? { right: `calc(${chapterProgress}% - 5px)` } : { left: `calc(${chapterProgress}% - 5px)` }}
+                className="absolute top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-app-accent border-2 border-app-surface shadow-xs group-hover:scale-125 transition-transform"
+                style={isRtl ? { right: `calc(${chapterProgress}% - 6px)` } : { left: `calc(${chapterProgress}% - 6px)` }}
               />
             </div>
 
@@ -95,7 +111,7 @@ export function ReaderBottomBar({
                   }}
                   disabled={isPaginated ? (isFirstPage && !hasPrev) : !hasPrev}
                   className={cn(
-                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border bg-app-bg/80 text-app-text transition-all active:scale-90 cursor-pointer shadow-xs',
+                    'h-8 w-8 sm:h-8.5 sm:w-8.5 flex items-center justify-center rounded-xl border border-app-border bg-app-bg/80 text-app-text transition-all active:scale-90 cursor-pointer shadow-xs touch-manipulation',
                     (isPaginated ? (!isFirstPage || hasPrev) : hasPrev)
                       ? 'hover:bg-app-accent/15 hover:border-app-accent/60 hover:text-app-accent text-app-accent'
                       : 'opacity-20 pointer-events-none'
@@ -114,7 +130,7 @@ export function ReaderBottomBar({
                   }}
                   disabled={!hasPrev}
                   className={cn(
-                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
+                    'h-8 w-8 sm:h-8.5 sm:w-8.5 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs touch-manipulation',
                     hasPrev ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
                   )}
                   title={t('prevChapter')}
@@ -184,7 +200,7 @@ export function ReaderBottomBar({
                   }}
                   disabled={!hasNext}
                   className={cn(
-                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs',
+                    'h-8 w-8 sm:h-8.5 sm:w-8.5 flex items-center justify-center rounded-xl border border-app-border/70 bg-app-bg/60 text-app-muted transition-all active:scale-90 cursor-pointer shadow-2xs touch-manipulation',
                     hasNext ? 'hover:bg-app-accent/15 hover:border-app-accent/50 hover:text-app-accent' : 'opacity-20 pointer-events-none'
                   )}
                   title={t('nextChapter')}
@@ -202,7 +218,7 @@ export function ReaderBottomBar({
                   }}
                   disabled={isPaginated ? (isLastPage && !hasNext) : !hasNext}
                   className={cn(
-                    'h-7.5 w-7.5 sm:h-8 sm:w-8 flex items-center justify-center rounded-xl border border-app-border bg-app-bg/80 text-app-text transition-all active:scale-90 cursor-pointer shadow-xs',
+                    'h-8 w-8 sm:h-8.5 sm:w-8.5 flex items-center justify-center rounded-xl border border-app-border bg-app-bg/80 text-app-text transition-all active:scale-90 cursor-pointer shadow-xs touch-manipulation',
                     (isPaginated ? (!isLastPage || hasNext) : hasNext)
                       ? 'hover:bg-app-accent/15 hover:border-app-accent/60 hover:text-app-accent text-app-accent'
                       : 'opacity-20 pointer-events-none'
@@ -214,8 +230,8 @@ export function ReaderBottomBar({
                 </button>
               </div>
             </div>
-          </div>
-        </motion.footer>
+          </motion.footer>
+        </div>
       )}
     </AnimatePresence>
   )
