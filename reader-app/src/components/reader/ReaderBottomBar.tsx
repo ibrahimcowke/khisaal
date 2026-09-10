@@ -59,7 +59,7 @@ export function ReaderBottomBar({
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 40, opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-[calc(3.75rem+max(env(safe-area-inset-bottom,0px),0.35rem))] sm:bottom-16 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 w-auto sm:w-115 z-30 pointer-events-auto select-none"
+          className="fixed bottom-[max(env(safe-area-inset-bottom,0px),0.5rem)] sm:bottom-4 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 w-auto sm:w-115 z-30 pointer-events-auto select-none"
         >
           <div className="rounded-2xl sm:rounded-3xl bg-app-surface/95 dark:bg-app-surface/90 backdrop-blur-2xl border border-app-border/90 shadow-xl shadow-black/10 dark:shadow-black/40 px-2 sm:px-3 py-1.5 space-y-1">
             {/* Precision Slim Interactive Scrubber */}
